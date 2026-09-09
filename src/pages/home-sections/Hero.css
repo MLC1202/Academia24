@@ -1,0 +1,104 @@
+.hero {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    padding: 64px 48px;
+    background-image: linear-gradient(
+        to top,
+        rgba(0, 0, 0, 0.75),
+        rgba(0, 0, 0, 0.2)
+      ),
+      url("/hero-academia.jpg");
+    background-size: cover;
+    background-position: center;
+    color: var(--color-white);
+  }
+  
+  .hero__content {
+    max-width: 1100px;
+  }
+  
+  .hero__location {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: var(--color-red);
+    margin-bottom: 16px;
+  }
+  
+  .hero__title {
+    font-family: var(--font-display);
+    font-size: 88px;
+    font-weight: 800;
+    line-height: 1;
+    margin-bottom: 24px;
+  }
+  
+  .hero__title-accent {
+    color: var(--color-red);
+  }
+  
+  .hero__subtitle {
+    font-size: 20px;
+    color: #e5e5e5;
+    max-width: 640px;
+    margin-bottom: 32px;
+    line-height: 1.5;
+  }
+  
+  .hero__actions {
+    display: flex;
+    gap: 16px;
+  }
+  
+  .hero__btn-primary {
+    background: var(--color-red);
+    color: var(--color-white);
+    padding: 16px 28px;
+    font-size: 13px;
+    font-weight: 700;
+  }
+  
+  .hero__btn-secondary {
+    background: transparent;
+    border: 1px solid var(--color-white);
+    color: var(--color-white);
+    padding: 16px 28px;
+    font-size: 13px;
+    font-weight: 700;
+  }
+  
+  .hero__stats {
+    position: absolute;
+    bottom: 40px;
+    right: 48px;
+    display: flex;
+    gap: 0;
+  }
+  
+  .hero__stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: var(--color-white);
+    padding: 6px 28px;
+    border-left: 1px solid rgba(255, 255, 255, 0.3);
+  }
+  
+  .hero__stat-number {
+    font-family: var(--font-display);
+    font-size: 50px;
+    font-weight: 800;
+  }
+  
+  .hero__stat-label {
+    font-size: 13px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #ccc;
+    margin-top: 6px;
+  }
+  
+  .hero__stat:first-child {
+    border-left: none;
+  }

@@ -17,11 +17,24 @@
   padding: 0;
 }
 
+html,
+body,
+#root {
+  height: 100%;
+}
+
 body {
   font-family: var(--font-body);
   color: var(--color-black);
   background: var(--color-white);
   line-height: 1.5;
+}
+
+#root {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 a {
@@ -35,14 +48,20 @@ button {
 }
 
 .snap-container {
-  height: calc(100vh - var(--header-height));
-  overflow-y: scroll;
-  scroll-snap-type: y proximity;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
   scroll-behavior: smooth;
+  scroll-padding-top: 24px;
+  overscroll-behavior-y: contain;
 }
 
 .snap-section {
-  height: calc(100vh - var(--header-height));
-  scroll-snap-align: start;
-  overflow-y: auto;
+  min-height: 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .snap-container {
+    scroll-behavior: auto;
+  }
 }

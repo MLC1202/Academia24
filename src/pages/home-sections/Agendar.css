@@ -1,0 +1,148 @@
+.agendar {
+    padding: 96px 48px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 96px;
+    background: var(--color-black);
+    color: var(--color-white);
+    align-items: start;
+  }
+  
+  .agendar__eyebrow {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--color-red);
+    letter-spacing: 0.05em;
+    margin-bottom: 24px;
+  }
+  
+  .agendar__title {
+    font-family: var(--font-display);
+    font-size: 72px;
+    font-weight: 800;
+    line-height: 1.02;
+    letter-spacing: -0.01em;
+    margin-bottom: 32px;
+  }
+  
+  .agendar__subtitle {
+    font-size: 18px;
+    color: #cfcfcf;
+    max-width: 480px;
+    line-height: 1.5;
+    margin-bottom: 32px;
+  }
+  
+  .agendar__checklist {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .agendar__checklist li {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+  
+  .agendar__checklist li::before {
+    content: "✓";
+    color: var(--color-red);
+    margin-right: 10px;
+  }
+  
+  .agendar__form {
+    background: var(--color-cream);
+    color: var(--color-black);
+    padding: 40px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+  
+  .agendar__field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .agendar__field label {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: #444;
+  }
+  
+  .agendar__optional {
+    font-weight: 400;
+    text-transform: none;
+    color: #999;
+  }
+  
+  .agendar__field input,
+  .agendar__field select {
+    border: 1px solid #ccc;
+    background: var(--color-white);
+    padding: 14px 16px;
+    font-size: 15px;
+    font-family: inherit;
+    color: var(--color-black);
+  }
+  
+  .agendar__field input::placeholder {
+    color: #999;
+  }
+  
+  .agendar__consent {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    font-size: 13px;
+    color: #444;
+  }
+  
+  .agendar__consent input {
+    margin-top: 3px;
+  }
+  
+  .agendar__submit {
+    grid-column: 1 / -1;
+    background: var(--color-red);
+    color: var(--color-white);
+    border: none;
+    padding: 20px 28px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    cursor: pointer;
+  }
+  
+  .agendar__submit-eyebrow {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+  }
+  
+  .agendar__submit-title {
+    font-family: var(--font-display);
+    font-size: 32px;
+    font-weight: 800;
+  }
+  
+  .agendar__submit-note {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+  }
+  
+  .agendar__disclaimer {
+    grid-column: 1 / -1;
+    font-size: 12px;
+    color: #777;
+    text-align: center;
+  }
