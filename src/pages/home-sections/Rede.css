@@ -1,72 +1,205 @@
 .rede {
-    padding: 96px 48px;
-    display: grid;
-    grid-template-columns: 1.15fr 1fr;
-    gap: 96px;
     background: var(--color-cream);
+    padding: calc(var(--header-height) + 88px) 48px 98px;
+    color: var(--color-black);
+  }
+  
+  .rede__inner {
+    max-width: 1240px;
+    margin: 0 auto;
+  }
+  
+  .rede__eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0 0 28px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #8a8378;
+  }
+  
+  .rede__eyebrow::before {
+    content: "";
+    width: 28px;
+    height: 2px;
+    background: var(--color-red);
+  }
+  
+  .rede__head {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+    column-gap: 80px;
+    align-items: end;
   }
   
   .rede__title {
     font-family: var(--font-display);
-    font-size: 72px;
+    font-size: clamp(38px, 4.4vw, 60px);
     font-weight: 800;
-    line-height: 1.05;
-    letter-spacing: -0.01em;
-  }
-  
-  .rede__eyebrow {
-    font-size: 13px;
-    font-weight: 700;
-    color: var(--color-red);
-    letter-spacing: 0.05em;
-    margin-bottom: 16px;
-    grid-column: 1 / -1;
+    line-height: 1.04;
+    letter-spacing: -0.02em;
+    margin: 0;
   }
   
   .rede__text {
     font-size: 16px;
-    color: #444;
+    line-height: 1.65;
+    color: #55524b;
+    max-width: 46ch;
+  }
+  
+  .rede__text p {
+    margin: 0;
   }
   
   .rede__text p + p {
-    margin-top: 16px;
+    margin-top: 14px;
   }
   
-  .rede__cards {
-    grid-column: 1 / -1;
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    border-top: 1px solid #ddd;
-    margin-top: 32px;
+  /* acordeão */
+  
+  .rede__accordion {
+    display: flex;
+    gap: 6px;
+    height: 400px;
+    margin-top: 78px;
   }
   
-  .rede__card {
-    padding: 32px 24px 24px;
-    border-top: 3px solid var(--color-red);
-    background: var(--color-white);
-    border-left: 1px solid #ddd;
+  .rede__painel {
+    position: relative;
+    flex: 0 1 96px;
+    min-width: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 30px 26px;
+    border: 0;
+    text-align: left;
+    cursor: pointer;
+    color: var(--color-white);
+    font-family: inherit;
+    /* placeholder — trocar por url("/unidades/nome.jpg") quando tiver foto */
+    background-color: #16151a;
+    background-image: linear-gradient(150deg, #2b2a32 0%, #121116 70%);
+    background-size: cover;
+    background-position: center;
+    transition: flex-grow 0.55s cubic-bezier(0.4, 0, 0.2, 1);
   }
   
-  .rede__card:first-child {
-    border-left: none;
+  .rede__painel::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: var(--color-red);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
   }
   
-  .rede__card-number {
+  .rede__painel--ativo {
+    flex-grow: 1;
+  }
+  
+  .rede__painel--ativo::before {
+    transform: scaleX(1);
+  }
+  
+  .rede__painel-n {
     font-family: var(--font-display);
-    font-size: 36px;
-    font-weight: 800;
-    color: var(--color-red);
-    margin-bottom: 20px;
-  }
-  
-  .rede__card-title {
-    font-size: 20px;
+    font-size: 13px;
     font-weight: 700;
-    margin-bottom: 12px;
-    line-height: 1.2;
+    letter-spacing: 0.08em;
+    color: #8c8798;
+    transition: color 0.35s ease;
   }
   
-  .rede__card-text {
-    font-size: 14px;
-    color: #666;
+  .rede__painel--ativo .rede__painel-n {
+    color: var(--color-red);
+  }
+  
+  .rede__painel-titulo {
+    margin-top: auto;
+    writing-mode: vertical-rl;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+  }
+  
+  .rede__painel--ativo .rede__painel-titulo {
+    writing-mode: horizontal-tb;
+    font-size: clamp(22px, 2vw, 28px);
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
+  }
+  
+  .rede__painel-texto {
+    display: block;
+    max-width: 40ch;
+    margin-top: 12px;
+    font-size: 14.5px;
+    line-height: 1.6;
+    color: #c4c0cb;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+  
+  .rede__painel--ativo .rede__painel-texto {
+    opacity: 1;
+    transform: none;
+    transition-delay: 0.2s;
+  }
+  
+  @media (max-width: 1024px) {
+    .rede {
+      padding: calc(var(--header-height) + 64px) 32px 72px;
+    }
+  
+    .rede__head {
+      grid-template-columns: 1fr;
+      row-gap: 32px;
+      align-items: start;
+    }
+  
+    .rede__text {
+      max-width: 60ch;
+    }
+  }
+  
+  @media (max-width: 900px) {
+    .rede__accordion {
+      flex-direction: column;
+      height: auto;
+      gap: 10px;
+      margin-top: 56px;
+    }
+  
+    .rede__painel {
+      flex: 0 0 auto;
+      min-height: 132px;
+      padding: 24px;
+    }
+  
+    .rede__painel-titulo {
+      writing-mode: horizontal-tb;
+      margin-top: 16px;
+      font-size: 20px;
+    }
+  }
+  
+  @media (prefers-reduced-motion: reduce) {
+    .rede__painel,
+    .rede__painel::before,
+    .rede__painel-texto {
+      transition: none;
+    }
   }

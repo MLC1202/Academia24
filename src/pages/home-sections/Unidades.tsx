@@ -1,0 +1,155 @@
+import "./Unidades.css";
+
+const unidades = [
+  {
+    n: "01",
+    marca: "24 Wellness",
+    nome: "Alphaville",
+    frase: "Conforto, performance e bem-estar.",
+    descricao:
+      "Loja de roupas fitness, loja de suplementos, massoterapia e ambiente familiar.",
+    destaques: [
+      "1.800 m²",
+      "Life Fitness e Hammer Strength",
+      "Ambientes climatizados",
+      "Valet",
+    ],
+    endereco: "Alameda Grajaú, 525 · Alphaville Industrial · Barueri",
+    horarios: "Seg–Sex 05h–23h · Sáb 07h–15h · Dom/feriados 08h–14h",
+    local: "Barueri · SP",
+    rota: "/unidades/alphaville",
+  },
+  {
+    n: "02",
+    marca: "24 Health Club",
+    nome: "Norte",
+    frase: "Espaço e liberdade para evoluir.",
+    descricao:
+      "Salão amplo com circulação natural de ar, salas coletivas climatizadas e equipamentos Life Fitness e Technogym.",
+    destaques: [
+      "Mais de 3.000 m²",
+      "Mais de 80 vagas de estacionamento",
+      "Mais de 20 anos na região",
+      "Abre às 4h de segunda a sexta",
+    ],
+    endereco: "Rua Maria Cândida, 468 · Vila Guilherme · São Paulo",
+    horarios: "Seg–Sex 04h–23h · Sáb 07h–15h · Dom/feriados 08h–14h",
+    local: "Vila Guilherme · São Paulo",
+    rota: "/unidades/norte",
+  },
+  {
+    n: "03",
+    marca: "24 Health Club",
+    nome: "Cambuí",
+    frase: "Premium sem ser impessoal.",
+    descricao:
+      "Estrutura acolhedora e climatizada, com novos equipamentos Hack Squat 35° e cadeira abdutora articulada.",
+    destaques: [
+      "Mais de 1.200 m²",
+      "Life Fitness e Hammer Strength",
+      "11 anos no Cambuí",
+      "Valet",
+    ],
+    endereco: "Rua Santa Cruz, 299 · Cambuí · Campinas",
+    horarios: "Seg–Sex 05h–23h · Sáb 07h–15h · Dom/feriados 08h–14h",
+    local: "Campinas · SP",
+    rota: "/unidades/cambui",
+  },
+  {
+    n: "04",
+    marca: "24 Health Club",
+    nome: "Lagoa",
+    frase: "Estrutura à altura dos seus objetivos.",
+    descricao:
+      "Estrutura completa e uma rotina de treino com conforto, orientação e praticidade.",
+    destaques: [
+      "Musculação completa",
+      "Área de cardio",
+      "Aulas coletivas",
+      "Avaliação com bioimpedância",
+    ],
+    endereco: "Av. Dr. Heitor Penteado, 1740 · Campinas",
+    horarios: "Consulte a unidade para confirmar os horários vigentes.",
+    local: "Campinas · SP",
+    rota: "/unidades/lagoa",
+  },
+];
+
+function Unidades() {
+  return (
+    <section className="unidades snap-section" id="unidades">
+      <div className="unidades__inner">
+        <header className="unidades__head">
+          <p className="unidades__eyebrow">Encontre a sua 24</p>
+
+          <h2 className="unidades__title">
+            <span className="unidades__title-destaque">Quatro unidades.</span>
+            <br />
+            Uma experiência para cada rotina.
+            <br />
+          </h2>
+
+          <div className="unidades__intro">
+            <p>
+              Compare os diferenciais e escolha a unidade mais próxima ou mais
+              alinhada ao
+              <strong> seu jeito de treinar.</strong>
+            </p>
+          </div>
+        </header>
+
+        <div className="unidades__lista">
+          {unidades.map((u, i) => (
+            <article
+              key={u.n}
+              className={i % 2 === 0 ? "unidade" : "unidade unidade--invertida"}
+            >
+              <div className="unidade__foto">
+                <span className="unidade__foto-n">{u.n}</span>
+                <span className="unidade__foto-local">{u.local}</span>
+              </div>
+
+              <div className="unidade__conteudo">
+                <p className="unidade__marca">
+                  {u.marca} · Unidade {u.n}
+                </p>
+
+                <h3 className="unidade__nome">{u.nome}</h3>
+
+                <p className="unidade__frase">{u.frase}</p>
+
+                <p className="unidade__descricao">{u.descricao}</p>
+
+                <ul className="unidade__destaques">
+                  {u.destaques.map((d) => (
+                    <li key={d}>{d}</li>
+                  ))}
+                </ul>
+
+                <dl className="unidade__dados">
+                  <div>
+                    <dt>Endereço</dt>
+                    <dd>{u.endereco}</dd>
+                  </div>
+                  <div>
+                    <dt>Horários</dt>
+                    <dd>{u.horarios}</dd>
+                  </div>
+                </dl>
+
+                <a className="unidade__link" href={u.rota}>
+                  <span>Conhecer unidade</span>
+                  <span className="unidade__link-seta" aria-hidden="true">
+                    ↗
+                  </span>
+                </a>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export default Unidades;
