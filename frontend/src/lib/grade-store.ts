@@ -5,23 +5,22 @@ import {
 } from '../grade';
 import { slugsUnidades, type UnidadeSlug } from '../unidades';
 
+// Nome da chave no localStorage.
 const CHAVE = 'academia24:grades';
 
-/**
- * ================== PONTO DE LIGAÇÃO DO BANCO ==================
- * Hoje a grade editada fica no localStorage do navegador, o que serve
- * para desenvolver e testar. NÃO serve em produção: o que você edita
- * aqui não aparece para os visitantes, porque cada navegador tem o seu.
- *
- * Quando o endpoint existir, estas duas funções viram:
- *
- *   carregarGrades: GET  /api/grades.php   -> Grades
- *   salvarGrade:    POST /api/grades.php   { unidade, grade }
- *
- * O resto do site não muda: a home e o dashboard só falam com daqui.
- * ===============================================================
- */
+// AQUI E ONDE EU PLUGO O BANCO DEPOIS.
+//
+// Por enquanto a grade editada fica no localStorage do navegador. Serve pra
+// desenvolver e testar, mas NAO serve em producao: cada navegador tem o seu,
+// entao o que eu edito aqui nao aparece pra quem visita o site.
+//
+// Quando o endpoint existir, essas duas funcoes viram:
+//   carregarGrades -> GET  /api/grades.php
+//   salvarGrade    -> POST /api/grades.php  { unidade, grade }
+//
+// O resto do site nao muda: a home e o dashboard so falam com este arquivo.
 
+// Le o que estiver salvo e completa com a grade de exemplo o que faltar.
 export function carregarGrades(): Grades {
   try {
     const salvo = localStorage.getItem(CHAVE);
@@ -40,6 +39,7 @@ export function carregarGrades(): Grades {
   }
 }
 
+// Salva a grade de UMA unidade, preservando as outras.
 export function salvarGrade(unidade: UnidadeSlug, grade: GradeUnidade) {
   const grades = carregarGrades();
   grades[unidade] = grade;

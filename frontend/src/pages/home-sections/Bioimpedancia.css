@@ -1,0 +1,148 @@
+/* Secao da bioimpedancia — foto vermelha a esquerda, texto a direita */
+
+.bio {
+  display: grid;
+  grid-template-columns: minmax(0, 0.86fr) minmax(0, 1.14fr);
+  background: var(--color-offwhite);
+  color: var(--color-black);
+}
+
+/* lado esquerdo: foto com o vermelho por cima */
+
+.bio__foto {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  min-height: 620px;
+  padding: 56px 48px;
+  overflow: hidden;
+  background-color: var(--color-red);
+  background-image: linear-gradient(
+      rgba(224, 52, 44, 0.82),
+      rgba(224, 52, 44, 0.82)
+    ),
+    url("https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1600&q=80");
+  background-size: cover;
+  background-position: center;
+}
+
+.bio__frase {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(48px, 5.6vw, 88px);
+  font-weight: 800;
+  line-height: 0.92;
+  letter-spacing: -0.035em;
+  text-transform: uppercase;
+  color: #4a4744;
+}
+
+/* lado direito: o texto */
+
+.bio__conteudo {
+  display: flex;
+  align-items: center;
+  padding: 96px 48px 96px 72px;
+}
+
+.bio__inner {
+  width: 100%;
+  max-width: 620px;
+}
+
+.bio__eyebrow {
+  margin: 0 0 28px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #8a8378;
+}
+
+.bio__title {
+  margin: 0 0 28px;
+  font-family: var(--font-display);
+  font-size: clamp(40px, 4.6vw, 68px);
+  font-weight: 800;
+  line-height: 1.02;
+  letter-spacing: -0.03em;
+}
+
+.bio__subtitle {
+  margin: 0;
+  max-width: 46ch;
+  font-size: 16.5px;
+  line-height: 1.65;
+  color: #55524b;
+}
+
+.bio__itens {
+  list-style: none;
+  margin: 48px 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 40px;
+}
+
+.bio__item {
+  position: relative;
+  padding: 18px 0 18px 20px;
+  border-top: 1px solid #d9d6d0;
+  font-size: 15px;
+  line-height: 1.5;
+  color: #38352f;
+}
+
+.bio__item::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 25px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-red);
+}
+
+.bio__cta {
+  display: inline-block;
+  margin-top: 48px;
+  padding: 20px 34px;
+  background: var(--color-black);
+  color: var(--color-white);
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  transition: background 0.25s ease;
+}
+
+.bio__cta:hover {
+  background: var(--color-red);
+}
+
+@media (max-width: 1024px) {
+  .bio {
+    grid-template-columns: 1fr;
+  }
+
+  .bio__foto {
+    min-height: 420px;
+    padding: 40px 32px;
+  }
+
+  .bio__conteudo {
+    padding: 64px 32px;
+  }
+
+  .bio__itens {
+    margin-top: 40px;
+  }
+}
+
+@media (max-width: 640px) {
+  .bio__itens {
+    grid-template-columns: 1fr;
+  }
+}

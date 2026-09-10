@@ -1,3 +1,5 @@
+// Rodape da home (o admin nao usa).
+
 import './Footer.css';
 
 function Footer() {

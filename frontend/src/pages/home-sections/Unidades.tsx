@@ -1,4 +1,6 @@
-import { Link } from "react-router-dom";
+// Secao das 4 unidades na home, em zigue-zague.
+// Os textos ficam aqui mesmo; foto e link da LP vem de src/unidades.ts.
+
 import { unidades as infoUnidades } from "../../unidades";
 import "./Unidades.css";
 
@@ -19,7 +21,7 @@ const unidades = [
     endereco: "Alameda Grajaú, 525 · Alphaville Industrial · Barueri",
     horarios: "Seg–Sex 05h–23h · Sáb 07h–15h · Dom/feriados 08h–14h",
     local: "Barueri · SP",
-    rota: "/unidades/alphaville",
+    lp: infoUnidades.alphaville.lp,
     foto: infoUnidades.alphaville.foto,
   },
   {
@@ -38,7 +40,7 @@ const unidades = [
     endereco: "Rua Maria Cândida, 468 · Vila Guilherme · São Paulo",
     horarios: "Seg–Sex 04h–23h · Sáb 07h–15h · Dom/feriados 08h–14h",
     local: "Vila Guilherme · São Paulo",
-    rota: "/unidades/norte",
+    lp: infoUnidades.norte.lp,
     foto: infoUnidades.norte.foto,
   },
   {
@@ -57,7 +59,7 @@ const unidades = [
     endereco: "Rua Santa Cruz, 299 · Cambuí · Campinas",
     horarios: "Seg–Sex 05h–23h · Sáb 07h–15h · Dom/feriados 08h–14h",
     local: "Campinas · SP",
-    rota: "/unidades/cambui",
+    lp: infoUnidades.cambui.lp,
     foto: infoUnidades.cambui.foto,
   },
   {
@@ -76,7 +78,7 @@ const unidades = [
     endereco: "Av. Dr. Heitor Penteado, 1740 · Campinas",
     horarios: "Consulte a unidade para confirmar os horários vigentes.",
     local: "Campinas · SP",
-    rota: "/unidades/lagoa",
+    lp: infoUnidades.lagoa.lp,
     foto: infoUnidades.lagoa.foto,
   },
 ];
@@ -149,12 +151,29 @@ function Unidades() {
                 </dl>
 
                 <div className="unidade__acoes">
-                  <Link className="unidade__link" to={u.rota}>
-                    <span>Conhecer unidade</span>
-                    <span className="unidade__link-seta" aria-hidden="true">
-                      ↗
+                  {u.lp ? (
+                    <a
+                      className="unidade__link"
+                      href={u.lp}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      <span>Conhecer unidade</span>
+                      <span className="unidade__link-seta" aria-hidden="true">
+                        ↗
+                      </span>
+                    </a>
+                  ) : (
+                    <span
+                      className="unidade__link unidade__link--inativo"
+                      aria-disabled="true"
+                    >
+                      <span>Conhecer unidade</span>
+                      <span className="unidade__link-seta" aria-hidden="true">
+                        ↗
+                      </span>
                     </span>
-                  </Link>
+                  )}
 
                   <a
                     className="unidade__link unidade__link--grade"

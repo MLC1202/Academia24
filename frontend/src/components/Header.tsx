@@ -1,6 +1,8 @@
+// Cabecalho fixo. Em cima do hero ele nasce transparente e vai escurecendo
+// conforme eu rolo a pagina.
+
 import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { unidades, ehSlugUnidade } from '../unidades';
 import './Header.css';
 
 const links = [
@@ -16,17 +18,11 @@ function Header() {
 
   const isHome = pathname === '/';
 
-  // a area interna tem cabecalho proprio
+  // A area interna tem cabecalho proprio, entao aqui eu sumo.
   const isAdmin = pathname.startsWith('/admin');
 
-  // /unidades/<slug> -> cabecalho da unidade, com trilha de volta
-  const encontrado = pathname.match(/^\/unidades\/([^/]+)\/?$/);
-  const slug =
-    encontrado && ehSlugUnidade(encontrado[1]) ? encontrado[1] : null;
-  const unidade = slug ? unidades[slug] : null;
-
-  // paginas com foto grande no topo comecam transparentes
-  const temHero = isHome || Boolean(unidade);
+  // So a home tem foto grande no topo, so ela comeca transparente.
+  const temHero = isHome;
   const solid = !temHero || scrolled;
 
   useEffect(() => {
@@ -37,7 +33,7 @@ function Header() {
 
     const onScroll = () => setScrolled(container.scrollTop > 24);
 
-    // leitura inicial fora do corpo do efeito (evita setState sincrono)
+    // Primeira leitura fora do corpo do efeito, senao da setState sincrono.
     const frame = requestAnimationFrame(onScroll);
     container.addEventListener('scroll', onScroll, { passive: true });
 
@@ -51,44 +47,13 @@ function Header() {
     'header',
     solid || menuAberto ? 'header--solid' : '',
     menuAberto ? 'header--aberto' : '',
-    unidade ? 'header--unidade' : '',
   ]
     .filter(Boolean)
     .join(' ');
 
   if (isAdmin) return null;
 
-  // ---------- cabecalho das landing pages ----------
-  if (unidade) {
-    return (
-      <header className={classes}>
-        <Link to="/" className="header__logo">
-          <span className="header__logo-number">24</span>
-          <div>
-            <div className="header__logo-name">{unidade.marca}</div>
-            <div className="header__logo-tagline">
-              Unidade {unidade.nome} · {unidade.cidade}
-            </div>
-          </div>
-        </Link>
-
-        <nav className="header__trilha" aria-label="Você está aqui">
-          <Link to="/" className="header__trilha-voltar">
-            <span aria-hidden="true">←</span>
-            <span>Home</span>
-          </Link>
-          <span className="header__trilha-sep" aria-hidden="true">
-            ›
-          </span>
-          <span className="header__trilha-atual" aria-current="page">
-            {unidade.nome}
-          </span>
-        </nav>
-      </header>
-    );
-  }
-
-  // ---------- cabecalho da home ----------
+  // Fora da home os links viram /#secao, senao o hash nao leva a lugar nenhum.
   const alvo = (hash: string) => (isHome ? hash : `/${hash}`);
 
   return (

@@ -1,3 +1,5 @@
+/* Secao da grade de aulas na home */
+
 .grade {
     padding: 96px 48px;
     display: grid;
@@ -148,10 +150,8 @@
     }
   }
 
-/* ==========================================================================
-   Abas de dia da semana + grade do dia escolhido
-   (seção de fundo claro — cores escuras)
-   ========================================================================== */
+/* Abas dos dias + a grade do dia escolhido.
+   Esta parte tem fundo claro, por isso as cores aqui sao escuras. */
 
 .grade__dias {
   grid-column: 1 / -1;
@@ -284,4 +284,11 @@
     flex: 1 0 calc((100% - 18px) / 4);
     padding: 10px 6px 8px;
   }
+}
+
+/* Sem link de LP preenchido o botao fica apagado e nao clica */
+.grade__card-btn--inativo {
+  opacity: 0.45;
+  pointer-events: none;
+  cursor: default;
 }

@@ -1,11 +1,11 @@
+// Secao "Agende sua aula" da home.
+//
+// ATENCAO: por enquanto isso e so a tela. O botao valida os campos e mostra a
+// confirmacao, mas NAO manda os dados pra lugar nenhum — so joga no console.
+// Quando o endpoint existir, e so trocar o corpo do submeter().
+
 import { useState } from "react";
-import {
-  unidades,
-  slugsUnidades,
-  linkWhatsapp,
-  type UnidadeSlug,
-} from "../unidades";
-import { enviarLead, type LeadRede } from "../lib/lead";
+import { unidades, slugsUnidades, type UnidadeSlug } from "../unidades";
 import "./Agendamento.css";
 
 const inicial = {
@@ -33,6 +33,7 @@ const periodos = [
   { valor: "noite", texto: "Noite" },
 ];
 
+// Vai formatando o telefone enquanto a pessoa digita: (11) 90000-0000.
 function mascararWhatsapp(valor: string) {
   const d = valor.replace(/\D/g, "").slice(0, 11);
   if (d.length <= 2) return d;
@@ -42,6 +43,7 @@ function mascararWhatsapp(valor: string) {
   return `(${d.slice(0, 2)}) ${d.slice(2, 7)}-${d.slice(7)}`;
 }
 
+// Uma funcao so pra todos os campos — devolve "" quando esta ok.
 function validar(campo: Campo, valor: string) {
   const v = valor.trim();
 
@@ -66,36 +68,13 @@ function validar(campo: Campo, valor: string) {
   return v === "" ? "Selecione uma opção." : "";
 }
 
-function textoDe(lista: { valor: string; texto: string }[], valor: string) {
-  return lista.find((i) => i.valor === valor)?.texto ?? valor;
-}
-
-function montarMensagem(lead: LeadRede) {
-  return [
-    `Olá! Quero agendar uma aula experimental na unidade ${
-      unidades[lead.unidade].nome
-    }.`,
-    "",
-    `Nome: ${lead.nome}`,
-    `WhatsApp: ${lead.whatsapp}`,
-    `E-mail: ${lead.email}`,
-    `Objetivo: ${textoDe(objetivos, lead.objetivo)}`,
-    `Melhor período: ${textoDe(periodos, lead.periodo)}`,
-  ].join("\n");
-}
-
 type Estado = "parado" | "enviando" | "enviado";
 
-/**
- * Formulário da home: a pessoa ainda não escolheu unidade.
- * O formulário das landing pages é outro — ver ContatoUnidade.tsx.
- */
 function Agendamento() {
   const [dados, setDados] = useState(inicial);
   const [erros, setErros] = useState<Partial<Record<Campo, string>>>({});
   const [consentimento, setConsentimento] = useState(false);
   const [estado, setEstado] = useState<Estado>("parado");
-  const [conversa, setConversa] = useState<string | null>(null);
 
   const preencher =
     (campo: Campo) =>
@@ -112,38 +91,26 @@ function Agendamento() {
   const conferir = (campo: Campo) => () =>
     setErros((x) => ({ ...x, [campo]: validar(campo, dados[campo]) }));
 
+  // So libero o botao com tudo preenchido e o consentimento marcado.
   const completo =
     consentimento &&
     (Object.keys(inicial) as Campo[]).every((c) => validar(c, dados[c]) === "");
 
-  async function submeter(e: React.FormEvent) {
+  function submeter(e: React.FormEvent) {
     e.preventDefault();
     if (!completo || estado === "enviando") return;
 
     setEstado("enviando");
 
-    const lead: LeadRede = {
+    // Aqui e o lugar do POST quando o backend existir. Por enquanto so mostro
+    // no console pra conferir que os dados estao chegando certos.
+    console.info("[agendamento]", {
+      ...dados,
       nome: dados.nome.trim(),
       email: dados.email.trim(),
-      whatsapp: dados.whatsapp,
-      unidade: dados.unidade as UnidadeSlug,
-      objetivo: dados.objetivo,
-      periodo: dados.periodo,
-      tipo: "rede",
       origem: window.location.pathname,
       criadoEm: new Date().toISOString(),
-    };
-
-    // o lead nunca bloqueia o atendimento: se falhar, segue para o WhatsApp
-    try {
-      await enviarLead(lead);
-    } catch (erro) {
-      console.error("[lead] falha ao enviar", erro);
-    }
-
-    const link = linkWhatsapp(lead.unidade, montarMensagem(lead));
-    setConversa(link);
-    if (link) window.open(link, "_blank", "noopener,noreferrer");
+    });
 
     setEstado("enviado");
   }
@@ -160,20 +127,8 @@ function Agendamento() {
             {dados.nome.split(" ")[0]}.
           </h3>
           <p className="agendar__sucesso-texto">
-            {conversa
-              ? `Abrimos a conversa com a unidade ${nomeUnidade} no WhatsApp. Se a janela não apareceu, use o botão abaixo.`
-              : `A equipe da unidade ${nomeUnidade} vai entrar em contato pelo WhatsApp que você informou.`}
+            {`A equipe da unidade ${nomeUnidade} vai entrar em contato pelo telefone que você informou.`}
           </p>
-          {conversa && (
-            <a
-              className="agendar__sucesso-btn"
-              href={conversa}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Abrir a conversa
-            </a>
-          )}
         </div>
       </div>
     );
@@ -211,7 +166,7 @@ function Agendamento() {
         </div>
 
         <div className="agendar__field">
-          <label htmlFor="whatsapp">WhatsApp</label>
+          <label htmlFor="whatsapp">Telefone</label>
           <input
             id="whatsapp"
             type="tel"
@@ -253,7 +208,7 @@ function Agendamento() {
             </option>
             {slugsUnidades.map((slug) => (
               <option key={slug} value={slug}>
-                {unidades[slug].rotulo}
+                {`${unidades[slug].marca} — ${unidades[slug].nome}`}
               </option>
             ))}
           </select>

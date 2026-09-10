@@ -1,3 +1,6 @@
+/* Cabecalho fixo. --solid e o estado depois que eu saio do hero: preto meio
+   transparente com o fundo desfocado por tras. */
+
 .header {
   position: absolute;
   top: 0;
@@ -10,8 +13,12 @@
   padding: 20px 48px;
   color: var(--color-white);
   background: transparent;
+  /* O blur fica em 0 no topo e so entra junto com o --solid. */
+  backdrop-filter: blur(0px);
+  -webkit-backdrop-filter: blur(0px);
   transition: background-color 0.35s ease, padding 0.35s ease,
-    box-shadow 0.35s ease;
+    box-shadow 0.35s ease, backdrop-filter 0.35s ease,
+    -webkit-backdrop-filter 0.35s ease;
 }
 
 .header::before {
@@ -26,9 +33,19 @@
 }
 
 .header--solid {
-  background: var(--color-black);
+  background: rgba(10, 10, 10, 0.6);
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
   padding: 14px 48px;
   box-shadow: 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+/* Navegador sem backdrop-filter (Firefox antigo) cairia num preto lavado,
+   entao nesses eu volto pro preto solido. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .header--solid {
+    background: var(--color-black);
+  }
 }
 
 .header--solid::before {
@@ -95,7 +112,7 @@
   color: var(--color-black);
 }
 
-/* ---------- botão do menu (mobile) ---------- */
+/* Botao hamburguer, so aparece no mobile */
 
 .header__toggle {
   display: none;
@@ -117,7 +134,7 @@
   background: var(--color-white);
 }
 
-/* ---------- responsivo ---------- */
+/* Daqui pra baixo e o mobile: menu vira lista e o CTA desce pro fim */
 
 @media (max-width: 1024px) {
   .header,
@@ -160,6 +177,12 @@
     flex-basis: 100%;
   }
 
+  /* Menu aberto tapa a tela inteira, entao escurece mais pra dar contraste. */
+  .header--aberto.header--solid,
+  .header--aberto {
+    background: rgba(10, 10, 10, 0.92);
+  }
+
   .header--aberto .header__nav {
     display: flex;
     flex-direction: column;
@@ -177,86 +200,5 @@
     display: block;
     margin: 12px 0 4px;
     text-align: center;
-  }
-}
-
-/* ==========================================================================
-   Cabeçalho das landing pages: logo da unidade + trilha de volta.
-   Sem menu e sem CTA — a própria página já tem cinco botões de contato.
-   ========================================================================== */
-
-.header--unidade .header__logo-name {
-  font-size: 16px;
-  letter-spacing: 0.06em;
-}
-
-.header__trilha {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 13px;
-  font-weight: 600;
-}
-
-.header__trilha-voltar {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 9px 16px 9px 13px;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 999px;
-  color: var(--color-white);
-  transition: background-color 0.2s ease, color 0.2s ease,
-    border-color 0.2s ease;
-}
-
-.header__trilha-voltar:hover {
-  background: var(--color-white);
-  border-color: var(--color-white);
-  color: var(--color-black);
-}
-
-.header__trilha-sep {
-  color: rgba(255, 255, 255, 0.35);
-}
-
-.header__trilha-item {
-  color: #cfcfcf;
-  transition: color 0.2s ease;
-}
-
-a.header__trilha-item:hover {
-  color: var(--color-white);
-}
-
-.header__trilha-atual {
-  color: var(--color-white);
-}
-
-.header--solid .header__trilha-item {
-  color: #9a9a9a;
-}
-
-.header--solid .header__trilha-sep {
-  color: #5a5a5a;
-}
-
-@media (max-width: 860px) {
-  .header--unidade {
-    flex-wrap: nowrap;
-  }
-
-  .header__trilha {
-    gap: 8px;
-    font-size: 12px;
-  }
-
-  .header__trilha-voltar {
-    padding: 8px 13px 8px 11px;
-  }
-
-  .header--unidade .header__logo-tagline {
-    display: block;
-    font-size: 10px;
   }
 }

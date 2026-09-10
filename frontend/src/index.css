@@ -1,3 +1,6 @@
+/* Base do site: as cores, as fontes e o container que rola.
+   Cor ou fonte nova entra aqui no :root e o resto do site usa a variavel. */
+
 :root {
   --color-black: #0a0a0a;
   --color-white: #ffffff;
@@ -47,6 +50,8 @@ button {
   cursor: pointer;
 }
 
+/* .snap-container e quem rola de verdade (o body fica parado).
+   O Header escuta o scroll dele. */
 .snap-container {
   flex: 1;
   min-height: 0;
@@ -61,7 +66,9 @@ button {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .snap-container {
+  /* .snap-container e quem rola de verdade (o body fica parado).
+   O Header escuta o scroll dele. */
+.snap-container {
     scroll-behavior: auto;
   }
 }

@@ -1,0 +1,104 @@
+/* Faixa vermelha antes do rodape */
+
+.convite {
+  background: var(--color-red);
+  color: var(--color-white);
+  padding: 52px 48px;
+}
+
+.convite__inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  column-gap: 64px;
+  align-items: center;
+}
+
+/* lado esquerdo */
+
+.convite__eyebrow {
+  margin: 0 0 14px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.convite__title {
+  margin: 0 0 12px;
+  font-family: var(--font-display);
+  font-size: clamp(28px, 3.2vw, 44px);
+  font-weight: 500;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+}
+
+.convite__subtitle {
+  margin: 0;
+  max-width: 56ch;
+  font-size: 15px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+/* botao branco, compacto, texto vermelho centralizado */
+
+.convite__card {
+  display: block;
+  width: 232px;
+  padding: 20px 24px;
+  background: var(--color-white);
+  color: var(--color-red);
+  text-align: center;
+  transition: background 0.25s ease, color 0.25s ease;
+}
+
+.convite__card:hover {
+  background: var(--color-black);
+  color: var(--color-white);
+}
+
+.convite__card-eyebrow {
+  display: block;
+  margin: 0 0 8px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.convite__card-title {
+  display: block;
+  margin: 0 0 10px;
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+}
+
+.convite__cta {
+  display: block;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 1024px) {
+  .convite {
+    padding: 40px 32px;
+  }
+
+  .convite__inner {
+    grid-template-columns: 1fr;
+    row-gap: 28px;
+  }
+
+  .convite__card {
+    width: 100%;
+  }
+}

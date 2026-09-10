@@ -1,6 +1,4 @@
-/* ==========================================================================
-   Área interna — editor da grade de aulas
-   ========================================================================== */
+/* Area interna: o editor da grade. Visual proprio, nao usa nada da home. */
 
 .admin {
   flex: 1;
@@ -61,7 +59,7 @@
   color: #4a4a4a;
 }
 
-/* ---------- blocos ---------- */
+/* Cada bloco e uma etapa: unidade, dia, aulas */
 
 .admin__bloco {
   margin-top: 28px;
@@ -99,7 +97,7 @@
   color: var(--color-black);
 }
 
-/* ---------- abas ---------- */
+/* Abas de unidade e de dia (mesmo estilo pros dois) */
 
 .admin__abas {
   margin-top: 14px;
@@ -149,7 +147,7 @@
   color: rgba(255, 255, 255, 0.85);
 }
 
-/* ---------- lista de aulas ---------- */
+/* Lista de aulas: hora, modalidade e o botao de remover */
 
 .admin__lista {
   list-style: none;
@@ -228,12 +226,11 @@
   background: var(--color-offwhite);
 }
 
-/* ---------- rodapé fixo ---------- */
+/* Barra de salvar, colada embaixo */
 
-/* Barra flutuante: a faixa fixa e transparente e nao intercepta clique;
-   o conteudo vive numa moldura que paira sobre a pagina.
-   (sticky nao serve aqui: .admin e o container que rola e a barra e o
-   ultimo filho, sem conteudo depois para descolar) */
+/* A faixa fixa e transparente e deixa o clique passar; quem aparece e a
+   moldura de dentro. Nao da pra usar sticky aqui porque a barra e o ultimo
+   filho de .admin, entao nao teria conteudo depois pra ela descolar. */
 .admin__rodape {
   position: fixed;
   left: 0;

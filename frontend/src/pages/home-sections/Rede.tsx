@@ -1,3 +1,6 @@
+// Secao "A Rede": os 4 pilares em acordeao.
+// As fotos aqui ainda sao do Unsplash, e placeholder.
+
 import { useState } from "react";
 import "./Rede.css";
 

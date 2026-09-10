@@ -1,82 +1,68 @@
-/**
- * Registro único das unidades.
- *
- * Usado pela home (cards e formulário), pelas landing pages e pelo
- * link de WhatsApp. Mudar aqui reflete em todos os lugares.
- */
+// Aqui ficam os dados das 4 unidades. E o unico lugar que eu edito quando
+// muda nome, foto ou link da LP: a home e a grade leem tudo daqui.
 
 export type UnidadeSlug = 'alphaville' | 'norte' | 'cambui' | 'lagoa';
 
 export type UnidadeInfo = {
   nome: string;
   marca: string;
-  /** Como aparece no <select> do formulário. */
-  rotulo: string;
-  /** Usada na trilha de navegação do cabeçalho. */
-  cidade: string;
-  /** Foto do topo da LP e do card da home. */
+  // Caminho da foto que aparece no card da home.
+  // O arquivo fica em frontend/public/unidades/<slug>.jpg.
+  // Pra trocar a foto eu apago o arquivo e ponho o novo COM O MESMO NOME —
+  // aqui no codigo nao mexo em nada. As que estao la agora sao provisorias.
   foto: string;
-  /**
-   * ================== PREENCHER QUANDO RECEBER ==================
-   * Só dígitos, com código do país: 55 + DDD + número.
-   * Ex.: '5511987654321'
-   * Enquanto estiver '', os botões de WhatsApp ficam inertes e o
-   * formulário salva o lead sem abrir conversa.
-   * ==============================================================
-   */
-  whatsapp: string;
+  // Link da LP oficial da unidade (as que a dona mandou).
+  // Pode colar sem o https:// que o urlAbsoluta la embaixo completa.
+  // Se eu deixar vazio, o botao "Conhecer unidade" fica desativado em vez
+  // de virar link quebrado.
+  lp: string;
 };
 
-const FOTO_PADRAO =
-  'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=2400&q=80';
 
-export const unidades: Record<UnidadeSlug, UnidadeInfo> = {
+// Link sem https:// o navegador entende como caminho interno e acaba
+// voltando pra home. Entao eu garanto o prefixo aqui.
+function urlAbsoluta(valor: string) {
+  const limpo = valor.trim();
+  if (!limpo) return '';
+  return /^https?:\/\//i.test(limpo) ? limpo : `https://${limpo}`;
+}
+
+const registro: Record<UnidadeSlug, UnidadeInfo> = {
   alphaville: {
     nome: 'Alphaville',
     marca: '24 Wellness',
-    rotulo: '24 Wellness — Alphaville',
-    cidade: 'Barueri',
-    foto: FOTO_PADRAO,
-    whatsapp: '', // TODO: número da unidade Alphaville
+    foto: '/unidades/alphaville.jpg',
+    lp: 'alphaville.24wellness.com', 
   },
   norte: {
     nome: 'Norte',
     marca: '24 Health Club',
-    rotulo: '24 Health Club — Norte',
-    cidade: 'São Paulo',
-    foto: FOTO_PADRAO,
-    whatsapp: '', // TODO: número da unidade Norte
+    foto: '/unidades/norte.jpg',
+    lp: 'unidadenorte.academia24hclub.com', 
   },
   cambui: {
     nome: 'Cambuí',
     marca: '24 Health Club',
-    rotulo: '24 Health Club — Cambuí',
-    cidade: 'Campinas',
-    foto: FOTO_PADRAO,
-    whatsapp: '', // TODO: número da unidade Cambuí
+    foto: '/unidades/cambui.jpg',
+    lp: 'unidadecambui.academia24hclub.com',
   },
   lagoa: {
     nome: 'Lagoa',
     marca: '24 Health Club',
-    rotulo: '24 Health Club — Lagoa',
-    cidade: 'Campinas',
-    foto: FOTO_PADRAO,
-    whatsapp: '', // TODO: número da unidade Lagoa
+    foto: '/unidades/lagoa.jpg',
+    lp: 'unidadelagoa.academia24hclub.com',
   },
 };
 
-export const slugsUnidades = Object.keys(unidades) as UnidadeSlug[];
+// O que o resto do site importa: o mesmo registro, mas com os links de LP
+// ja arrumados.
+export const unidades = Object.fromEntries(
+  Object.entries(registro).map(([slug, info]) => [
+    slug,
+    { ...info, lp: urlAbsoluta(info.lp) },
+  ]),
+) as Record<UnidadeSlug, UnidadeInfo>;
 
-export function ehSlugUnidade(valor: string): valor is UnidadeSlug {
-  return valor in unidades;
-}
-
-/**
- * Link do WhatsApp com a mensagem pronta.
- * Devolve null enquanto a unidade não tiver número cadastrado.
- */
-export function linkWhatsapp(slug: UnidadeSlug, mensagem: string) {
-  const digitos = unidades[slug].whatsapp.replace(/\D/g, '');
-  if (!digitos) return null;
-  return `https://wa.me/${digitos}?text=${encodeURIComponent(mensagem)}`;
-}
+// ['alphaville', 'norte', 'cambui', 'lagoa'] — uso pra percorrer as unidades
+// sem repetir a lista.
+export const slugsUnidades = Object.keys(registro) as UnidadeSlug[];

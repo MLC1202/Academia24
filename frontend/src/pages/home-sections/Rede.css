@@ -1,3 +1,5 @@
+/* Secao "A Rede" — texto de abertura + acordeao dos 4 pilares */
+
 .rede {
     background: var(--color-cream);
     padding: calc(var(--header-height) + 88px) 48px 98px;
@@ -59,7 +61,7 @@
     margin-top: 14px;
   }
   
-  /* acordeão */
+  /* Acordeao: o painel aberto cresce, os outros encolhem */
   
   .rede__accordion {
     display: flex;
@@ -82,7 +84,7 @@
     cursor: pointer;
     color: var(--color-white);
     font-family: inherit;
-    /* placeholder — trocar por url("/unidades/nome.jpg") quando tiver foto */
+    /* Foto de reserva, so aparece se a do componente falhar */
     background-color: #16151a;
     background-image: linear-gradient(
         to top,

@@ -1,3 +1,5 @@
+/* Secao de agendamento da home: texto a esquerda, formulario no painel */
+
 .agendar {
     background: var(--color-black);
     color: var(--color-white);
@@ -456,23 +458,6 @@
   font-size: 15px;
   line-height: 1.6;
   color: var(--color-gray);
-}
-
-.agendar__sucesso-btn {
-  display: inline-block;
-  margin-top: 28px;
-  padding: 15px 26px;
-  background: var(--color-red);
-  color: var(--color-white);
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  transition: background-color 0.2s ease;
-}
-
-.agendar__sucesso-btn:hover {
-  background: var(--color-black);
 }
 
 @media (max-width: 640px) {

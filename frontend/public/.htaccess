@@ -1,5 +1,6 @@
-# SPA: qualquer rota que nao seja arquivo real cai no index.html
-# Sem isso, /unidades/alphaville da 404 ao recarregar ou ao abrir o link direto.
+# O site e uma pagina so (React Router), entao qualquer rota que nao seja um
+# arquivo de verdade tem que cair no index.html.
+# Sem isso, abrir /admin/dashboard direto ou dar F5 nele da 404 na Hostinger.
 <IfModule mod_rewrite.c>
   RewriteEngine On
   RewriteBase /

@@ -1,0 +1,60 @@
+# Publica o site no GitHub Pages a cada push.
+# O link fica em https://mlc1202.github.io/Academia24/
+#
+# Antes do primeiro deploy, ligar uma vez no GitHub:
+#   Settings > Pages > Source: GitHub Actions
+name: Deploy no GitHub Pages
+
+on:
+  push:
+    branches: [main, redesign]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Instalar dependencias
+        working-directory: frontend
+        run: npm install
+
+      - name: Build
+        working-directory: frontend
+        # O nome do repositorio vira o caminho do site no Pages.
+        env:
+          BASE_PATH: /${{ github.event.repository.name }}/
+        run: npm run build
+
+      - name: Fallback das rotas
+        # O Pages nao tem .htaccess: sem isso, recarregar /admin/dashboard da 404.
+        working-directory: frontend
+        run: cp dist/index.html dist/404.html
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: frontend/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

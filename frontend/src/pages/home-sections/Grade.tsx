@@ -1,5 +1,7 @@
+// Secao da grade de aulas na home. Mostra as abas da semana e as aulas do
+// dia escolhido, lendo o que estiver salvo pelo dashboard.
+
 import { useMemo, useState } from "react";
-import { Link } from "react-router-dom";
 import { slugsUnidades, unidades } from "../../unidades";
 import {
   diaDeHoje,
@@ -11,7 +13,7 @@ import { carregarGrades } from "../../lib/grade-store";
 import "./Grade.css";
 
 function Grade() {
-  // a semana e o dia de hoje são calculados uma vez por visita
+  // Calculo a semana e a grade uma vez so por visita, nao a cada clique.
   const semana = useMemo(() => semanaAtual(), []);
   const grades = useMemo(() => carregarGrades(), []);
   const [dia, setDia] = useState<Dia>(() => diaDeHoje());
@@ -86,10 +88,25 @@ function Grade() {
                 </p>
               )}
 
-              <Link to={`/unidades/${slug}`} className="grade__card-btn">
-                <span>CONSULTAR ESTA UNIDADE</span>
-                <span aria-hidden="true">→</span>
-              </Link>
+              {unidades[slug].lp ? (
+                <a
+                  href={unidades[slug].lp}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="grade__card-btn"
+                >
+                  <span>CONSULTAR ESTA UNIDADE</span>
+                  <span aria-hidden="true">→</span>
+                </a>
+              ) : (
+                <span
+                  className="grade__card-btn grade__card-btn--inativo"
+                  aria-disabled="true"
+                >
+                  <span>CONSULTAR ESTA UNIDADE</span>
+                  <span aria-hidden="true">→</span>
+                </span>
+              )}
             </article>
           );
         })}

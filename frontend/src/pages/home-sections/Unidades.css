@@ -1,3 +1,6 @@
+/* Secao das unidades: cada card e uma foto de um lado e o texto do outro,
+   alternando o lado a cada unidade */
+
 .unidades {
     background: #0d0c0c;
     color: var(--color-white);
@@ -9,7 +12,7 @@
     margin: 0 auto;
   }
   
-  /* cabeçalho */
+  /* Titulo e texto de abertura da secao */
   
   .unidades__head {
     display: grid;
@@ -88,7 +91,7 @@
     background: var(--color-red);
   }
   
-  /* lista em zigue-zague */
+  /* O zigue-zague: --invertida troca a foto de lado */
   
   .unidades__lista {
     border-top: 1px solid #232120;
@@ -108,7 +111,7 @@
     flex-direction: column;
     justify-content: space-between;
     align-items: flex-start;
-    /* placeholder — trocar por url("/unidades/nome.jpg") */
+    /* Foto de reserva, so aparece se a de src/unidades.ts falhar */
     background-color: #17161a;
     background-image: linear-gradient(
         to top,
@@ -278,7 +281,7 @@
     color: var(--color-white);
   }
   
-  /* ações do card: conhecer unidade + grade de aulas */
+  /* Os dois botoes do card: LP da unidade e atalho pra grade */
   
   .unidade__acoes {
     display: flex;
@@ -376,3 +379,9 @@
       transition: none;
     }
   }
+/* Sem link de LP preenchido o botao fica apagado e nao clica */
+.unidade__link--inativo {
+  opacity: 0.45;
+  pointer-events: none;
+  cursor: default;
+}

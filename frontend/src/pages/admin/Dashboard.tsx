@@ -1,3 +1,7 @@
+// Editor da grade de aulas (/admin/dashboard).
+// Escolho unidade + dia, mexo nas aulas e salvo. Enquanto nao tiver backend,
+// o salvar so grava no localStorage deste navegador.
+
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { slugsUnidades, unidades, type UnidadeSlug } from "../../unidades";
@@ -53,7 +57,7 @@ function Dashboard() {
   }
 
   function salvar() {
-    // linhas em branco nao vao para a grade publicada
+    // Linha sem horario ou sem modalidade eu descarto na hora de salvar.
     const limpa: GradeUnidade = { ...grade };
     for (const d of dias) {
       limpa[d.chave] = ordenarPorHora(
@@ -65,6 +69,7 @@ function Dashboard() {
     setEstado("salvo");
   }
 
+  // Aulas do dia que esta aberto + quantas estao pela metade.
   const aulas = grade[dia];
   const incompletas = aulas.filter(
     (a) => !a.modalidade.trim() || !a.hora.trim(),

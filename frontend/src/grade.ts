@@ -1,20 +1,17 @@
-/**
- * Grade de aulas coletivas — modelo de dados e a semana do calendário.
- *
- * A grade é semanal e se repete: o que muda a cada semana é só o número
- * do dia, calculado a partir de hoje. Não existe "grade de 15/09": existe
- * "grade de segunda", e a aba mostra a segunda desta semana.
- */
+// Modelo da grade de aulas coletivas.
+// A grade e sempre semanal e se repete: nao existe "grade do dia 15/09",
+// existe "grade de segunda". O que muda toda semana e so o numero do dia,
+// que eu calculo a partir de hoje.
 
 import type { UnidadeSlug } from './unidades';
 
 export type Dia = 'seg' | 'ter' | 'qua' | 'qui' | 'sex' | 'sab' | 'dom';
 
 export type Aula = {
-  /** Só para o React e para o editor identificarem a linha. */
+  // So pro React e pro editor saberem qual linha e qual.
   id: string;
   modalidade: string;
-  /** Formato 24h, 'HH:MM'. */
+  // Sempre em 24h, no formato 'HH:MM'.
   hora: string;
 };
 
@@ -31,7 +28,8 @@ export const dias: { chave: Dia; curto: string; longo: string }[] = [
   { chave: 'dom', curto: 'Dom', longo: 'Domingo' },
 ];
 
-/** Índice 0 = segunda, 6 = domingo (o getDay() nativo começa no domingo). */
+// Aqui 0 e segunda e 6 e domingo. O getDay() do JS comeca no domingo, por
+// isso o +6 % 7.
 function indiceDoDia(data: Date) {
   return (data.getDay() + 6) % 7;
 }
@@ -40,10 +38,8 @@ export function diaDeHoje(hoje = new Date()): Dia {
   return dias[indiceDoDia(hoje)].chave;
 }
 
-/**
- * A semana corrente, de segunda a domingo, com o número de cada dia.
- * Vira o mês sozinho: se hoje é 30/09, a aba de domingo mostra 05.
- */
+// Monta a semana atual, de segunda a domingo, ja com o numero de cada dia.
+// Vira o mes sozinho: se hoje e 30/09, a aba de domingo mostra 05.
 export function semanaAtual(hoje = new Date()) {
   const segunda = new Date(hoje);
   segunda.setHours(0, 0, 0, 0);
@@ -77,13 +73,9 @@ export function novaAula(): Aula {
   };
 }
 
-/**
- * ============================ EXEMPLO ============================
- * Grade de partida, só para a seção não nascer vazia. A grade real de
- * cada unidade deve ser cadastrada em /admin/dashboard — o que for
- * salvo lá substitui isto.
- * =================================================================
- */
+// Daqui pra baixo e so exemplo, pra secao nao nascer vazia.
+// A grade de verdade de cada unidade e cadastrada em /admin/dashboard, e o
+// que for salvo la substitui isto.
 function exemplo(aulas: [Dia, string, string][]): GradeUnidade {
   const grade = gradeVazia();
   aulas.forEach(([dia, hora, modalidade], i) => {
