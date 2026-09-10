@@ -92,6 +92,14 @@
         rgba(0, 0, 0, 0.25)
       ),
       url("https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=1600&q=80");
+    /* 'cover': a foto cobre o painel inteiro. Com 'auto 100%' ela mantinha
+       a largura natural e sobrava fundo preto dos lados quando o painel
+       abria. O preco e que a escala muda enquanto o painel cresce.
+       Ancorada embaixo: o corte fica no teto, o chao e as maquinas da
+       frente sempre aparecem. */
+    background-size: cover;
+    background-position: center bottom;
+    background-repeat: no-repeat;
     transition: flex-grow 0.55s cubic-bezier(0.4, 0, 0.2, 1);
   }
   
@@ -190,14 +198,40 @@
   
     .rede__painel {
       flex: 0 0 auto;
-      min-height: 132px;
+      min-height: 0;
       padding: 24px;
+      cursor: default;
     }
   
-    .rede__painel-titulo {
+    /* No celular nao existe passar o mouse: os quatro paineis ficam
+       abertos, com titulo e texto sempre a mostra. */
+    .rede__painel::before,
+    .rede__painel--ativo::before {
+      transform: scaleX(1);
+    }
+  
+    .rede__painel-n {
+      color: var(--color-red);
+    }
+  
+    .rede__painel-titulo,
+    .rede__painel--ativo .rede__painel-titulo {
       writing-mode: horizontal-tb;
-      margin-top: 16px;
-      font-size: 20px;
+      margin-top: 14px;
+      font-family: var(--font-display);
+      font-size: 21px;
+      letter-spacing: -0.02em;
+      white-space: normal;
+    }
+  
+    .rede__painel-texto,
+    .rede__painel--ativo .rede__painel-texto {
+      opacity: 1;
+      transform: none;
+      transition-delay: 0s;
+      max-width: none;
+      margin-top: 10px;
+      font-size: 14px;
     }
   }
   

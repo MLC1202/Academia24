@@ -17,11 +17,13 @@
   padding: 72px 48px;
   overflow: hidden;
   background-color: var(--color-black);
+  /* Foto em src/assets: o Vite reescreve o caminho no build, entao funciona
+     tanto na raiz do dominio quanto no GitHub Pages. */
   background-image: linear-gradient(
       rgba(10, 10, 10, 0.86),
       rgba(10, 10, 10, 0.72)
     ),
-    url("https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=1600&q=80");
+    url("../../assets/duvidas.jpg");
   background-size: cover;
   background-position: center;
 }
