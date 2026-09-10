@@ -330,16 +330,20 @@
       padding: calc(var(--header-height) + 56px) 28px 72px;
     }
   
+    /* Uma coluna so: titulo em cima, texto embaixo. */
     .unidades__head {
-      display: grid;
-      grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
-      column-gap: 80px;
-      align-items: start;
-      padding-bottom: 72px;
+      grid-template-columns: 1fr;
+      column-gap: 0;
+      row-gap: 24px;
+      padding-bottom: 56px;
     }
   
     .unidades__intro {
-      padding-top: 22px;
+      align-self: start;
+    }
+  
+    .unidades__intro p {
+      max-width: 56ch;
     }
   
     .unidade__conteudo {
@@ -348,6 +352,38 @@
   }
   
   @media (max-width: 780px) {
+    .unidades {
+      padding: calc(var(--header-height) + 40px) 20px 56px;
+    }
+  
+    .unidades__head {
+      row-gap: 20px;
+      padding-bottom: 44px;
+    }
+  
+    /* No celular o minimo de 44px ainda estourava a linha. */
+    .unidades__title {
+      font-size: clamp(32px, 9vw, 52px);
+      line-height: 1.02;
+    }
+  
+    .unidades__eyebrow {
+      margin-bottom: 20px;
+      font-size: 10px;
+      letter-spacing: 0.14em;
+    }
+  
+    .unidades__intro p {
+      font-size: 14.5px;
+      line-height: 1.6;
+    }
+  
+    .unidades__regioes {
+      margin-top: 20px !important;
+      font-size: 9.5px;
+      letter-spacing: 0.12em;
+    }
+  
     .unidade {
       grid-template-columns: 1fr;
     }
