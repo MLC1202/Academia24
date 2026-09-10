@@ -39,7 +39,7 @@ const registro: Record<UnidadeSlug, UnidadeInfo> = {
     nome: 'Alphaville',
     marca: '24 Wellness',
     foto: '/unidades/alphaville.jpg',
-    lp: 'alphaville.24wellness.com', 
+    lp: 'alphaville.24wellness.com.br', 
   },
   norte: {
     nome: 'Norte',
