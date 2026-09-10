@@ -22,8 +22,8 @@ function Hero() {
           Se o mp4 faltar, sobra o poster e depois a foto de fundo do CSS. */}
       <video
         className="hero__video"
-        src="/hero.mp4"
-        poster="/hero-poster.jpg"
+        src={`${import.meta.env.BASE_URL}hero.mp4`}
+        poster={`${import.meta.env.BASE_URL}hero-poster.jpg`}
         autoPlay
         muted
         loop

@@ -19,6 +19,13 @@ export type UnidadeInfo = {
 };
 
 
+// Arquivo de public/: o caminho depende de onde o site esta hospedado.
+// Na raiz do dominio o BASE_URL e '/', no GitHub Pages e '/Academia24/'.
+// Sem isso a foto vira mlc1202.github.io/unidades/x.jpg e da 404.
+function caminhoPublico(valor: string) {
+  return `${import.meta.env.BASE_URL}${valor.replace(/^\//, '')}`;
+}
+
 // Link sem https:// o navegador entende como caminho interno e acaba
 // voltando pra home. Entao eu garanto o prefixo aqui.
 function urlAbsoluta(valor: string) {
@@ -59,7 +66,7 @@ const registro: Record<UnidadeSlug, UnidadeInfo> = {
 export const unidades = Object.fromEntries(
   Object.entries(registro).map(([slug, info]) => [
     slug,
-    { ...info, lp: urlAbsoluta(info.lp) },
+    { ...info, foto: caminhoPublico(info.foto), lp: urlAbsoluta(info.lp) },
   ]),
 ) as Record<UnidadeSlug, UnidadeInfo>;
 
