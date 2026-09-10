@@ -5,7 +5,7 @@
     position: relative;
     display: flex;
     align-items: flex-end;
-    padding: calc(var(--header-height) + 32px) 48px 64px;
+    padding: 64px 48px;
     background-image: linear-gradient(
         to top,
         rgba(0, 0, 0, 0.8),
@@ -62,9 +62,7 @@
   
   .hero__title {
     font-family: var(--font-display);
-    /* Acompanha a largura da tela: 40px no celular, 88px no desktop. */
-    font-size: clamp(40px, 8.5vw, 88px);
-    letter-spacing: -0.02em;
+    font-size: 88px;
     font-weight: 800;
     line-height: 1;
     margin-bottom: 24px;
@@ -75,7 +73,7 @@
   }
   
   .hero__subtitle {
-    font-size: clamp(15px, 1.6vw, 20px);
+    font-size: 20px;
     color: #e5e5e5;
     max-width: 640px;
     margin-bottom: 32px;
@@ -84,7 +82,6 @@
   
   .hero__actions {
     display: flex;
-    flex-wrap: wrap;
     gap: 16px;
   }
   
@@ -141,67 +138,138 @@
     border-left: none;
   }
 
-/* Celular e tablet: os numeros saem da posicao absoluta e entram no fluxo,
-   logo abaixo dos botoes. Sem isso eles ficam por cima do texto. */
 
-@media (max-width: 900px) {
+/* ------------------------------------------------------------------
+   Daqui pra baixo e so tela pequena. O desktop nao passa por aqui.
+   ------------------------------------------------------------------ */
+
+/* Tablet: so encolhe o que estoura, o desenho continua o mesmo. */
+@media (max-width: 1024px) and (min-width: 768px) {
   .hero {
-    padding: calc(var(--header-height) + 24px) 24px 40px;
+    padding: 56px 32px;
+  }
+
+  .hero__title {
+    font-size: clamp(52px, 7vw, 88px);
+  }
+
+  .hero__stats {
+    right: 32px;
+    bottom: 32px;
+  }
+
+  .hero__stat {
+    padding: 6px 20px;
+  }
+
+  .hero__stat-number {
+    font-size: 38px;
+  }
+}
+
+/* Celular: o hero vira uma coluna do topo ao rodape — texto empurrado
+   pra baixo, botoes largos e os numeros como faixa final. */
+@media (max-width: 767px) {
+  .hero {
+    /* svh: altura da janela sem contar a barra do navegador, que some
+       e volta conforme rola. Com vh o conteudo pula. */
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: calc(var(--header-height) + 8px) 20px 24px;
+    background-position: 62% center;
+  }
+
+  /* Mais escuro em cima e embaixo, claro no meio: o texto le bem sem
+     apagar a imagem inteira. */
+  .hero__veu {
+    background: linear-gradient(
+      180deg,
+      rgba(0, 0, 0, 0.62) 0%,
+      rgba(0, 0, 0, 0.18) 35%,
+      rgba(0, 0, 0, 0.82) 100%
+    );
   }
 
   .hero__content {
     width: 100%;
+    max-width: 520px;
+    margin-top: auto;
+    padding: 32px 0 28px;
   }
 
-  .hero__subtitle {
-    max-width: 46ch;
-    margin-bottom: 28px;
-  }
-
-  .hero__stats {
-    position: static;
-    margin-top: 40px;
-    padding-top: 24px;
-    border-top: 1px solid rgba(255, 255, 255, 0.25);
-    z-index: 2;
-  }
-
-  .hero__stat {
-    flex: 1;
-    align-items: flex-start;
-    padding: 0 16px;
-  }
-
-  .hero__stat:first-child {
-    padding-left: 0;
-  }
-
-  .hero__stat-number {
-    font-size: clamp(30px, 8vw, 42px);
-  }
-
-  .hero__stat-label {
-    font-size: 11px;
-  }
-}
-
-@media (max-width: 560px) {
   .hero__location {
     font-size: 11px;
     letter-spacing: 0.08em;
+    margin-bottom: 12px;
   }
 
-  /* Os dois botoes ocupam a largura toda, um embaixo do outro:
-     alvo grande o suficiente pro dedo. */
+  .hero__title {
+    max-width: 390px;
+    font-size: clamp(2.5rem, 12vw, 4rem);
+    line-height: 0.96;
+    letter-spacing: -0.055em;
+    margin-bottom: 0;
+  }
+
+  .hero__subtitle {
+    max-width: 430px;
+    margin: 22px 0 24px;
+    font-size: 15px;
+    line-height: 1.45;
+    color: rgba(255, 255, 255, 0.9);
+  }
+
   .hero__actions {
     flex-direction: column;
-    align-items: stretch;
-    gap: 12px;
+    gap: 10px;
   }
 
   .hero__btn-primary,
   .hero__btn-secondary {
-    padding: 16px 20px;
-    text-align: center;
+    width: 100%;
+    min-height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 18px;
+    font-size: 14px;
+  }
+
+  /* Sai do canto absoluto e vira a faixa de baixo, em tres colunas. */
+  .hero__stats {
+    position: relative;
+    inset: auto;
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+
+  .hero__stat {
+    min-width: 0;
+    align-items: flex-start;
+    padding: 0 0 0 12px;
+    border-left: 1px solid rgba(255, 255, 255, 0.45);
+  }
+
+  .hero__stat:first-child {
+    padding-left: 0;
+    border-left: 0;
+  }
+
+  .hero__stat-number {
+    font-size: clamp(2rem, 9vw, 3rem);
+    line-height: 1;
+    letter-spacing: -0.06em;
+  }
+
+  .hero__stat-label {
+    margin-top: 6px;
+    font-size: 9px;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+    color: rgba(255, 255, 255, 0.72);
   }
 }
