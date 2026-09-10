@@ -84,9 +84,12 @@
     font-family: inherit;
     /* placeholder — trocar por url("/unidades/nome.jpg") quando tiver foto */
     background-color: #16151a;
-    background-image: linear-gradient(150deg, #2b2a32 0%, #121116 70%);
-    background-size: cover;
-    background-position: center;
+    background-image: linear-gradient(
+        to top,
+        rgba(0, 0, 0, 0.75),
+        rgba(0, 0, 0, 0.25)
+      ),
+      url("https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=1600&q=80");
     transition: flex-grow 0.55s cubic-bezier(0.4, 0, 0.2, 1);
   }
   

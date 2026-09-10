@@ -5,10 +5,10 @@
     padding: 64px 48px;
     background-image: linear-gradient(
         to top,
-        rgba(0, 0, 0, 0.75),
+        rgba(0, 0, 0, 0.8),
         rgba(0, 0, 0, 0.2)
       ),
-      url("/hero-academia.jpg");
+      url("https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=2560&q=80");
     background-size: cover;
     background-position: center;
     color: var(--color-white);

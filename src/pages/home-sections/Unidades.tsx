@@ -18,6 +18,7 @@ const unidades = [
     horarios: "Seg–Sex 05h–23h · Sáb 07h–15h · Dom/feriados 08h–14h",
     local: "Barueri · SP",
     rota: "/unidades/alphaville",
+    foto: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=2400&q=80",
   },
   {
     n: "02",
@@ -36,6 +37,7 @@ const unidades = [
     horarios: "Seg–Sex 04h–23h · Sáb 07h–15h · Dom/feriados 08h–14h",
     local: "Vila Guilherme · São Paulo",
     rota: "/unidades/norte",
+    foto: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=2400&q=80",
   },
   {
     n: "03",
@@ -54,6 +56,7 @@ const unidades = [
     horarios: "Seg–Sex 05h–23h · Sáb 07h–15h · Dom/feriados 08h–14h",
     local: "Campinas · SP",
     rota: "/unidades/cambui",
+    foto: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=2400&q=80",
   },
   {
     n: "04",
@@ -72,6 +75,7 @@ const unidades = [
     horarios: "Consulte a unidade para confirmar os horários vigentes.",
     local: "Campinas · SP",
     rota: "/unidades/lagoa",
+    foto: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=2400&q=80",
   },
 ];
 
@@ -104,7 +108,12 @@ function Unidades() {
               key={u.n}
               className={i % 2 === 0 ? "unidade" : "unidade unidade--invertida"}
             >
-              <div className="unidade__foto">
+              <div
+                className="unidade__foto"
+                style={{
+                  backgroundImage: `linear-gradient(to top, rgba(0,0,0,.75), rgba(0,0,0,.15)), url(${u.foto})`,
+                }}
+              >
                 <span className="unidade__foto-n">{u.n}</span>
                 <span className="unidade__foto-local">{u.local}</span>
               </div>
