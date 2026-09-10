@@ -1,0 +1,349 @@
+/* ==========================================================================
+   Área interna — editor da grade de aulas
+   ========================================================================== */
+
+.admin {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 40px 32px 140px;
+  background: var(--color-offwhite);
+  color: var(--color-black);
+}
+
+.admin > * {
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.admin__topo {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.admin__eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-red);
+}
+
+.admin__titulo {
+  margin-top: 6px;
+  font-family: var(--font-display);
+  font-size: 34px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.admin__voltar {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-gray);
+  transition: color 0.2s ease;
+}
+
+.admin__voltar:hover {
+  color: var(--color-black);
+}
+
+.admin__aviso {
+  margin-top: 24px;
+  padding: 14px 16px;
+  border-left: 3px solid var(--color-red);
+  background: var(--color-white);
+  font-size: 13px;
+  line-height: 1.55;
+  color: #4a4a4a;
+}
+
+/* ---------- blocos ---------- */
+
+.admin__bloco {
+  margin-top: 28px;
+  padding: 22px;
+  background: var(--color-white);
+  border: 1px solid rgba(10, 10, 10, 0.1);
+}
+
+.admin__bloco-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.admin__bloco-titulo {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-gray);
+}
+
+.admin__link {
+  border: 0;
+  background: transparent;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-red);
+  cursor: pointer;
+}
+
+.admin__link:hover {
+  color: var(--color-black);
+}
+
+/* ---------- abas ---------- */
+
+.admin__abas {
+  margin-top: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.admin__aba {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 16px;
+  white-space: nowrap;
+  border: 1px solid rgba(10, 10, 10, 0.18);
+  background: transparent;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-black);
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.admin__aba:hover {
+  border-color: var(--color-black);
+}
+
+.admin__aba--ativa {
+  background: var(--color-black);
+  border-color: var(--color-black);
+  color: var(--color-white);
+}
+
+.admin__aba-contador {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(10, 10, 10, 0.08);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-gray);
+}
+
+.admin__aba--ativa .admin__aba-contador {
+  background: rgba(255, 255, 255, 0.18);
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* ---------- lista de aulas ---------- */
+
+.admin__lista {
+  list-style: none;
+  margin-top: 18px;
+}
+
+.admin__linha {
+  display: grid;
+  grid-template-columns: 150px 1fr auto;
+  gap: 10px;
+  align-items: center;
+  padding: 10px 0;
+  border-top: 1px solid rgba(10, 10, 10, 0.08);
+}
+
+.admin__linha:first-child {
+  border-top: 0;
+}
+
+.admin__hora,
+.admin__modalidade {
+  padding: 12px 14px;
+  border: 1px solid rgba(10, 10, 10, 0.18);
+  background: var(--color-offwhite);
+  font-family: inherit;
+  font-size: 15px;
+  color: var(--color-black);
+}
+
+.admin__hora:focus,
+.admin__modalidade:focus {
+  outline: none;
+  border-color: var(--color-black);
+}
+
+.admin__remover {
+  padding: 11px 14px;
+  border: 1px solid rgba(10, 10, 10, 0.18);
+  background: transparent;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-gray);
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.admin__remover:hover {
+  background: var(--color-red);
+  border-color: var(--color-red);
+  color: var(--color-white);
+}
+
+.admin__vazio {
+  margin-top: 18px;
+  font-size: 14px;
+  color: var(--color-gray);
+}
+
+.admin__adicionar {
+  margin-top: 18px;
+  padding: 13px 18px;
+  border: 1px dashed rgba(10, 10, 10, 0.3);
+  background: transparent;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-black);
+  cursor: pointer;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.admin__adicionar:hover {
+  border-color: var(--color-black);
+  background: var(--color-offwhite);
+}
+
+/* ---------- rodapé fixo ---------- */
+
+/* Barra flutuante: a faixa fixa e transparente e nao intercepta clique;
+   o conteudo vive numa moldura que paira sobre a pagina.
+   (sticky nao serve aqui: .admin e o container que rola e a barra e o
+   ultimo filho, sem conteudo depois para descolar) */
+.admin__rodape {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 50;
+  max-width: none;
+  padding: 20px 32px 24px;
+  display: flex;
+  justify-content: center;
+  background: transparent;
+  pointer-events: none;
+}
+
+.admin__rodape-inner {
+  pointer-events: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 20px;
+  padding: 10px 10px 10px 22px;
+  border: 1px solid rgba(10, 10, 10, 0.1);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 10px 30px rgba(10, 10, 10, 0.14);
+}
+
+.admin__estado {
+  font-size: 13px;
+}
+
+.admin__estado:empty {
+  display: none;
+}
+
+.admin__estado-alterado {
+  color: #9a6400;
+}
+
+.admin__estado-salvo {
+  color: #1c7a45;
+}
+
+.admin__salvar {
+  padding: 14px 26px;
+  border-radius: 999px;
+  border: 0;
+  background: var(--color-red);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-white);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.admin__salvar:hover:enabled {
+  background: var(--color-black);
+  color: var(--color-white);
+}
+
+.admin__salvar:disabled {
+  background: rgba(10, 10, 10, 0.08);
+  color: rgba(10, 10, 10, 0.35);
+  cursor: not-allowed;
+}
+
+@media (max-width: 640px) {
+  .admin {
+    padding: 28px 18px 150px;
+  }
+
+  .admin__linha {
+    grid-template-columns: 140px 1fr;
+    grid-template-areas:
+      "hora modalidade"
+      "remover remover";
+  }
+
+  .admin__hora {
+    grid-area: hora;
+  }
+
+  .admin__modalidade {
+    grid-area: modalidade;
+  }
+
+  .admin__remover {
+    grid-area: remover;
+    justify-self: start;
+  }
+
+  .admin__rodape {
+    padding: 12px 14px 16px;
+  }
+
+  .admin__rodape-inner {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    padding: 14px;
+    border-radius: 18px;
+    text-align: center;
+  }
+
+  .admin__abas {
+    gap: 6px;
+  }
+}

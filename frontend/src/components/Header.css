@@ -1,0 +1,262 @@
+.header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 48px;
+  color: var(--color-white);
+  background: transparent;
+  transition: background-color 0.35s ease, padding 0.35s ease,
+    box-shadow 0.35s ease;
+}
+
+.header::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.55), transparent);
+  opacity: 1;
+  transition: opacity 0.35s ease;
+  pointer-events: none;
+}
+
+.header--solid {
+  background: var(--color-black);
+  padding: 14px 48px;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.header--solid::before {
+  opacity: 0;
+}
+
+.header__logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.header__logo-number {
+  font-family: var(--font-display);
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--color-red);
+}
+
+.header__logo-name {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+.header__logo-tagline {
+  font-size: 11px;
+  color: #d5d5d5;
+}
+
+.header__nav {
+  display: flex;
+  gap: 32px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.header__nav a {
+  color: #e2e2e2;
+  transition: color 0.2s;
+}
+
+.header--solid .header__nav a {
+  color: #b5b5b5;
+}
+
+.header__nav a:hover {
+  color: var(--color-white);
+}
+
+.header__cta {
+  background: transparent;
+  color: var(--color-white);
+  border: 1px solid var(--color-white);
+  padding: 12px 24px;
+  font-size: 13px;
+  font-weight: 700;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.header__cta:hover {
+  background: var(--color-white);
+  color: var(--color-black);
+}
+
+/* ---------- botão do menu (mobile) ---------- */
+
+.header__toggle {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: transparent;
+}
+
+.header__toggle-barra {
+  display: block;
+  width: 18px;
+  height: 2px;
+  margin: 0 auto;
+  background: var(--color-white);
+}
+
+/* ---------- responsivo ---------- */
+
+@media (max-width: 1024px) {
+  .header,
+  .header--solid {
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+
+  .header__nav {
+    gap: 20px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 860px) {
+  .header {
+    flex-wrap: wrap;
+    padding: 16px 20px;
+  }
+
+  .header--solid {
+    padding: 12px 20px;
+  }
+
+  .header__logo-tagline {
+    display: none;
+  }
+
+  .header__logo-number {
+    font-size: 26px;
+  }
+
+  .header__toggle {
+    display: flex;
+  }
+
+  .header__nav,
+  .header__cta {
+    display: none;
+    flex-basis: 100%;
+  }
+
+  .header--aberto .header__nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    padding-top: 12px;
+  }
+
+  .header--aberto .header__nav a {
+    padding: 14px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+    color: var(--color-white);
+  }
+
+  .header--aberto .header__cta {
+    display: block;
+    margin: 12px 0 4px;
+    text-align: center;
+  }
+}
+
+/* ==========================================================================
+   Cabeçalho das landing pages: logo da unidade + trilha de volta.
+   Sem menu e sem CTA — a própria página já tem cinco botões de contato.
+   ========================================================================== */
+
+.header--unidade .header__logo-name {
+  font-size: 16px;
+  letter-spacing: 0.06em;
+}
+
+.header__trilha {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.header__trilha-voltar {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 16px 9px 13px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 999px;
+  color: var(--color-white);
+  transition: background-color 0.2s ease, color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.header__trilha-voltar:hover {
+  background: var(--color-white);
+  border-color: var(--color-white);
+  color: var(--color-black);
+}
+
+.header__trilha-sep {
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.header__trilha-item {
+  color: #cfcfcf;
+  transition: color 0.2s ease;
+}
+
+a.header__trilha-item:hover {
+  color: var(--color-white);
+}
+
+.header__trilha-atual {
+  color: var(--color-white);
+}
+
+.header--solid .header__trilha-item {
+  color: #9a9a9a;
+}
+
+.header--solid .header__trilha-sep {
+  color: #5a5a5a;
+}
+
+@media (max-width: 860px) {
+  .header--unidade {
+    flex-wrap: nowrap;
+  }
+
+  .header__trilha {
+    gap: 8px;
+    font-size: 12px;
+  }
+
+  .header__trilha-voltar {
+    padding: 8px 13px 8px 11px;
+  }
+
+  .header--unidade .header__logo-tagline {
+    display: block;
+    font-size: 10px;
+  }
+}

@@ -1,0 +1,287 @@
+.grade {
+    padding: 96px 48px;
+    display: grid;
+    grid-template-columns: 1.15fr 1fr;
+    gap: 0 96px;
+    align-items: end;
+    background: var(--color-white);
+  }
+  
+  .grade__eyebrow {
+    grid-column: 1 / -1;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--color-red);
+    letter-spacing: 0.05em;
+    margin-bottom: 16px;
+  }
+  
+  .grade__title {
+    font-family: var(--font-display);
+    font-size: 72px;
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+  }
+  
+  .grade__text {
+    font-size: 18px;
+    color: #444;
+    line-height: 1.8;
+    padding-bottom: 12px;
+  }
+  
+  .grade__cards {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    margin-top: 64px;
+  }
+  
+  .grade__card {
+    display: flex;
+    flex-direction: column;
+    padding: 32px 24px 24px;
+    border-top: 3px solid var(--color-red);
+    border-left: 1px solid #ddd;
+    background: var(--color-offwhite);
+  }
+  
+  .grade__card:first-child {
+    border-left: none;
+  }
+  
+  .grade__card-marca {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--color-red);
+    letter-spacing: 0.08em;
+    margin-bottom: 16px;
+  }
+  
+  .grade__card-title {
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 12px;
+  }
+  
+  .grade__card-text {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 24px;
+  }
+  
+  .grade__card-btn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 18px 20px;
+    background: var(--color-black);
+    color: var(--color-white);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    transition: background 0.2s ease;
+  }
+  
+  .grade__card-btn:hover,
+  .grade__card-btn:focus-visible {
+    background: var(--color-red);
+  }
+  
+  .grade__disclaimer {
+    grid-column: 1 / -1;
+    margin-top: 24px;
+    font-size: 13px;
+    color: #8a8a8a;
+  }
+  
+  @media (max-width: 1100px) {
+    .grade__cards {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  
+    .grade__card:nth-child(3) {
+      border-left: none;
+    }
+  
+    .grade__card:nth-child(n + 3) {
+      margin-top: 32px;
+    }
+  }
+  
+  @media (max-width: 780px) {
+    .grade {
+      padding: 64px 24px;
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+  
+    .grade__title {
+      font-size: 44px;
+    }
+  
+    .grade__text {
+      font-size: 16px;
+      padding-bottom: 0;
+    }
+  
+    .grade__cards {
+      grid-template-columns: 1fr;
+      margin-top: 32px;
+    }
+  
+    .grade__card {
+      border-left: none;
+    }
+  
+    .grade__card + .grade__card {
+      margin-top: 24px;
+    }
+  }
+  
+  @media (prefers-reduced-motion: reduce) {
+    .grade__card-btn {
+      transition: none;
+    }
+  }
+
+/* ==========================================================================
+   Abas de dia da semana + grade do dia escolhido
+   (seção de fundo claro — cores escuras)
+   ========================================================================== */
+
+.grade__dias {
+  grid-column: 1 / -1;
+  margin-top: 48px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.grade__cards {
+  margin-top: 28px;
+}
+
+.grade__dia {
+  min-width: 66px;
+  padding: 12px 14px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  border: 1px solid rgba(10, 10, 10, 0.18);
+  background: transparent;
+  font-family: inherit;
+  color: #666;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.grade__dia:hover {
+  border-color: var(--color-black);
+  color: var(--color-black);
+}
+
+.grade__dia--ativo {
+  background: var(--color-red);
+  border-color: var(--color-red);
+  color: var(--color-white);
+}
+
+.grade__dia-nome {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.grade__dia-numero {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--color-black);
+}
+
+.grade__dia:hover .grade__dia-numero {
+  color: var(--color-black);
+}
+
+.grade__dia--ativo .grade__dia-numero {
+  color: var(--color-white);
+}
+
+.grade__dia-hoje {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-red);
+}
+
+.grade__dia--ativo .grade__dia-hoje {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.grade__aulas {
+  list-style: none;
+  margin: 0 0 24px;
+  flex: 1;
+}
+
+.grade__aula {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  padding: 11px 0;
+  border-top: 1px solid #ddd;
+}
+
+.grade__aula:first-child {
+  border-top: 0;
+}
+
+.grade__aula-hora {
+  flex-shrink: 0;
+  min-width: 48px;
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-red);
+}
+
+.grade__aula-modalidade {
+  font-size: 14px;
+  color: #333;
+}
+
+.grade__vazio {
+  flex: 1;
+  margin-bottom: 24px;
+  padding-top: 14px;
+  border-top: 1px solid #ddd;
+  font-size: 13px;
+  color: #666;
+}
+
+@media (max-width: 900px) {
+  .grade__dias {
+    margin-top: 32px;
+  }
+}
+
+@media (max-width: 640px) {
+  .grade__dias {
+    gap: 6px;
+  }
+
+  .grade__dia {
+    min-width: 0;
+    flex: 1 0 calc((100% - 18px) / 4);
+    padding: 10px 6px 8px;
+  }
+}
