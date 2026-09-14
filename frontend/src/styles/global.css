@@ -72,3 +72,15 @@ button {
     scroll-behavior: auto;
   }
 }
+/* Paginas internas (Unidades, Agendamento, Duvidas). O cabecalho delas ja
+   nasce escuro e, no mobile, ganha a linha da trilha — por isso o
+   --header-height muda aqui e as secoes descem junto. */
+.pagina {
+  --header-height: 76px;
+}
+
+@media (max-width: 860px) {
+  .pagina {
+    --header-height: 112px;
+  }
+}

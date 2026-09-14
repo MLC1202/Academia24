@@ -1,7 +1,7 @@
 // Primeira dobra da home: video de fundo, titulo, os dois botoes e os numeros.
 //
 // O VIDEO DE FUNDO:
-// arquivo fixo em frontend/public/hero.mp4 (+ hero-poster.jpg, o primeiro
+// arquivo fixo em frontend/public/videos/hero.mp4 (+ public/imagens/hero-poster.jpg, o primeiro
 // quadro, que aparece enquanto o video carrega). Pra trocar eu apago os dois
 // e ponho os novos COM O MESMO NOME — aqui no codigo nao mexo em nada.
 //
@@ -13,6 +13,7 @@
 //   - imagem sem texto no meio, que o titulo fica por cima
 // O que esta la agora e provisorio, feito a partir da foto da unidade.
 
+import { Link } from "react-router-dom";
 import "./Hero.css";
 
 function Hero() {
@@ -22,8 +23,8 @@ function Hero() {
           Se o mp4 faltar, sobra o poster e depois a foto de fundo do CSS. */}
       <video
         className="hero__video"
-        src={`${import.meta.env.BASE_URL}hero.mp4`}
-        poster={`${import.meta.env.BASE_URL}hero-poster.jpg`}
+        src={`${import.meta.env.BASE_URL}videos/hero.mp4`}
+        poster={`${import.meta.env.BASE_URL}imagens/hero-poster.jpg`}
         autoPlay
         muted
         loop
@@ -48,12 +49,12 @@ function Hero() {
           para você evoluir.
         </p>
         <div className="hero__actions">
-          <a href="#agendar" className="hero__btn-primary">
+          <Link to="/agendamento" className="hero__btn-primary">
             Agendar aula experimental
-          </a>
-          <a href="#unidades" className="hero__btn-secondary">
+          </Link>
+          <Link to="/unidades" className="hero__btn-secondary">
             Escolher minha unidade
-          </a>
+          </Link>
         </div>
       </div>
 

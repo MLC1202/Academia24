@@ -2,8 +2,8 @@ import {
   gradesPadrao,
   type GradeUnidade,
   type Grades,
-} from '../grade';
-import { slugsUnidades, type UnidadeSlug } from '../unidades';
+} from '../data/grade';
+import { slugsUnidades, type UnidadeSlug } from '../data/unidades';
 
 // Nome da chave no localStorage.
 const CHAVE = 'academia24:grades';

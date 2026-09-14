@@ -4,7 +4,7 @@
 
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { slugsUnidades, unidades, type UnidadeSlug } from "../../unidades";
+import { slugsUnidades, unidades, type UnidadeSlug } from "../../data/unidades";
 import {
   dias,
   novaAula,
@@ -12,13 +12,13 @@ import {
   type Aula,
   type Dia,
   type GradeUnidade,
-} from "../../grade";
+} from "../../data/grade";
 import { carregarGrades, salvarGrade } from "../../lib/grade-store";
-import "./Dashboard.css";
+import "./DashboardPage.css";
 
 type Estado = "limpo" | "alterado" | "salvo";
 
-function Dashboard() {
+function DashboardPage() {
   const iniciais = useMemo(() => carregarGrades(), []);
 
   const [unidade, setUnidade] = useState<UnidadeSlug>("alphaville");
@@ -217,4 +217,4 @@ function Dashboard() {
   );
 }
 
-export default Dashboard;
+export default DashboardPage;

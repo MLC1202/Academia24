@@ -1,5 +1,5 @@
 // Secao "A Rede": os 4 pilares em acordeao.
-// Estrutura e equipamentos ja usam foto real (public/rede/); os outros dois
+// Estrutura e equipamentos ja usam foto real (public/imagens/rede/); os outros dois
 // ainda sao placeholder do Unsplash. Foto nova: mesmo nome, mesma pasta.
 //
 // O BASE_URL e o caminho onde o site esta hospedado ('/' na Hostinger,
@@ -14,7 +14,7 @@ const pilares = [
     titulo: "Estrutura de verdade",
     texto:
       "Unidades amplas, organizadas e preparadas para diferentes objetivos e níveis de treino.",
-    foto: `${import.meta.env.BASE_URL}rede/estrutura.jpg`,
+    foto: `${import.meta.env.BASE_URL}imagens/rede/estrutura.jpg`,
     // Enquadramento so quando fugir do padrao (o CSS ancora embaixo).
     posicao: "center center",
   },
@@ -23,7 +23,7 @@ const pilares = [
     titulo: "Equipamentos reconhecidos",
     texto:
       "Parques diversificados com marcas como Life Fitness, Hammer Strength e Technogym, conforme a unidade.",
-    foto: `${import.meta.env.BASE_URL}rede/equipamentos.jpg`,
+    foto: `${import.meta.env.BASE_URL}imagens/rede/equipamentos.jpg`,
   },
   {
     n: "03",

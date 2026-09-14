@@ -17,13 +17,14 @@
   padding: 72px 48px;
   overflow: hidden;
   background-color: var(--color-black);
-  /* Foto em src/assets: o Vite reescreve o caminho no build, entao funciona
-     tanto na raiz do dominio quanto no GitHub Pages. */
+  /* Foto em public/imagens/duvidas.jpg. Pra trocar: mesmo nome, mesma pasta.
+     O Vite poe o base na frente no build, entao funciona tanto na raiz do
+     dominio quanto no GitHub Pages. */
   background-image: linear-gradient(
       rgba(10, 10, 10, 0.86),
       rgba(10, 10, 10, 0.72)
     ),
-    url("../../assets/duvidas.jpg");
+    url("/imagens/duvidas.jpg");
   background-size: cover;
   background-position: center;
 }
@@ -211,5 +212,24 @@
   .duvidas__resposta,
   .duvidas__resposta > p {
     transition: none;
+  }
+}
+
+/* Na pagina /duvidas as duas colunas descem pra sair de tras do cabecalho. */
+.pagina .duvidas__foto {
+  padding-top: calc(var(--header-height) + 72px);
+}
+
+.pagina .duvidas__conteudo {
+  padding-top: calc(var(--header-height) + 72px);
+}
+
+@media (max-width: 1024px) {
+  .pagina .duvidas__foto {
+    padding-top: calc(var(--header-height) + 48px);
+  }
+
+  .pagina .duvidas__conteudo {
+    padding-top: 64px;
   }
 }

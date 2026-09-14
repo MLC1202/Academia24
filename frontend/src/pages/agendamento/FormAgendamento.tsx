@@ -1,12 +1,21 @@
-// Secao "Agende sua aula" da home.
+// Formulario "Agende sua aula", usado na pagina /agendamento.
+//
+// Se o link vier com ?unidade=<slug> (botao da subpagina da unidade), o
+// select de unidade ja abre com ela marcada.
 //
 // ATENCAO: por enquanto isso e so a tela. O botao valida os campos e mostra a
 // confirmacao, mas NAO manda os dados pra lugar nenhum — so joga no console.
 // Quando o endpoint existir, e so trocar o corpo do submeter().
 
 import { useState } from "react";
-import { unidades, slugsUnidades, type UnidadeSlug } from "../unidades";
-import "./Agendamento.css";
+import { useSearchParams } from "react-router-dom";
+import {
+  unidades,
+  slugsUnidades,
+  ehSlugUnidade,
+  type UnidadeSlug,
+} from "../../data/unidades";
+import "./FormAgendamento.css";
 
 const inicial = {
   nome: "",
@@ -70,8 +79,12 @@ function validar(campo: Campo, valor: string) {
 
 type Estado = "parado" | "enviando" | "enviado";
 
-function Agendamento() {
-  const [dados, setDados] = useState(inicial);
+function FormAgendamento() {
+  const [params] = useSearchParams();
+  const [dados, setDados] = useState(() => {
+    const unidade = params.get("unidade") ?? "";
+    return ehSlugUnidade(unidade) ? { ...inicial, unidade } : inicial;
+  });
   const [erros, setErros] = useState<Partial<Record<Campo, string>>>({});
   const [consentimento, setConsentimento] = useState(false);
   const [estado, setEstado] = useState<Estado>("parado");
@@ -118,19 +131,21 @@ function Agendamento() {
   if (estado === "enviado") {
     const nomeUnidade = unidades[dados.unidade as UnidadeSlug].nome;
     return (
-      <div className="agendar__painel agendar__painel--fim">
-        <div className="agendar__sucesso">
-          <p className="agendar__form-eyebrow">Recebemos seus dados</p>
-          <h3 className="agendar__form-title">
-            Tudo certo,
-            <br />
-            {dados.nome.split(" ")[0]}.
-          </h3>
-          <p className="agendar__sucesso-texto">
-            {`A equipe da unidade ${nomeUnidade} vai entrar em contato pelo telefone que você informou.`}
-          </p>
+      <section className="agendar agendar--fim snap-section" id="agendar">
+        <div className="agendar__painel agendar__painel--fim">
+          <div className="agendar__sucesso">
+            <p className="agendar__form-eyebrow">Recebemos seus dados</p>
+            <h3 className="agendar__form-title">
+              Tudo certo,
+              <br />
+              {dados.nome.split(" ")[0]}.
+            </h3>
+            <p className="agendar__sucesso-texto">
+              {`A equipe da unidade ${nomeUnidade} vai entrar em contato pelo telefone que você informou.`}
+            </p>
+          </div>
         </div>
-      </div>
+      </section>
     );
   }
 
@@ -363,4 +378,4 @@ function Agendamento() {
   );
 }
 
-export default Agendamento;
+export default FormAgendamento;

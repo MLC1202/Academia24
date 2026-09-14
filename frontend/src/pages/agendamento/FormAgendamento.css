@@ -466,3 +466,27 @@
     padding: 28px 22px;
   }
 }
+
+/* Tela de "tudo certo" depois do envio: painel centralizado na pagina. */
+.agendar--fim {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.agendar--fim .agendar__painel--fim {
+  max-width: 560px;
+}
+
+/* Na pagina /agendamento a secao e a primeira da tela: desce o conteudo
+   pra nao ficar atras do cabecalho. */
+.pagina .agendar {
+  padding-top: calc(var(--header-height) + 72px);
+  min-height: 100%;
+}
+
+@media (max-width: 860px) {
+  .pagina .agendar {
+    padding-top: calc(var(--header-height) + 40px);
+  }
+}

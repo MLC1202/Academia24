@@ -4,20 +4,28 @@
 // GitHub Pages. Assim as rotas funcionam nos dois sem eu mexer aqui.
 
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import Header from './components/Header';
-import Home from './pages/Home';
-import Login from './pages/admin/Login';
-import Dashboard from './pages/admin/Dashboard';
+import Header from './components/Header/Header';
+import HomePage from './pages/home/HomePage';
+import UnidadesPage from './pages/unidades/UnidadesPage';
+import UnidadePage from './pages/unidades/UnidadePage';
+import AgendamentoPage from './pages/agendamento/AgendamentoPage';
+import DuvidasPage from './pages/duvidas/DuvidasPage';
+import LoginPage from './pages/admin/LoginPage';
+import DashboardPage from './pages/admin/DashboardPage';
 
 function App() {
   return (
     <BrowserRouter basename={import.meta.env.BASE_URL}>
       <Header />
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<HomePage />} />
+        <Route path="/unidades" element={<UnidadesPage />} />
+        <Route path="/unidades/:slug" element={<UnidadePage />} />
+        <Route path="/agendamento" element={<AgendamentoPage />} />
+        <Route path="/duvidas" element={<DuvidasPage />} />
         {/* Area interna, ainda sem login de verdade. */}
-        <Route path="/admin/login" element={<Login />} />
-        <Route path="/admin/dashboard" element={<Dashboard />} />
+        <Route path="/admin/login" element={<LoginPage />} />
+        <Route path="/admin/dashboard" element={<DashboardPage />} />
         {/* Qualquer rota que nao existe volta pra home. */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

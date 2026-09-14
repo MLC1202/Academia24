@@ -1,5 +1,6 @@
 // Faixa vermelha de fechamento: chamada a esquerda, cartao de agendamento a direita.
 
+import { Link } from "react-router-dom";
 import "./Convite.css";
 
 function Convite() {
@@ -17,13 +18,13 @@ function Convite() {
           </p>
         </div>
 
-        <a href="#agendar" className="convite__card">
+        <Link to="/agendamento" className="convite__card">
           <span className="convite__card-eyebrow">Quero agendar</span>
 
           <span className="convite__card-title">Minha aula</span>
 
           <span className="convite__cta">Sem compromisso →</span>
-        </a>
+        </Link>
       </div>
     </section>
   );

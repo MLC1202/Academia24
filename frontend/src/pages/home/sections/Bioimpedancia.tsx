@@ -1,6 +1,7 @@
 // Secao da avaliacao fisica: foto com filtro vermelho a esquerda,
 // texto e itens medidos a direita. A foto ainda e placeholder do Unsplash.
 
+import { Link } from "react-router-dom";
 import "./Bioimpedancia.css";
 
 const itens = [
@@ -44,9 +45,9 @@ function Bioimpedancia() {
             ))}
           </ul>
 
-          <a href="#agendar" className="bio__cta">
+          <Link to="/agendamento" className="bio__cta">
             Agendar aula experimental →
-          </a>
+          </Link>
         </div>
       </div>
     </section>

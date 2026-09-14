@@ -1,18 +1,28 @@
-// Secao da grade de aulas na home. Mostra as abas da semana e as aulas do
-// dia escolhido, lendo o que estiver salvo pelo dashboard.
+// Grade de aulas coletivas. Mostra as abas da semana e as aulas do dia
+// escolhido, lendo o que estiver salvo pelo dashboard.
+//
+// Na pagina /unidades aparece a grade das 4. Na subpagina de uma unidade eu
+// passo so o slug dela e a grade vira um card unico.
 
 import { useMemo, useState } from "react";
-import { slugsUnidades, unidades } from "../../unidades";
+import { Link } from "react-router-dom";
+import { slugsUnidades, unidades, type UnidadeSlug } from "../../../data/unidades";
 import {
   diaDeHoje,
   ordenarPorHora,
   semanaAtual,
   type Dia,
-} from "../../grade";
-import { carregarGrades } from "../../lib/grade-store";
-import "./Grade.css";
+} from "../../../data/grade";
+import { carregarGrades } from "../../../lib/grade-store";
+import "./GradeAulas.css";
 
-function Grade() {
+type Props = {
+  slugs?: UnidadeSlug[];
+};
+
+function GradeAulas({ slugs = slugsUnidades }: Props) {
+  const unica = slugs.length === 1;
+
   // Calculo a semana e a grade uma vez so por visita, nao a cada clique.
   const semana = useMemo(() => semanaAtual(), []);
   const grades = useMemo(() => carregarGrades(), []);
@@ -30,8 +40,9 @@ function Grade() {
 
       <div className="grade__text">
         <p>
-          As modalidades e os horários variam por unidade. Escolha o dia para
-          ver a grade das quatro unidades.
+          {unica
+            ? `Escolha o dia para ver as aulas coletivas da unidade ${unidades[slugs[0]].nome}.`
+            : "As modalidades e os horários variam por unidade. Escolha o dia para ver a grade das quatro unidades."}
         </p>
       </div>
 
@@ -54,8 +65,10 @@ function Grade() {
         ))}
       </div>
 
-      <div className="grade__cards">
-        {slugsUnidades.map((slug) => {
+      <div
+        className={unica ? "grade__cards grade__cards--unica" : "grade__cards"}
+      >
+        {slugs.map((slug) => {
           const info = unidades[slug];
           const aulas = ordenarPorHora(grades[slug][dia]);
 
@@ -88,24 +101,19 @@ function Grade() {
                 </p>
               )}
 
-              {unidades[slug].lp ? (
-                <a
-                  href={unidades[slug].lp}
-                  target="_blank"
-                  rel="noreferrer"
+              {unica ? (
+                <Link
+                  to={`/agendamento?unidade=${slug}`}
                   className="grade__card-btn"
                 >
-                  <span>CONSULTAR ESTA UNIDADE</span>
+                  <span>AGENDAR AULA EXPERIMENTAL</span>
                   <span aria-hidden="true">→</span>
-                </a>
+                </Link>
               ) : (
-                <span
-                  className="grade__card-btn grade__card-btn--inativo"
-                  aria-disabled="true"
-                >
-                  <span>CONSULTAR ESTA UNIDADE</span>
+                <Link to={`/unidades/${slug}`} className="grade__card-btn">
+                  <span>VER ESTA UNIDADE</span>
                   <span aria-hidden="true">→</span>
-                </span>
+                </Link>
               )}
             </article>
           );
@@ -120,4 +128,4 @@ function Grade() {
   );
 }
 
-export default Grade;
+export default GradeAulas;

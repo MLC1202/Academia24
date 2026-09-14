@@ -292,3 +292,43 @@
   pointer-events: none;
   cursor: default;
 }
+
+/* Grade de uma unidade so (subpagina): um card largo, aulas em 2 colunas. */
+.grade__cards--unica {
+  grid-template-columns: 1fr;
+}
+
+.grade__cards--unica .grade__card {
+  border-left: none;
+}
+
+.grade__cards--unica .grade__aulas {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 48px;
+  align-content: start;
+}
+
+.grade__cards--unica .grade__aula:nth-child(2) {
+  border-top: 0;
+}
+
+.grade__cards--unica .grade__card-btn {
+  align-self: flex-start;
+  min-width: 320px;
+}
+
+@media (max-width: 780px) {
+  .grade__cards--unica .grade__aulas {
+    grid-template-columns: 1fr;
+  }
+
+  .grade__cards--unica .grade__aula:nth-child(2) {
+    border-top: 1px solid #ddd;
+  }
+
+  .grade__cards--unica .grade__card-btn {
+    align-self: stretch;
+    min-width: 0;
+  }
+}
