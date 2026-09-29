@@ -1,492 +1,720 @@
-/* Secao de agendamento da home: texto a esquerda, formulario no painel */
+/* Pagina /agendamento — estilo Apple (skill apple-design), igual a grade.
+   - Fundo claro; o vermelho so aponta o que esta escolhido e a acao final.
+   - Perguntas em sequencia com letra grande, em vez de selects apertados.
+   - Campos agrupados num card branco so, com linhas finas (como no iPhone).
+   - Tudo que e clicavel tem 44px ou mais de altura.
+   - Movimento curto: selecao, pilula do periodo e o check da confirmacao.
+     Nada anima com "reduzir movimento" ligado. */
 
 .agendar {
-    background: var(--color-black);
-    color: var(--color-white);
-    padding: 96px 48px;
-  }
-  
-  .agendar__inner {
-    max-width: 1280px;
-    margin: 0 auto;
-    display: grid;
-    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.05fr);
-    column-gap: 80px;
-    align-items: center;
-  }
-  
-  /* coluna esquerda */
-  
-  .agendar__eyebrow {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    margin: 0 0 32px;
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--color-red);
-  }
-  
-  .agendar__eyebrow::before {
-    content: "";
-    width: 32px;
-    height: 1px;
-    background: var(--color-red);
-  }
-  
-  .agendar__title {
-    margin: 0 0 40px;
-    font-family: var(--font-display);
-    font-size: clamp(48px, 5.4vw, 84px);
-    font-weight: 800;
-    line-height: 0.98;
-    letter-spacing: -0.03em;
-    color: var(--color-cream);
-  }
-  
-  .agendar__title-destaque {
-    color: var(--color-red);
-  }
-  
-  .agendar__subtitle {
-    margin: 0 0 48px;
-    max-width: 42ch;
-    font-size: 17px;
-    line-height: 1.65;
-    color: #b8b4ad;
-  }
-  
-  .agendar__beneficios {
-    list-style: none;
-    margin: 0;
-    padding: 40px 0 0;
-    border-top: 1px solid #2a2825;
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 32px 28px;
-  }
-  
-  .agendar__beneficio h3 {
-    position: relative;
-    margin: 0 0 10px;
-    padding-left: 22px;
-    font-size: 12.5px;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--color-white);
-  }
-  
-  .agendar__beneficio h3::before {
-    content: "✓";
-    position: absolute;
-    left: 0;
-    color: var(--color-red);
-    font-size: 13px;
-  }
-  
-  .agendar__beneficio p {
-    margin: 0;
-    padding-left: 22px;
-    font-size: 14px;
-    line-height: 1.55;
-    color: #8d8981;
-  }
-  
-  /* painel do formulário */
-  
-  .agendar__painel {
-    position: relative;
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) 190px;
-    background: var(--color-cream);
-    color: var(--color-black);
-    border-top: 4px solid var(--color-red);
-    box-shadow: 0 26px 60px -20px rgba(224, 52, 44, 0.45),
-      0 8px 24px -12px rgba(0, 0, 0, 0.6);
-  }
-  
-  .agendar__painel::before,
-  .agendar__painel::after {
-    content: "";
-    position: absolute;
-    width: 78px;
-    height: 78px;
-    pointer-events: none;
-  }
-  
-  .agendar__painel::before {
-    top: -34px;
-    left: -34px;
-    border-top: 1px solid var(--color-red);
-    border-left: 1px solid var(--color-red);
-  }
-  
-  .agendar__painel::after {
-    right: -34px;
-    bottom: -34px;
-    border-right: 1px solid var(--color-red);
-    border-bottom: 1px solid var(--color-red);
-  }
-  
-  .agendar__form {
-    padding: 38px 34px;
-  }
-  
-  .agendar__form-head {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 24px;
-    margin-bottom: 20px;
-  }
-  
-  .agendar__form-eyebrow {
-    margin: 0;
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: var(--color-red);
-  }
-  
-  .agendar__form-passo {
-    margin: 0;
-    text-align: right;
-    font-size: 11px;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    line-height: 1.6;
-    color: #a8a29a;
-  }
-  
-  .agendar__form-passo strong {
-    display: block;
-    font-weight: 700;
-    color: var(--color-red);
-  }
-  
-  .agendar__form-title {
-    margin: 0 0 30px;
-    font-family: var(--font-display);
-    font-size: clamp(26px, 2.1vw, 36px);
-    font-weight: 800;
-    line-height: 1.02;
-    letter-spacing: -0.02em;
-  }
-  
-  .agendar__grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 18px 22px;
-  }
-  
-  .agendar__field {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    min-width: 0;
-  }
-  
-  .agendar__field label {
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: #6f6a62;
-  }
-  
-  .agendar__field input,
-  .agendar__field select {
-    width: 100%;
-    padding: 12px 14px;
-    font-family: inherit;
-    font-size: 14.5px;
-    color: var(--color-black);
-    background: #fbfaf7;
-    border: 1px solid #ddd8cf;
-    border-radius: 0;
-    outline: none;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
-  }
-  
-  .agendar__field select {
-    appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236f6a62' stroke-width='1.6' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 14px center;
-    padding-right: 38px;
-    cursor: pointer;
-  }
-  
-  .agendar__field input::placeholder {
-    color: #a9a49c;
-  }
-  
-  .agendar__field input:focus,
-  .agendar__field select:focus {
-    border-color: var(--color-red);
-    box-shadow: 0 0 0 3px rgba(224, 52, 44, 0.12);
-  }
-  
-  .agendar__consent {
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-    margin-top: 24px;
-    padding-top: 22px;
-    border-top: 1px solid #ddd8cf;
-    font-size: 13.5px;
-    line-height: 1.5;
-    color: #5f5a53;
-    cursor: pointer;
-  }
-  
-  .agendar__consent input {
-    flex-shrink: 0;
-    width: 20px;
-    height: 20px;
-    margin-top: 1px;
-    accent-color: var(--color-red);
-    cursor: pointer;
-  }
-  
-  .agendar__submit {
-    width: 100%;
-    margin-top: 22px;
-    padding: 17px 22px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 20px;
-    text-align: left;
-    color: var(--color-white);
-    background: var(--color-red);
-    border: 0;
-    transition: background-color 0.25s ease;
-  }
-  
-  .agendar__submit:hover {
-    background: var(--color-red);
-  }
+  --ag-fundo: var(--color-offwhite);
+  --ag-texto: var(--color-black);
+  --ag-texto-2: #6e6e73;
+  --ag-linha: rgba(10, 10, 10, 0.08);
+  --ag-controle: rgba(10, 10, 10, 0.06);
+  --ag-mola: cubic-bezier(0.3, 1.25, 0.4, 1);
 
-  .agendar__submit:disabled {
-    opacity: 0.38;
-    cursor: not-allowed;
-  }
-  
-  .agendar__submit:disabled:hover {
-    background: var(--color-red);
-  }
-  
-  .agendar__submit:disabled:hover .agendar__submit-seta {
-    transform: none;
-  }
-  
-  .agendar__submit-eyebrow {
-    display: block;
-    margin-bottom: 6px;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.65);
-  }
-  
-  .agendar__submit-title {
-    display: block;
-    font-family: var(--font-display);
-    font-size: 22px;
-    font-weight: 800;
-    letter-spacing: -0.02em;
-  }
-  
-  .agendar__submit-seta {
-    font-size: 22px;
-    transition: transform 0.25s ease;
-  }
-  
-  .agendar__submit:hover .agendar__submit-seta {
-    transform: translateX(6px);
-  }
+  /* --header-height: o cabecalho fica por cima, a secao desce junto */
+  padding: calc(var(--header-height) + 56px) 48px 120px;
+  background: var(--ag-fundo);
+  color: var(--ag-texto);
+}
 
-  .agendar__erro {
-    font-size: 12px;
-    line-height: 1.4;
-    color: var(--color-red);
-  }
-  
-  .agendar__field input[aria-invalid="true"] {
-    border-color: var(--color-red);
-  }
-  
-  /* coluna lateral do painel */
+.agendar__inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1fr);
+  column-gap: 96px;
+  align-items: start;
+}
 
-.agendar__aside {
-    padding: 30px 20px;
-    border-left: 1px solid #ddd8cf;
-    background: #efece4;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    gap: 34px;
-  }
-  
-  .agendar__aside-icone {
-    display: block;
-    width: 17px;
-    height: 17px;
-    margin-bottom: 12px;
-    fill: none;
-    stroke: var(--color-red);
-    stroke-width: 1.6;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-  }
-  
-  .agendar__aside-item h4,
-  .agendar__aside-label {
-    display: block;
-    margin: 0 0 5px;
-    font-size: 9.5px;
-    font-weight: 700;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: #7d786f;
-  }
-  
-  .agendar__aside-item p {
-    margin: 0;
-    font-size: 12px;
-    line-height: 1.5;
-    color: #8b867d;
-  }
-  
-  .agendar__aside-destaque {
-    font-family: var(--font-display);
-    font-size: 22px;
-    font-weight: 800;
-    letter-spacing: -0.02em;
-    color: var(--color-black);
-  }
-  
-  @media (max-width: 1180px) {
-    .agendar__inner {
-      grid-template-columns: 1fr;
-      row-gap: 64px;
-    }
-  
-    .agendar__subtitle {
-      max-width: 60ch;
-    }
-  }
-  
-  @media (max-width: 860px) {
-    .agendar {
-      padding: 72px 24px;
-    }
-  
-    .agendar__painel {
-        grid-template-columns: minmax(0, 1fr) 158px;
-    }
-  
-    .agendar__painel::before,
-    .agendar__painel::after {
-      display: none;
-    }
-  
-    .agendar__form {
-      padding: 32px 22px;
-    }
-  
-    .agendar__grid {
-      grid-template-columns: 1fr;
-    }
-  
-    .agendar__beneficios {
-      grid-template-columns: 1fr;
-      gap: 24px;
-    }
-  
-    .agendar__aside {
-      flex-direction: row;
-      flex-wrap: wrap;
-      gap: 28px 40px;
-      padding: 30px 22px;
-      border-left: 0;
-      border-top: 1px solid #ddd8cf;
-    }
-  }
-/* ==========================================================================
-   Modo unidade — o mesmo formulário dentro da landing page.
-   Sem a coluna de texto e sem o aside: a LP já contou a história.
-   ========================================================================== */
+/* ---------- Coluna da esquerda (presa na tela) ---------- */
 
-.agendar__painel--compacto {
+.agendar__intro {
+  position: sticky;
+  top: calc(var(--header-height) + 40px);
+}
+
+.agendar__eyebrow {
+  margin: 0 0 20px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-red);
+}
+
+.agendar__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(44px, 5vw, 72px);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.035em;
+}
+
+.agendar__title-destaque {
+  color: var(--color-red);
+}
+
+.agendar__subtitle {
+  margin: 24px 0 0;
+  max-width: 40ch;
+  font-size: 19px;
+  line-height: 1.5;
+  color: var(--ag-texto-2);
+}
+
+.agendar__beneficios {
+  list-style: none;
+  margin: 48px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 20px;
+}
+
+.agendar__beneficios li {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.agendar__beneficios svg {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  margin-top: 1px;
+  fill: none;
+  stroke: var(--ag-texto);
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.agendar__beneficios strong {
   display: block;
-  width: 100%;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.agendar__beneficios span {
+  display: block;
+  margin-top: 2px;
+  font-size: 15px;
+  line-height: 1.45;
+  color: var(--ag-texto-2);
+}
+
+/* ---------- Formulario ---------- */
+
+.agendar__form {
+  min-width: 0;
+}
+
+.agendar__passo {
+  min-width: 0;
+  margin: 0 0 56px;
+  padding: 0;
+  border: 0;
+}
+
+.agendar__pergunta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 18px;
+  padding: 0;
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+}
+
+.agendar__numero {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--ag-texto);
+  color: var(--color-white);
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+/* Os inputs de verdade ficam invisiveis; quem aparece e o label estilizado.
+   Continuam funcionando com teclado e leitor de tela. */
+.agendar__unidade input,
+.agendar__periodo input,
+.agendar__objetivo input,
+.agendar__consent input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+  pointer-events: none;
+}
+
+/* 1. Cards das unidades */
+
+.agendar__unidades {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.agendar__unidade {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 88px;
+  padding: 12px 44px 12px 12px;
+  border-radius: 18px;
   background: var(--color-white);
-  color: var(--color-black);
-  border-radius: 20px;
+  box-shadow: inset 0 0 0 1px var(--ag-linha);
+  cursor: pointer;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.agendar__unidade:hover {
+  box-shadow: inset 0 0 0 1px rgba(10, 10, 10, 0.2);
+}
+
+.agendar__unidade:active {
+  transform: scale(0.985);
+}
+
+.agendar__unidade:has(input:checked) {
+  box-shadow: inset 0 0 0 2px var(--color-red);
+}
+
+.agendar__unidade:has(input:focus-visible),
+.agendar__objetivo:has(input:focus-visible),
+.agendar__periodo:has(input:focus-visible),
+.agendar__consent:has(input:focus-visible) {
+  outline: 2px solid var(--color-red);
+  outline-offset: 2px;
+}
+
+.agendar__unidade-foto {
+  flex-shrink: 0;
+  width: 64px;
+  height: 64px;
+  border-radius: 12px;
+  background-color: #ddd;
+  background-size: cover;
+  background-position: center;
+}
+
+.agendar__unidade-texto {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.agendar__unidade-marca {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ag-texto-2);
+}
+
+.agendar__unidade-nome {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.agendar__unidade-local {
+  font-size: 13px;
+  color: var(--ag-texto-2);
+}
+
+/* Bolinha no canto: vazia, e vira um check vermelho quando escolhe */
+.agendar__marca-check {
+  position: absolute;
+  top: 50%;
+  right: 14px;
+  width: 22px;
+  height: 22px;
+  margin-top: -11px;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1.5px rgba(10, 10, 10, 0.2);
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.agendar__marca-check::after {
+  content: "";
+  position: absolute;
+  left: 7.5px;
+  top: 4px;
+  width: 5px;
+  height: 10px;
+  border: solid var(--color-white);
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg) scale(0);
+  transition: transform 0.25s var(--ag-mola);
+}
+
+.agendar__unidade:has(input:checked) .agendar__marca-check {
+  background: var(--color-red);
+  box-shadow: none;
+}
+
+.agendar__unidade:has(input:checked) .agendar__marca-check::after {
+  transform: rotate(45deg) scale(1);
+}
+
+/* 2. Periodo: segmented control com pilula que desliza */
+
+.agendar__periodos {
+  position: relative;
+  display: flex;
+  padding: 4px;
+  border-radius: 18px;
+  background: var(--ag-controle);
+}
+
+.agendar__periodos-pilula {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  left: 4px;
+  width: calc((100% - 8px) / 3);
+  border-radius: 14px;
+  background: var(--color-white);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06), 0 4px 14px rgba(0, 0, 0, 0.06);
+  transform: translateX(calc(var(--idx) * 100%));
+  opacity: 0;
+  transition: transform 0.38s var(--ag-mola), opacity 0.2s ease;
+}
+
+.agendar__periodos--escolhido .agendar__periodos-pilula {
+  opacity: 1;
+}
+
+.agendar__periodo {
+  position: relative;
+  z-index: 1;
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 64px;
+  border-radius: 14px;
+  color: var(--ag-texto-2);
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.agendar__periodo:hover,
+.agendar__periodo:has(input:checked) {
+  color: var(--ag-texto);
+}
+
+.agendar__periodo-nome {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.agendar__periodo-horas {
+  font-size: 12px;
+  color: var(--ag-texto-2);
+}
+
+/* 3. Objetivo: pilulas */
+
+.agendar__objetivos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.agendar__objetivo span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 18px;
+  border-radius: 999px;
+  background: var(--color-white);
+  box-shadow: inset 0 0 0 1px var(--ag-linha);
+  font-size: 15px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.agendar__objetivo {
+  border-radius: 999px;
+}
+
+.agendar__objetivo:hover span {
+  box-shadow: inset 0 0 0 1px rgba(10, 10, 10, 0.2);
+}
+
+.agendar__objetivo:has(input:checked) span {
+  background: var(--ag-texto);
+  box-shadow: none;
+  color: var(--color-white);
+}
+
+/* 4. Dados: um card so, campos separados por linha fina */
+
+.agendar__grupo {
+  border-radius: 18px;
+  background: var(--color-white);
+  box-shadow: inset 0 0 0 1px var(--ag-linha);
   overflow: hidden;
 }
 
-.agendar__painel--compacto .agendar__form {
-  padding: 36px;
+.agendar__campo {
+  display: flex;
+  flex-direction: column;
+  padding: 12px 18px;
+  transition: background-color 0.2s ease;
 }
 
-.agendar__painel--fim {
-  display: block;
+.agendar__campo + .agendar__campo {
+  border-top: 1px solid var(--ag-linha);
+}
+
+.agendar__campo:focus-within {
+  background: rgba(10, 10, 10, 0.02);
+}
+
+.agendar__campo label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ag-texto-2);
+}
+
+.agendar__campo input {
   width: 100%;
+  min-height: 32px;
+  margin: 2px 0 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font-family: inherit;
+  font-size: 17px;
+  color: var(--ag-texto);
+  outline: none;
+}
+
+.agendar__campo input::placeholder {
+  color: #b0b0b5;
+}
+
+.agendar__campo--erro label,
+.agendar__erro {
+  color: var(--color-red);
+}
+
+.agendar__erro {
+  margin-top: 2px;
+  font-size: 13px;
+}
+
+/* Autorizacao: caixinha arredondada que vira check vermelho */
+
+.agendar__consent {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-top: 18px;
+  padding: 4px 0;
+  border-radius: 8px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--ag-texto-2);
+  cursor: pointer;
+}
+
+.agendar__consent-caixa {
+  position: relative;
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  margin-top: 1px;
+  border-radius: 7px;
   background: var(--color-white);
-  color: var(--color-black);
-  border-radius: 20px;
+  box-shadow: inset 0 0 0 1.5px rgba(10, 10, 10, 0.25);
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* ---------- estado de sucesso ---------- */
-
-.agendar__sucesso {
-  padding: 44px 36px;
+.agendar__consent-caixa::after {
+  content: "";
+  position: absolute;
+  left: 7.5px;
+  top: 4px;
+  width: 5px;
+  height: 10px;
+  border: solid var(--color-white);
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg) scale(0);
+  transition: transform 0.25s var(--ag-mola);
 }
 
-.agendar__sucesso-texto {
-  margin-top: 20px;
-  max-width: 46ch;
-  font-family: var(--font-body);
+.agendar__consent:has(input:checked) .agendar__consent-caixa {
+  background: var(--color-red);
+  box-shadow: none;
+}
+
+.agendar__consent:has(input:checked) .agendar__consent-caixa::after {
+  transform: rotate(45deg) scale(1);
+}
+
+/* Botao final: a unica acao cheia da pagina */
+
+.agendar__enviar {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.agendar__submit {
+  min-height: 56px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--color-red);
+  color: var(--color-white);
+  font-family: inherit;
+  font-size: 17px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease, opacity 0.2s ease;
+}
+
+.agendar__submit:hover:not(:disabled) {
+  background: #c62a23;
+}
+
+.agendar__submit:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.agendar__submit:focus-visible {
+  outline: 2px solid var(--color-red);
+  outline-offset: 3px;
+}
+
+.agendar__submit:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.agendar__status {
+  margin: 12px 0 0;
+  font-size: 14px;
+  text-align: center;
+  color: var(--ag-texto-2);
+}
+
+/* ---------- Confirmacao ---------- */
+
+.agendar--fim {
+  display: grid;
+  place-items: center;
+}
+
+.agendar__fim {
+  width: 100%;
+  max-width: 560px;
+  text-align: center;
+}
+
+.agendar__fim-icone {
+  width: 72px;
+  height: 72px;
+  fill: none;
+  stroke: var(--color-red);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* O circulo e o check "se desenham" */
+.agendar__fim-icone circle {
+  stroke-dasharray: 151;
+  stroke-dashoffset: 151;
+  animation: agendar-desenha 0.6s ease-out forwards;
+}
+
+.agendar__fim-icone path {
+  stroke-dasharray: 40;
+  stroke-dashoffset: 40;
+  animation: agendar-desenha 0.35s 0.45s ease-out forwards;
+}
+
+.agendar__fim-titulo {
+  margin: 24px 0 0;
+  font-family: var(--font-display);
+  font-size: clamp(40px, 5vw, 64px);
+  font-weight: 800;
+  line-height: 1.02;
+  letter-spacing: -0.035em;
+}
+
+.agendar__fim-texto {
+  margin: 16px auto 0;
+  max-width: 44ch;
+  font-size: 18px;
+  line-height: 1.5;
+  color: var(--ag-texto-2);
+}
+
+.agendar__resumo {
+  margin: 36px 0 0;
+  border-radius: 18px;
+  background: var(--color-white);
+  box-shadow: inset 0 0 0 1px var(--ag-linha);
+  text-align: left;
+}
+
+.agendar__resumo div {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 18px;
+}
+
+.agendar__resumo div + div {
+  border-top: 1px solid var(--ag-linha);
+}
+
+.agendar__resumo dt {
   font-size: 15px;
-  line-height: 1.6;
-  color: var(--color-gray);
+  color: var(--ag-texto-2);
 }
 
-@media (max-width: 640px) {
-  .agendar__painel--compacto .agendar__form,
-  .agendar__sucesso {
-    padding: 28px 22px;
+.agendar__resumo dd {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  text-align: right;
+}
+
+.agendar__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 44px;
+  margin-top: 20px;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-red);
+}
+
+.agendar__link:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+@keyframes agendar-desenha {
+  to {
+    stroke-dashoffset: 0;
   }
 }
 
-/* Tela de "tudo certo" depois do envio: painel centralizado na pagina. */
-.agendar--fim {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+/* ---------- Tablet ---------- */
+
+@media (max-width: 1024px) {
+  .agendar {
+    padding: calc(var(--header-height) + 48px) 32px 96px;
+  }
+
+  .agendar__inner {
+    grid-template-columns: 1fr;
+    row-gap: 56px;
+  }
+
+  .agendar__intro {
+    position: static;
+  }
+
+  .agendar__beneficios {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+  }
+
+  .agendar__beneficios li {
+    flex-direction: column;
+    gap: 10px;
+  }
 }
 
-.agendar--fim .agendar__painel--fim {
-  max-width: 560px;
+/* ---------- Celular ---------- */
+
+@media (max-width: 640px) {
+  .agendar {
+    padding: calc(var(--header-height) + 32px) 20px 80px;
+  }
+
+  .agendar__subtitle {
+    font-size: 17px;
+  }
+
+  .agendar__beneficios {
+    grid-template-columns: 1fr;
+    margin-top: 32px;
+    gap: 16px;
+  }
+
+  .agendar__beneficios li {
+    flex-direction: row;
+    gap: 14px;
+  }
+
+  .agendar__passo {
+    margin-bottom: 44px;
+  }
+
+  .agendar__pergunta {
+    font-size: 24px;
+  }
+
+  .agendar__unidades {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .agendar__unidade {
+    min-height: 76px;
+  }
+
+  .agendar__unidade-foto {
+    width: 52px;
+    height: 52px;
+  }
+
+  .agendar__periodo-horas {
+    font-size: 11px;
+  }
 }
 
-/* Na pagina /agendamento a secao e a primeira da tela: desce o conteudo
-   pra nao ficar atras do cabecalho. */
-.pagina .agendar {
-  padding-top: calc(var(--header-height) + 72px);
-  min-height: 100%;
-}
+@media (prefers-reduced-motion: reduce) {
+  .agendar__unidade,
+  .agendar__marca-check,
+  .agendar__marca-check::after,
+  .agendar__periodos-pilula,
+  .agendar__periodo,
+  .agendar__objetivo span,
+  .agendar__campo,
+  .agendar__consent-caixa,
+  .agendar__consent-caixa::after,
+  .agendar__submit {
+    transition: none;
+  }
 
-@media (max-width: 860px) {
-  .pagina .agendar {
-    padding-top: calc(var(--header-height) + 40px);
+  .agendar__fim-icone circle,
+  .agendar__fim-icone path {
+    animation: none;
+    stroke-dashoffset: 0;
   }
 }
