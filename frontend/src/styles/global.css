@@ -1,0 +1,86 @@
+/* Base do site: as cores, as fontes e o container que rola.
+   Cor ou fonte nova entra aqui no :root e o resto do site usa a variavel. */
+
+:root {
+  --color-black: #0a0a0a;
+  --color-white: #ffffff;
+  --color-offwhite: #f2f1ee;
+  --color-red: #e0342c;
+  --color-gray: #6b6b6b;
+  --color-cream: #f5f1ea;
+
+  --font-display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --font-body: "Inter", "Helvetica Neue", Arial, sans-serif;
+  --header-height: 88px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  font-family: var(--font-body);
+  color: var(--color-black);
+  background: var(--color-white);
+  line-height: 1.5;
+}
+
+#root {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+/* .snap-container e quem rola de verdade (o body fica parado).
+   O Header escuta o scroll dele. */
+.snap-container {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+  scroll-padding-top: 24px;
+  overscroll-behavior-y: contain;
+}
+
+.snap-section {
+  min-height: 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* .snap-container e quem rola de verdade (o body fica parado).
+   O Header escuta o scroll dele. */
+.snap-container {
+    scroll-behavior: auto;
+  }
+}
+/* Paginas internas (Unidades, Agendamento, Duvidas). O cabecalho delas ja
+   nasce escuro e, no mobile, ganha a linha da trilha — por isso o
+   --header-height muda aqui e as secoes descem junto. */
+.pagina {
+  --header-height: 76px;
+}
+
+@media (max-width: 860px) {
+  .pagina {
+    --header-height: 112px;
+  }
+}

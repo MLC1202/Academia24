@@ -17,12 +17,12 @@ POST /api/grades.php   { unidade, grade }
 ```
 
 `unidade` é sempre `alphaville` | `norte` | `cambui` | `lagoa`.
-O formato de `Grades` está em `frontend/src/grade.ts`.
+O formato de `Grades` está em `frontend/src/data/grade.ts`.
 
 ## Formulário de agendamento
 
 A seção de agendamento da home já existe e valida os campos, mas ainda não
-envia nada: o `submeter()` em `frontend/src/components/Agendamento.tsx` só
+envia nada: o `submeter()` em `frontend/src/pages/agendamento/FormAgendamento.tsx` só
 registra no console. Falta decidir para onde o lead vai.
 
 ## Ao implementar
