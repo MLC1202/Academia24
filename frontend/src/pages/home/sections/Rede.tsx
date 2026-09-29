@@ -4,8 +4,17 @@
 //
 // O BASE_URL e o caminho onde o site esta hospedado ('/' na Hostinger,
 // '/Academia24/' no GitHub Pages). Sem ele a foto da 404 no Pages.
+//
+// NO CELULAR (ate 900px) o acordeao vira uma pilha de cartoes presa na tela
+// (position: sticky) dentro de um trilho mais alto que ela. Conforme o
+// cliente rola, o cartao da frente sobe e some, e o de tras (que fica
+// espiando por cima) vem pra frente e para no centro. Depois do 04 a pilha
+// solta e a pagina segue pra proxima secao.
+// O Rede.tsx so calcula --p (0 = cartao 01 na frente, 3 = cartao 04) e o
+// CSS faz o resto. No computador nada muda: continua abrindo no hover.
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import type { CSSProperties } from "react";
 import "./Rede.css";
 
 const pilares = [
@@ -41,8 +50,93 @@ const pilares = [
   },
 ];
 
+const MOBILE = "(max-width: 900px)";
+
+// Folga (em "cartoes") no comeco e no fim do trilho, pra o 01 e o 04 ficarem
+// um tempinho parados antes de a pilha comecar a andar / soltar.
+const FOLGA = 0.3;
+const ULTIMO = pilares.length - 1;
+
+// Progresso do trilho (0 a 1) -> posicao na pilha (0 a ULTIMO). Cada troca
+// ainda "segura" um pouco no meio, pro cartao descansar no centro.
+function paraPosicao(progresso: number) {
+  const bruto = progresso * (ULTIMO + 2 * FOLGA) - FOLGA;
+  const limitado = Math.min(Math.max(bruto, 0), ULTIMO);
+  const base = Math.floor(limitado);
+  const resto = limitado - base;
+  const segura = Math.min(Math.max((resto - 0.15) / 0.7, 0), 1);
+  return base + segura;
+}
+
 function Rede() {
   const [ativo, setAtivo] = useState(0);
+  const trilhoRef = useRef<HTMLDivElement>(null);
+  const molduraRef = useRef<HTMLDivElement>(null);
+
+  // Quanto do trilho ja foi rolado (0 a 1) enquanto a moldura esta presa.
+  const medir = () => {
+    const trilho = trilhoRef.current;
+    const moldura = molduraRef.current;
+    if (!trilho || !moldura) return null;
+    const t = trilho.getBoundingClientRect();
+    const m = moldura.getBoundingClientRect();
+    const total = t.height - m.height;
+    if (total <= 0) return null;
+    return { t, m, total, rolado: m.top - t.top };
+  };
+
+  useEffect(() => {
+    const container = document.querySelector<HTMLElement>(".snap-container");
+    const mq = window.matchMedia(MOBILE);
+    if (!container) return;
+
+    let frame = 0;
+    const atualizar = () => {
+      if (!mq.matches) molduraRef.current?.style.removeProperty("--p");
+      frame = 0;
+      if (!mq.matches) return;
+      const med = medir();
+      if (!med) return;
+      const progresso = Math.min(Math.max(med.rolado / med.total, 0), 1);
+      const p = paraPosicao(progresso);
+      molduraRef.current?.style.setProperty("--p", p.toFixed(4));
+      setAtivo(Math.round(p));
+    };
+    const onScroll = () => {
+      if (!frame) frame = requestAnimationFrame(atualizar);
+    };
+
+    onScroll();
+    container.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    mq.addEventListener("change", onScroll);
+    return () => {
+      cancelAnimationFrame(frame);
+      container.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      mq.removeEventListener("change", onScroll);
+    };
+  }, []);
+
+  // No celular, tocar num cartao de tras leva a rolagem ate ele.
+  const irPara = (i: number) => {
+    if (!window.matchMedia(MOBILE).matches) {
+      setAtivo(i);
+      return;
+    }
+    const container = document.querySelector<HTMLElement>(".snap-container");
+    const med = medir();
+    if (!container || !molduraRef.current || !med) return;
+    // Onde a moldura gruda na tela (topo do container + o 'top' do sticky).
+    const topoPreso =
+      container.getBoundingClientRect().top +
+      parseFloat(getComputedStyle(molduraRef.current).top || "0");
+    const alvo = ((i + FOLGA) / (ULTIMO + 2 * FOLGA)) * med.total;
+    container.scrollTo({
+      top: container.scrollTop + med.t.top - topoPreso + alvo,
+      behavior: "smooth",
+    });
+  };
 
   return (
     <section className="rede snap-section" id="a-rede">
@@ -71,7 +165,13 @@ function Rede() {
           </div>
         </div>
 
-        <div className="rede__accordion">
+        {/* O trilho so tem altura extra no celular; no computador e neutro. */}
+        <div
+          className="rede__trilho"
+          ref={trilhoRef}
+          style={{ "--rede-passos": pilares.length } as CSSProperties}
+        >
+        <div className="rede__accordion" ref={molduraRef}>
           {pilares.map((p, i) => (
             <button
               key={p.n}
@@ -84,17 +184,19 @@ function Rede() {
               style={{
                 backgroundImage: `linear-gradient(to top, rgba(0,0,0,.8), rgba(0,0,0,.3)), url(${p.foto})`,
                 backgroundPosition: p.posicao,
-              }}
+                "--i": i,
+              } as CSSProperties}
               aria-expanded={i === ativo}
               onMouseEnter={() => setAtivo(i)}
               onFocus={() => setAtivo(i)}
-              onClick={() => setAtivo(i)}
+              onClick={() => irPara(i)}
             >
               <span className="rede__painel-n">{p.n}</span>
               <span className="rede__painel-titulo">{p.titulo}</span>
               <span className="rede__painel-texto">{p.texto}</span>
             </button>
           ))}
+        </div>
         </div>
       </div>
     </section>

@@ -1,305 +1,512 @@
-/* Secao da grade de aulas na home */
+/* Grade de aulas coletivas — estilo Apple (skill apple-design).
+   Regras que guiaram:
+   - Fundo claro e calmo; cards brancos por cima. Sem bordas grossas.
+   - UMA cor de destaque (o vermelho) e so onde aponta algo: o dia de hoje,
+     a proxima aula e o link. O resto e preto e cinza.
+   - Hierarquia com tamanho de letra e espaco, nao com caixa e linha.
+   - Movimento curto e discreto (e uma tela de consulta): a pilula dos dias
+     desliza e a lista entra com um fade. Nada disso roda com
+     "reduzir movimento" ligado.
+   - Tudo que e clicavel tem pelo menos 44px de altura (dedo). */
 
 .grade {
-    padding: 96px 48px;
-    display: grid;
-    grid-template-columns: 1.15fr 1fr;
-    gap: 0 96px;
-    align-items: end;
-    background: var(--color-white);
-  }
-  
-  .grade__eyebrow {
-    grid-column: 1 / -1;
-    font-size: 13px;
-    font-weight: 700;
-    color: var(--color-red);
-    letter-spacing: 0.05em;
-    margin-bottom: 16px;
-  }
-  
-  .grade__title {
-    font-family: var(--font-display);
-    font-size: 72px;
-    font-weight: 800;
-    line-height: 1.05;
-    letter-spacing: -0.01em;
-  }
-  
-  .grade__text {
-    font-size: 18px;
-    color: #444;
-    line-height: 1.8;
-    padding-bottom: 12px;
-  }
-  
-  .grade__cards {
-    grid-column: 1 / -1;
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    margin-top: 64px;
-  }
-  
-  .grade__card {
-    display: flex;
-    flex-direction: column;
-    padding: 32px 24px 24px;
-    border-top: 3px solid var(--color-red);
-    border-left: 1px solid #ddd;
-    background: var(--color-offwhite);
-  }
-  
-  .grade__card:first-child {
-    border-left: none;
-  }
-  
-  .grade__card-marca {
-    font-size: 12px;
-    font-weight: 700;
-    color: var(--color-red);
-    letter-spacing: 0.08em;
-    margin-bottom: 16px;
-  }
-  
-  .grade__card-title {
-    font-size: 24px;
-    font-weight: 700;
-    line-height: 1.2;
-    margin-bottom: 12px;
-  }
-  
-  .grade__card-text {
-    font-size: 14px;
-    color: #666;
-    margin-bottom: 24px;
-  }
-  
-  .grade__card-btn {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    padding: 18px 20px;
-    background: var(--color-black);
-    color: var(--color-white);
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    transition: background 0.2s ease;
-  }
-  
-  .grade__card-btn:hover,
-  .grade__card-btn:focus-visible {
-    background: var(--color-red);
-  }
-  
-  .grade__disclaimer {
-    grid-column: 1 / -1;
-    margin-top: 24px;
-    font-size: 13px;
-    color: #8a8a8a;
-  }
-  
-  @media (max-width: 1100px) {
-    .grade__cards {
-      grid-template-columns: repeat(2, 1fr);
-    }
-  
-    .grade__card:nth-child(3) {
-      border-left: none;
-    }
-  
-    .grade__card:nth-child(n + 3) {
-      margin-top: 32px;
-    }
-  }
-  
-  @media (max-width: 780px) {
-    .grade {
-      padding: 64px 24px;
-      grid-template-columns: 1fr;
-      gap: 24px;
-    }
-  
-    .grade__title {
-      font-size: 44px;
-    }
-  
-    .grade__text {
-      font-size: 16px;
-      padding-bottom: 0;
-    }
-  
-    .grade__cards {
-      grid-template-columns: 1fr;
-      margin-top: 32px;
-    }
-  
-    .grade__card {
-      border-left: none;
-    }
-  
-    .grade__card + .grade__card {
-      margin-top: 24px;
-    }
-  }
-  
-  @media (prefers-reduced-motion: reduce) {
-    .grade__card-btn {
-      transition: none;
-    }
-  }
+  --grade-fundo: var(--color-offwhite);
+  --grade-texto: var(--color-black);
+  --grade-texto-2: #6e6e73;
+  --grade-linha: rgba(10, 10, 10, 0.08);
+  --grade-mola: cubic-bezier(0.3, 1.25, 0.4, 1);
 
-/* Abas dos dias + a grade do dia escolhido.
-   Esta parte tem fundo claro, por isso as cores aqui sao escuras. */
+  padding: 120px 48px 104px;
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  gap: 0 96px;
+  align-items: end;
+  background: var(--grade-fundo);
+  color: var(--grade-texto);
+}
+
+.grade__eyebrow {
+  grid-column: 1 / -1;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-red);
+  letter-spacing: 0.05em;
+  margin-bottom: 20px;
+}
+
+/* Letra grande e apertada: quanto maior o texto, menor o espacamento */
+.grade__title {
+  font-family: var(--font-display);
+  font-size: clamp(44px, 5.6vw, 80px);
+  font-weight: 800;
+  line-height: 1.02;
+  letter-spacing: -0.035em;
+  margin: 0;
+}
+
+.grade__text {
+  font-size: 19px;
+  line-height: 1.5;
+  color: var(--grade-texto-2);
+  padding-bottom: 10px;
+}
+
+.grade__text p {
+  margin: 0;
+}
+
+/* ---------- Dias: segmented control ---------- */
 
 .grade__dias {
   grid-column: 1 / -1;
-  margin-top: 48px;
+  position: relative;
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
+  width: 100%;
+  max-width: 600px;
+  margin-top: 64px;
+  padding: 4px;
+  border-radius: 18px;
+  background: rgba(10, 10, 10, 0.06);
 }
 
-.grade__cards {
-  margin-top: 28px;
+/* A pilula branca. Tem a largura de um dia e anda --idx dias pro lado. */
+.grade__dias-pilula {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  left: 4px;
+  width: calc((100% - 8px) / var(--total));
+  border-radius: 14px;
+  background: var(--color-white);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06), 0 4px 14px rgba(0, 0, 0, 0.06);
+  transform: translateX(calc(var(--idx) * 100%));
+  transition: transform 0.38s var(--grade-mola);
 }
 
 .grade__dia {
-  min-width: 66px;
-  padding: 12px 14px 10px;
+  position: relative;
+  z-index: 1;
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 64px;
+  padding: 8px 2px 10px;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: 2px;
-  border: 1px solid rgba(10, 10, 10, 0.18);
+  border: 0;
+  border-radius: 14px;
   background: transparent;
   font-family: inherit;
-  color: #666;
+  color: var(--grade-texto-2);
   cursor: pointer;
-  transition: background-color 0.2s ease, border-color 0.2s ease,
-    color 0.2s ease;
+  transition: color 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .grade__dia:hover {
-  border-color: var(--color-black);
-  color: var(--color-black);
+  color: var(--grade-texto);
+}
+
+.grade__dia:focus-visible {
+  outline: 2px solid var(--color-red);
+  outline-offset: -2px;
 }
 
 .grade__dia--ativo {
-  background: var(--color-red);
-  border-color: var(--color-red);
-  color: var(--color-white);
+  color: var(--grade-texto);
 }
 
 .grade__dia-nome {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
 }
 
 .grade__dia-numero {
   font-family: var(--font-display);
   font-size: 20px;
-  font-weight: 800;
-  line-height: 1;
-  color: var(--color-black);
-}
-
-.grade__dia:hover .grade__dia-numero {
-  color: var(--color-black);
-}
-
-.grade__dia--ativo .grade__dia-numero {
-  color: var(--color-white);
-}
-
-.grade__dia-hoje {
-  font-size: 9px;
   font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--color-red);
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
 }
 
-.grade__dia--ativo .grade__dia-hoje {
-  color: rgba(255, 255, 255, 0.9);
+/* Hoje: um pontinho vermelho embaixo do numero */
+.grade__dia-hoje {
+  position: absolute;
+  bottom: 6px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--color-red);
 }
 
+/* Texto so pra leitor de tela */
+.grade__sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ---------- Cards das unidades ---------- */
+
+.grade__cards {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.grade__card {
+  display: flex;
+  flex-direction: column;
+  padding: 28px 24px 18px;
+  border-radius: 24px;
+  background: var(--color-white);
+}
+
+.grade__card-topo {
+  position: relative;
+  margin-bottom: 18px;
+  padding-right: 48px;
+}
+
+/* Botao de ampliar: circulo discreto no canto do card */
+.grade__ampliar,
+.grade__fechar {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(10, 10, 10, 0.05);
+  color: var(--grade-texto);
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.grade__ampliar {
+  position: absolute;
+  top: -6px;
+  right: -8px;
+}
+
+.grade__ampliar:hover,
+.grade__fechar:hover {
+  background: rgba(10, 10, 10, 0.1);
+}
+
+.grade__ampliar:active,
+.grade__fechar:active {
+  transform: scale(0.94);
+}
+
+.grade__ampliar:focus-visible,
+.grade__fechar:focus-visible,
+.grade__mais:focus-visible {
+  outline: 2px solid var(--color-red);
+  outline-offset: 2px;
+}
+
+.grade__ampliar svg,
+.grade__fechar svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* "+ 10 aulas neste dia": abre o mesmo card flutuante */
+.grade__mais {
+  align-self: flex-start;
+  min-height: 44px;
+  margin-top: 4px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--grade-texto-2);
+  cursor: pointer;
+}
+
+.grade__mais:hover {
+  color: var(--grade-texto);
+}
+
+.grade__card-marca {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--grade-texto-2);
+}
+
+.grade__card-title {
+  margin: 4px 0 0;
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+}
+
+.grade__card-text {
+  margin: 6px 0 0;
+  font-size: 15px;
+  color: var(--grade-texto-2);
+}
+
+/* Lista de aulas: linhas finas entre elas, hora com numeros alinhados */
 .grade__aulas {
   list-style: none;
-  margin: 0 0 24px;
+  margin: 0;
+  padding: 0;
   flex: 1;
+  animation: grade-entra 0.28s ease-out both;
 }
 
 .grade__aula {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 14px;
-  padding: 11px 0;
-  border-top: 1px solid #ddd;
-}
-
-.grade__aula:first-child {
-  border-top: 0;
+  min-height: 48px;
+  padding: 10px 0;
+  border-top: 1px solid var(--grade-linha);
+  transition: opacity 0.2s ease;
 }
 
 .grade__aula-hora {
   flex-shrink: 0;
-  min-width: 48px;
-  font-family: var(--font-display);
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--color-red);
+  min-width: 50px;
+  font-size: 17px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
 }
 
 .grade__aula-modalidade {
-  font-size: 14px;
-  color: #333;
+  flex: 1;
+  min-width: 0;
+  /* Nome comprido (Alongamento/Mobilidade) quebra linha em vez de passar
+     por cima da etiqueta "Próxima" */
+  overflow-wrap: break-word;
+  font-size: 17px;
+  line-height: 1.3;
+}
+
+/* Aula de hoje que ja passou: continua ali, mas sai do caminho */
+.grade__aula--passou {
+  opacity: 0.38;
+}
+
+/* Proxima aula de hoje: o unico vermelho da lista */
+.grade__aula--proxima .grade__aula-hora {
+  color: var(--color-red);
+}
+
+.grade__aula-tag {
+  flex-shrink: 0;
+  margin-left: auto;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: rgba(224, 52, 44, 0.1);
+  color: var(--color-red);
+  font-size: 12px;
+  font-weight: 600;
 }
 
 .grade__vazio {
   flex: 1;
-  margin-bottom: 24px;
-  padding-top: 14px;
-  border-top: 1px solid #ddd;
+  margin: 0;
+  padding: 14px 0;
+  border-top: 1px solid var(--grade-linha);
+  font-size: 15px;
+  color: var(--grade-texto-2);
+  animation: grade-entra 0.28s ease-out both;
+}
+
+/* Link do card (varios cards): texto vermelho com ›, como os
+   "Saiba mais ›" da Apple. Discreto porque sao quatro iguais lado a lado. */
+.grade__card-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  align-self: flex-start;
+  min-height: 44px;
+  margin-top: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-red);
+}
+
+.grade__card-seta {
+  font-size: 20px;
+  line-height: 1;
+  transition: transform 0.2s ease;
+}
+
+.grade__card-btn:hover .grade__card-seta,
+.grade__card-btn:focus-visible .grade__card-seta {
+  transform: translateX(3px);
+}
+
+.grade__card-btn:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* Botao cheio (card unico da subpagina): a unica acao principal da tela */
+.grade__card-btn--cheio {
+  justify-content: center;
+  min-height: 50px;
+  margin-top: 20px;
+  padding: 0 28px;
+  border-radius: 999px;
+  background: var(--color-red);
+  color: var(--color-white);
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.grade__card-btn--cheio:hover {
+  text-decoration: none;
+  background: #c62a23;
+}
+
+.grade__card-btn--cheio:active {
+  transform: scale(0.98);
+}
+
+.grade__disclaimer {
+  grid-column: 1 / -1;
+  margin: 28px 0 0;
   font-size: 13px;
-  color: #666;
+  color: var(--grade-texto-2);
 }
 
-@media (max-width: 900px) {
-  .grade__dias {
-    margin-top: 32px;
+@keyframes grade-entra {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
   }
 }
 
-@media (max-width: 640px) {
-  .grade__dias {
-    gap: 6px;
-  }
 
-  .grade__dia {
-    min-width: 0;
-    flex: 1 0 calc((100% - 18px) / 4);
-    padding: 10px 6px 8px;
+/* ---------- Card flutuante (dia inteiro de uma unidade) ---------- */
+
+.grade__modal {
+  width: min(880px, calc(100vw - 48px));
+  max-width: none;
+  max-height: min(86vh, 820px);
+  margin: auto;
+  padding: 0;
+  border: 0;
+  border-radius: 28px;
+  background: var(--color-white);
+  color: var(--grade-texto, var(--color-black));
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+}
+
+.grade__modal[open] {
+  display: flex;
+  animation: grade-modal-entra 0.32s var(--grade-mola, ease-out) both;
+}
+
+.grade__modal::backdrop {
+  background: rgba(10, 10, 10, 0.4);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  animation: grade-fundo-entra 0.25s ease-out both;
+}
+
+.grade__modal-caixa {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: 0;
+}
+
+.grade__modal-topo {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 32px 36px 20px;
+}
+
+.grade__modal-titulo {
+  margin: 4px 0 0;
+  font-family: var(--font-display);
+  font-size: clamp(30px, 4vw, 40px);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+}
+
+/* Duas colunas: Manha numa, Tarde/Noite na outra (o navegador equilibra) */
+.grade__modal-corpo {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 0 36px 8px;
+  columns: 2;
+  column-gap: 48px;
+}
+
+.grade__periodo {
+  break-inside: avoid;
+  margin-bottom: 20px;
+}
+
+.grade__periodo-nome {
+  margin: 0 0 4px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--grade-texto-2);
+}
+
+.grade__aulas--modal {
+  animation: none;
+}
+
+.grade__modal-rodape {
+  padding: 8px 36px 20px;
+  border-top: 1px solid var(--grade-linha, rgba(10, 10, 10, 0.08));
+}
+
+@keyframes grade-modal-entra {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.97);
   }
 }
 
-/* Sem link de LP preenchido o botao fica apagado e nao clica */
-.grade__card-btn--inativo {
-  opacity: 0.45;
-  pointer-events: none;
-  cursor: default;
+@keyframes grade-fundo-entra {
+  from {
+    opacity: 0;
+  }
 }
 
-/* Grade de uma unidade so (subpagina): um card largo, aulas em 2 colunas. */
+/* ---------- Grade de uma unidade so (subpagina) ---------- */
+
 .grade__cards--unica {
   grid-template-columns: 1fr;
 }
 
 .grade__cards--unica .grade__card {
-  border-left: none;
+  padding: 36px 36px 28px;
 }
 
 .grade__cards--unica .grade__aulas {
@@ -309,26 +516,132 @@
   align-content: start;
 }
 
-.grade__cards--unica .grade__aula:nth-child(2) {
-  border-top: 0;
+/* ---------- Tablet ---------- */
+
+@media (max-width: 1100px) {
+  .grade__cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
-.grade__cards--unica .grade__card-btn {
-  align-self: flex-start;
-  min-width: 320px;
-}
+/* ---------- Celular ---------- */
 
 @media (max-width: 780px) {
+  .grade {
+    padding: 80px 20px 72px;
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .grade__text {
+    font-size: 17px;
+    padding-bottom: 0;
+  }
+
+  .grade__dias {
+    margin-top: 20px;
+    max-width: none;
+  }
+
+  .grade__dia {
+    min-height: 60px;
+  }
+
+  .grade__dia-nome {
+    font-size: 11px;
+  }
+
+  .grade__dia-numero {
+    font-size: 18px;
+  }
+
+  /* Carrossel de lado: cada card ocupa quase a tela e o proximo aparece
+     na beirada, avisando que da pra arrastar. */
+  .grade__cards {
+    display: flex;
+    gap: 12px;
+    margin: 4px -20px 0;
+    padding: 0 20px 4px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding: 0 20px;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+  }
+
+  .grade__cards::-webkit-scrollbar {
+    display: none;
+  }
+
+  .grade__card {
+    flex: 0 0 84%;
+    scroll-snap-align: start;
+    padding: 24px 20px 14px;
+  }
+
+  .grade__card-title {
+    font-size: 26px;
+  }
+
+  /* Card flutuante no celular: quase a tela toda, uma coluna */
+  .grade__modal {
+    width: calc(100vw - 24px);
+    max-height: 88svh;
+    border-radius: 24px;
+  }
+
+  .grade__modal-topo {
+    padding: 24px 20px 12px;
+  }
+
+  .grade__modal-corpo {
+    columns: 1;
+    padding: 0 20px 8px;
+  }
+
+  .grade__modal-rodape {
+    padding: 4px 20px 12px;
+  }
+
+  /* Subpagina: um card so, sem carrossel */
+  .grade__cards--unica {
+    display: block;
+    margin: 4px 0 0;
+    padding: 0;
+    overflow: visible;
+  }
+
+  .grade__cards--unica .grade__card {
+    padding: 24px 20px 20px;
+  }
+
   .grade__cards--unica .grade__aulas {
     grid-template-columns: 1fr;
   }
 
-  .grade__cards--unica .grade__aula:nth-child(2) {
-    border-top: 1px solid #ddd;
+  .grade__cards--unica .grade__card-btn--cheio {
+    align-self: stretch;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .grade__dias-pilula,
+  .grade__dia,
+  .grade__aula,
+  .grade__card-seta,
+  .grade__card-btn--cheio {
+    transition: none;
   }
 
-  .grade__cards--unica .grade__card-btn {
-    align-self: stretch;
-    min-width: 0;
+  .grade__aulas,
+  .grade__vazio,
+  .grade__modal[open],
+  .grade__modal::backdrop {
+    animation: none;
+  }
+
+  .grade__ampliar,
+  .grade__fechar {
+    transition: none;
   }
 }

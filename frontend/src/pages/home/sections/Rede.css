@@ -1,244 +1,355 @@
 /* Secao "A Rede" — texto de abertura + acordeao dos 4 pilares */
 
 .rede {
-    background: var(--color-cream);
-    padding: calc(var(--header-height) + 88px) 48px 98px;
-    color: var(--color-black);
+  background: var(--color-cream);
+  padding: calc(var(--header-height) + 88px) 48px 98px;
+  color: var(--color-black);
+}
+
+.rede__inner {
+  max-width: 1240px;
+  margin: 0 auto;
+}
+
+.rede__eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 28px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #8a8378;
+}
+
+.rede__eyebrow::before {
+  content: "";
+  width: 28px;
+  height: 2px;
+  background: var(--color-red);
+}
+
+.rede__head {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  column-gap: 80px;
+  align-items: end;
+}
+
+.rede__title {
+  font-family: var(--font-display);
+  font-size: clamp(38px, 4.4vw, 60px);
+  font-weight: 800;
+  line-height: 1.04;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.rede__text {
+  font-size: 16px;
+  line-height: 1.65;
+  color: #55524b;
+  max-width: 46ch;
+}
+
+.rede__text p {
+  margin: 0;
+}
+
+.rede__text p + p {
+  margin-top: 14px;
+}
+
+/* Acordeao: o painel aberto cresce, os outros encolhem */
+
+.rede__accordion {
+  display: flex;
+  gap: 6px;
+  height: 400px;
+  margin-top: 78px;
+}
+
+.rede__painel {
+  position: relative;
+  flex: 0 1 96px;
+  min-width: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 30px 26px;
+  border: 0;
+  text-align: left;
+  cursor: pointer;
+  color: var(--color-white);
+  font-family: inherit;
+  /* Foto de reserva, so aparece se a do componente falhar */
+  background-color: #16151a;
+  background-image: linear-gradient(
+      to top,
+      rgba(0, 0, 0, 0.75),
+      rgba(0, 0, 0, 0.25)
+    ),
+    url("https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=1600&q=80");
+  /* 'cover': a foto cobre o painel inteiro. Com 'auto 100%' ela mantinha
+     a largura natural e sobrava fundo preto dos lados quando o painel
+     abria. O preco e que a escala muda enquanto o painel cresce.
+     Ancorada embaixo: o corte fica no teto, o chao e as maquinas da
+     frente sempre aparecem. */
+  background-size: cover;
+  background-position: center bottom;
+  background-repeat: no-repeat;
+  transition: flex-grow 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.rede__painel::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: var(--color-red);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.rede__painel--ativo {
+  flex-grow: 1;
+}
+
+.rede__painel--ativo::before {
+  transform: scaleX(1);
+}
+
+.rede__painel-n {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #8c8798;
+  transition: color 0.35s ease;
+}
+
+.rede__painel--ativo .rede__painel-n {
+  color: var(--color-red);
+}
+
+.rede__painel-titulo {
+  margin-top: auto;
+  writing-mode: vertical-rl;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+
+.rede__painel--ativo .rede__painel-titulo {
+  writing-mode: horizontal-tb;
+  font-size: clamp(22px, 2vw, 28px);
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
+}
+
+.rede__painel-texto {
+  display: block;
+  max-width: 40ch;
+  margin-top: 12px;
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: #c4c0cb;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.rede__painel--ativo .rede__painel-texto {
+  opacity: 1;
+  transform: none;
+  transition-delay: 0.2s;
+}
+
+@media (max-width: 1024px) {
+  .rede {
+    padding: calc(var(--header-height) + 64px) 32px 72px;
   }
-  
-  .rede__inner {
-    max-width: 1240px;
-    margin: 0 auto;
-  }
-  
-  .rede__eyebrow {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin: 0 0 28px;
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: #8a8378;
-  }
-  
-  .rede__eyebrow::before {
-    content: "";
-    width: 28px;
-    height: 2px;
-    background: var(--color-red);
-  }
-  
+
   .rede__head {
-    display: grid;
-    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
-    column-gap: 80px;
-    align-items: end;
+    grid-template-columns: 1fr;
+    row-gap: 32px;
+    align-items: start;
   }
-  
-  .rede__title {
-    font-family: var(--font-display);
-    font-size: clamp(38px, 4.4vw, 60px);
-    font-weight: 800;
-    line-height: 1.04;
-    letter-spacing: -0.02em;
-    margin: 0;
-  }
-  
+
   .rede__text {
-    font-size: 16px;
-    line-height: 1.65;
-    color: #55524b;
-    max-width: 46ch;
+    max-width: 60ch;
   }
-  
-  .rede__text p {
-    margin: 0;
-  }
-  
-  .rede__text p + p {
-    margin-top: 14px;
-  }
-  
-  /* Acordeao: o painel aberto cresce, os outros encolhem */
-  
+}
+
+@media (max-width: 900px) {
   .rede__accordion {
-    display: flex;
-    gap: 6px;
-    height: 400px;
-    margin-top: 78px;
-  }
-  
-  .rede__painel {
-    position: relative;
-    flex: 0 1 96px;
-    min-width: 0;
-    overflow: hidden;
-    display: flex;
     flex-direction: column;
-    align-items: flex-start;
-    padding: 30px 26px;
-    border: 0;
-    text-align: left;
-    cursor: pointer;
-    color: var(--color-white);
-    font-family: inherit;
-    /* Foto de reserva, so aparece se a do componente falhar */
-    background-color: #16151a;
-    background-image: linear-gradient(
-        to top,
-        rgba(0, 0, 0, 0.75),
-        rgba(0, 0, 0, 0.25)
-      ),
-      url("https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=1600&q=80");
-    /* 'cover': a foto cobre o painel inteiro. Com 'auto 100%' ela mantinha
-       a largura natural e sobrava fundo preto dos lados quando o painel
-       abria. O preco e que a escala muda enquanto o painel cresce.
-       Ancorada embaixo: o corte fica no teto, o chao e as maquinas da
-       frente sempre aparecem. */
-    background-size: cover;
-    background-position: center bottom;
-    background-repeat: no-repeat;
-    transition: flex-grow 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+    height: auto;
+    gap: 10px;
+    margin-top: 56px;
   }
-  
-  .rede__painel::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 3px;
-    background: var(--color-red);
-    transform: scaleX(0);
-    transform-origin: left;
-    transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+
+  .rede__painel {
+    flex: 0 0 auto;
+    min-height: 0;
+    padding: 24px;
+    cursor: default;
   }
-  
-  .rede__painel--ativo {
-    flex-grow: 1;
-  }
-  
+
+  /* No celular nao existe passar o mouse: os quatro paineis ficam
+     abertos, com titulo e texto sempre a mostra. */
+  .rede__painel::before,
   .rede__painel--ativo::before {
     transform: scaleX(1);
   }
-  
+
   .rede__painel-n {
-    font-family: var(--font-display);
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    color: #8c8798;
-    transition: color 0.35s ease;
-  }
-  
-  .rede__painel--ativo .rede__painel-n {
     color: var(--color-red);
   }
-  
-  .rede__painel-titulo {
-    margin-top: auto;
-    writing-mode: vertical-rl;
-    font-size: 16px;
-    font-weight: 700;
-    line-height: 1.2;
-    letter-spacing: -0.01em;
-    white-space: nowrap;
-  }
-  
+
+  .rede__painel-titulo,
   .rede__painel--ativo .rede__painel-titulo {
     writing-mode: horizontal-tb;
-    font-size: clamp(22px, 2vw, 28px);
+    margin-top: 14px;
     font-family: var(--font-display);
+    font-size: 21px;
     letter-spacing: -0.02em;
+    white-space: normal;
   }
-  
-  .rede__painel-texto {
-    display: block;
-    max-width: 40ch;
-    margin-top: 12px;
-    font-size: 14.5px;
-    line-height: 1.6;
-    color: #c4c0cb;
-    opacity: 0;
-    transform: translateY(10px);
-    transition: opacity 0.3s ease, transform 0.3s ease;
-  }
-  
+
+  .rede__painel-texto,
   .rede__painel--ativo .rede__painel-texto {
     opacity: 1;
     transform: none;
-    transition-delay: 0.2s;
+    transition-delay: 0s;
+    max-width: none;
+    margin-top: 10px;
+    font-size: 14px;
   }
-  
-  @media (max-width: 1024px) {
-    .rede {
-      padding: calc(var(--header-height) + 64px) 32px 72px;
-    }
-  
-    .rede__head {
-      grid-template-columns: 1fr;
-      row-gap: 32px;
-      align-items: start;
-    }
-  
-    .rede__text {
-      max-width: 60ch;
-    }
+}
+
+/* CELULAR: pilha de cartoes presa na tela.
+   O trilho e alto (a moldura + um "passo" de rolagem por cartao); a
+   moldura gruda no topo e o Rede.tsx vai mudando --p conforme o scroll.
+   Cada cartao sabe seu numero (--i) e calcula onde esta em relacao a
+   frente da pilha:
+     --frente  quantos cartoes ele esta ATRAS (0 = e o da frente)
+     --passou  quanto ele ja passou (0 a 1 = subindo e sumindo)
+   O de tras espia por cima, menor e esbranquicado; o terceiro em
+   diante fica escondido. */
+@media (max-width: 900px) {
+  .rede {
+    --rede-espia: 64px;
+    --rede-moldura: min(calc(100svh - var(--header-height) - 40px), 620px);
+    --rede-passo: 70svh;
   }
-  
-  @media (max-width: 900px) {
-    .rede__accordion {
-      flex-direction: column;
-      height: auto;
-      gap: 10px;
-      margin-top: 56px;
-    }
-  
-    .rede__painel {
-      flex: 0 0 auto;
-      min-height: 0;
-      padding: 24px;
-      cursor: default;
-    }
-  
-    /* No celular nao existe passar o mouse: os quatro paineis ficam
-       abertos, com titulo e texto sempre a mostra. */
-    .rede__painel::before,
-    .rede__painel--ativo::before {
-      transform: scaleX(1);
-    }
-  
-    .rede__painel-n {
-      color: var(--color-red);
-    }
-  
-    .rede__painel-titulo,
-    .rede__painel--ativo .rede__painel-titulo {
-      writing-mode: horizontal-tb;
-      margin-top: 14px;
-      font-family: var(--font-display);
-      font-size: 21px;
-      letter-spacing: -0.02em;
-      white-space: normal;
-    }
-  
-    .rede__painel-texto,
-    .rede__painel--ativo .rede__painel-texto {
-      opacity: 1;
-      transform: none;
-      transition-delay: 0s;
-      max-width: none;
-      margin-top: 10px;
-      font-size: 14px;
-    }
+
+  .rede__trilho {
+    position: relative;
+    margin-top: 48px;
+    height: calc(
+      var(--rede-moldura) + (var(--rede-passos) - 1) * var(--rede-passo)
+    );
   }
-  
-  @media (prefers-reduced-motion: reduce) {
-    .rede__painel,
-    .rede__painel::before,
-    .rede__painel-texto {
-      transition: none;
-    }
+
+  .rede__accordion {
+    --p: 0;
+    position: sticky;
+    top: calc(var(--header-height) + 20px);
+    display: block;
+    height: var(--rede-moldura);
+    margin-top: 0;
   }
+
+  .rede__painel {
+    --d: calc(var(--i) - var(--p));
+    --frente: max(var(--d), 0);
+    --passou: min(max(calc(-1 * var(--d)), 0), 1);
+
+    position: absolute;
+    top: var(--rede-espia);
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: calc(10 - var(--i));
+    justify-content: flex-end;
+    padding: 32px 26px;
+    border-radius: 28px;
+    cursor: pointer;
+    transform-origin: top center;
+    transform: translateY(
+        calc(
+          var(--frente) * var(--rede-espia) * -0.9 - var(--passou) * 60%
+        )
+      )
+      scale(calc(1 - min(var(--frente), 2) * 0.06 - var(--passou) * 0.04));
+    opacity: calc(
+      1 - var(--passou) * 1.7 - max(calc(var(--frente) - 1), 0) * 3
+    );
+    /* Anda junto com o dedo, sem atraso */
+    transition: none;
+    will-change: transform, opacity;
+  }
+
+  /* Veu branco no cartao de tras (some quando ele chega na frente) */
+  .rede__painel::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--color-cream);
+    opacity: calc(min(var(--frente), 1) * 0.6);
+    pointer-events: none;
+  }
+
+  .rede__painel::before,
+  .rede__painel--ativo::before {
+    display: none;
+  }
+
+  /* Texto so no cartao da frente */
+  .rede__painel-n,
+  .rede__painel-titulo,
+  .rede__painel-texto,
+  .rede__painel--ativo .rede__painel-titulo,
+  .rede__painel--ativo .rede__painel-texto {
+    position: relative;
+    z-index: 1;
+    opacity: calc(1 - min(var(--frente), 1) * 2.5);
+    transform: none;
+    transition: none;
+  }
+
+  .rede__painel-n {
+    font-size: 14px;
+    color: var(--color-red);
+  }
+
+  .rede__painel-titulo,
+  .rede__painel--ativo .rede__painel-titulo {
+    margin-top: 10px;
+    font-size: 28px;
+    line-height: 1.1;
+  }
+
+  .rede__painel-texto,
+  .rede__painel--ativo .rede__painel-texto {
+    margin-top: 12px;
+    font-size: 15px;
+    line-height: 1.55;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rede__painel,
+  .rede__painel::before,
+  .rede__painel-texto {
+    transition: none;
+  }
+}
