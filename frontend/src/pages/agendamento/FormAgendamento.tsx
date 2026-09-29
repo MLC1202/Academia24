@@ -154,7 +154,6 @@ function FormAgendamento() {
       <div className="agendar__form-head">
         <p className="agendar__form-eyebrow">Vamos começar</p>
         <p className="agendar__form-passo">
-          <span>01 / 02</span>
           <strong>Seus dados</strong>
         </p>
       </div>

@@ -17,6 +17,9 @@ export type UnidadeInfo = {
   // Se eu deixar vazio, o botao "Conhecer unidade" fica desativado em vez
   // de virar link quebrado.
   lp: string;
+  // Link da pagina de planos da unidade. Mesma regra da LP: pode colar sem
+  // https://, e se ficar vazio o botao "Ver planos" nem aparece no card.
+  planos: string;
 
   // Textos que aparecem no card da unidade (lista e subpagina).
   n: string;
@@ -49,6 +52,7 @@ const registro: Record<UnidadeSlug, UnidadeInfo> = {
     marca: "24 Wellness",
     foto: "/imagens/unidades/alphaville.jpg",
     lp: "alphaville.24wellness.com.br",
+    planos: "https://vendas.online.sistemapacto.com.br/loja?un=1&k=95115352dc19ba38fc6b7c1f4931700d",
     n: "01",
     frase: "Conforto, performance e bem-estar.",
     descricao:
@@ -68,6 +72,7 @@ const registro: Record<UnidadeSlug, UnidadeInfo> = {
     marca: "24 Health Club",
     foto: "/imagens/unidades/norte.jpg",
     lp: "unidadenorte.academia24hclub.com",
+    planos: "https://vendas.online.sistemapacto.com.br/loja?un=4&k=95115352dc19ba38fc6b7c1f4931700d", 
     n: "02",
     frase: "Espaço e liberdade para evoluir.",
     descricao:
@@ -87,6 +92,7 @@ const registro: Record<UnidadeSlug, UnidadeInfo> = {
     marca: "24 Health Club",
     foto: "/imagens/unidades/cambui.jpg",
     lp: "unidadecambui.academia24hclub.com",
+    planos: "https://vendas.online.sistemapacto.com.br/loja?un=2&k=95115352dc19ba38fc6b7c1f4931700d",
     n: "03",
     frase: "Premium sem ser impessoal.",
     descricao:
@@ -106,6 +112,7 @@ const registro: Record<UnidadeSlug, UnidadeInfo> = {
     marca: "24 Health Club",
     foto: "/imagens/unidades/lagoa.jpg",
     lp: "unidadelagoa.academia24hclub.com",
+    planos: "https://vendas.online.sistemapacto.com.br/loja?un=3&k=95115352dc19ba38fc6b7c1f4931700d",
     n: "04",
     frase: "Estrutura à altura dos seus objetivos.",
     descricao:
@@ -123,11 +130,16 @@ const registro: Record<UnidadeSlug, UnidadeInfo> = {
 };
 
 // O que o resto do site importa: o mesmo registro, mas com os links de LP
-// ja arrumados.
+// e de planos ja arrumados.
 export const unidades = Object.fromEntries(
   Object.entries(registro).map(([slug, info]) => [
     slug,
-    { ...info, foto: caminhoPublico(info.foto), lp: urlAbsoluta(info.lp) },
+    {
+      ...info,
+      foto: caminhoPublico(info.foto),
+      lp: urlAbsoluta(info.lp),
+      planos: urlAbsoluta(info.planos),
+    },
   ])
 ) as Record<UnidadeSlug, UnidadeInfo>;
 

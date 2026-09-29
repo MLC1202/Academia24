@@ -1,6 +1,6 @@
 // Card de uma unidade: foto de um lado, textos e botoes do outro.
 // Usado na lista (/unidades) e sozinho na subpagina (/unidades/<slug>).
-// Todos os textos, foto e link da LP vem de src/data/unidades.ts.
+// Todos os textos, foto, link da LP e dos planos vem de src/data/unidades.ts.
 
 import { Link } from "react-router-dom";
 import { unidades, type UnidadeSlug } from "../../../data/unidades";
@@ -107,6 +107,20 @@ function CardUnidade({ slug, invertida, detalhe }: CardProps) {
                   </span>
                 </a>
               ) : null}
+
+              {u.planos ? (
+                <a
+                  className="unidade__link unidade__link--grade"
+                  href={u.planos}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <span>Ver planos</span>
+                  <span className="unidade__link-seta" aria-hidden="true">
+                    ↗
+                  </span>
+                </a>
+              ) : null}
             </>
           ) : (
             <>
@@ -143,6 +157,20 @@ function CardUnidade({ slug, invertida, detalhe }: CardProps) {
                   ↓
                 </span>
               </a>
+
+              {u.planos ? (
+                <a
+                  className="unidade__link unidade__link--grade"
+                  href={u.planos}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <span>Ver planos</span>
+                  <span className="unidade__link-seta" aria-hidden="true">
+                    ↗
+                  </span>
+                </a>
+              ) : null}
             </>
           )}
         </div>
