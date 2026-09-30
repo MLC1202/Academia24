@@ -350,6 +350,18 @@
   font-weight: 600;
 }
 
+/* Aula cancelada nesta data: riscada, cinza, etiqueta neutra */
+.grade__aula--cancelada .grade__aula-hora,
+.grade__aula--cancelada .grade__aula-modalidade {
+  text-decoration: line-through;
+  color: var(--grade-texto-2);
+}
+
+.grade__aula-tag--cancelada {
+  background: rgba(0, 0, 0, 0.06);
+  color: var(--grade-texto-2);
+}
+
 .grade__vazio {
   flex: 1;
   margin: 0;

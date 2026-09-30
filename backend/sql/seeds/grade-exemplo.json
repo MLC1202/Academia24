@@ -1,0 +1,605 @@
+{
+ "alphaville": [
+  {
+   "dia": "seg",
+   "hora": "07:00",
+   "modalidade": "Alongamento"
+  },
+  {
+   "dia": "seg",
+   "hora": "19:00",
+   "modalidade": "Spinning"
+  },
+  {
+   "dia": "ter",
+   "hora": "07:00",
+   "modalidade": "Alongamento"
+  },
+  {
+   "dia": "ter",
+   "hora": "07:30",
+   "modalidade": "Fullbody"
+  },
+  {
+   "dia": "ter",
+   "hora": "08:00",
+   "modalidade": "Boxe"
+  },
+  {
+   "dia": "ter",
+   "hora": "08:00",
+   "modalidade": "Bike Class"
+  },
+  {
+   "dia": "ter",
+   "hora": "09:00",
+   "modalidade": "Pilates"
+  },
+  {
+   "dia": "ter",
+   "hora": "09:00",
+   "modalidade": "Fit Dance"
+  },
+  {
+   "dia": "ter",
+   "hora": "10:00",
+   "modalidade": "Pilates Flow"
+  },
+  {
+   "dia": "ter",
+   "hora": "17:00",
+   "modalidade": "Muay Thai"
+  },
+  {
+   "dia": "ter",
+   "hora": "18:00",
+   "modalidade": "Zumba"
+  },
+  {
+   "dia": "ter",
+   "hora": "18:50",
+   "modalidade": "Abdômen"
+  },
+  {
+   "dia": "ter",
+   "hora": "19:00",
+   "modalidade": "Boxe"
+  },
+  {
+   "dia": "ter",
+   "hora": "19:30",
+   "modalidade": "Bike Class"
+  },
+  {
+   "dia": "ter",
+   "hora": "20:20",
+   "modalidade": "Alongamento"
+  },
+  {
+   "dia": "ter",
+   "hora": "20:30",
+   "modalidade": "Jiu Jitsu"
+  },
+  {
+   "dia": "ter",
+   "hora": "06:00",
+   "modalidade": "Spinning"
+  },
+  {
+   "dia": "ter",
+   "hora": "06:30",
+   "modalidade": "HIIT Burn"
+  },
+  {
+   "dia": "ter",
+   "hora": "11:00",
+   "modalidade": "Yoga"
+  },
+  {
+   "dia": "ter",
+   "hora": "12:00",
+   "modalidade": "Pilates"
+  },
+  {
+   "dia": "ter",
+   "hora": "12:30",
+   "modalidade": "Funcional"
+  },
+  {
+   "dia": "ter",
+   "hora": "13:30",
+   "modalidade": "Zumba"
+  },
+  {
+   "dia": "ter",
+   "hora": "14:30",
+   "modalidade": "Alongamento"
+  },
+  {
+   "dia": "ter",
+   "hora": "15:30",
+   "modalidade": "Bike Class"
+  },
+  {
+   "dia": "ter",
+   "hora": "16:30",
+   "modalidade": "Fit Dance"
+  },
+  {
+   "dia": "ter",
+   "hora": "21:00",
+   "modalidade": "Boxe"
+  },
+  {
+   "dia": "ter",
+   "hora": "21:30",
+   "modalidade": "Yoga"
+  },
+  {
+   "dia": "qua",
+   "hora": "07:00",
+   "modalidade": "Alongamento"
+  },
+  {
+   "dia": "qua",
+   "hora": "19:00",
+   "modalidade": "Spinning"
+  },
+  {
+   "dia": "qui",
+   "hora": "08:00",
+   "modalidade": "Pilates"
+  },
+  {
+   "dia": "qui",
+   "hora": "19:00",
+   "modalidade": "Funcional"
+  },
+  {
+   "dia": "sex",
+   "hora": "07:00",
+   "modalidade": "Ritmos"
+  },
+  {
+   "dia": "sab",
+   "hora": "09:00",
+   "modalidade": "Funcional"
+  }
+ ],
+ "norte": [
+  {
+   "dia": "seg",
+   "hora": "06:00",
+   "modalidade": "Funcional"
+  },
+  {
+   "dia": "seg",
+   "hora": "18:30",
+   "modalidade": "Ritmos"
+  },
+  {
+   "dia": "ter",
+   "hora": "07:00",
+   "modalidade": "Kickboxing/Thai"
+  },
+  {
+   "dia": "ter",
+   "hora": "08:15",
+   "modalidade": "Fast Run"
+  },
+  {
+   "dia": "ter",
+   "hora": "08:45",
+   "modalidade": "GAP"
+  },
+  {
+   "dia": "ter",
+   "hora": "09:30",
+   "modalidade": "Fast Bike"
+  },
+  {
+   "dia": "ter",
+   "hora": "10:00",
+   "modalidade": "Alongamento/Mobilidade"
+  },
+  {
+   "dia": "ter",
+   "hora": "17:30",
+   "modalidade": "Pilates"
+  },
+  {
+   "dia": "ter",
+   "hora": "18:15",
+   "modalidade": "Bike Circuit"
+  },
+  {
+   "dia": "ter",
+   "hora": "18:45",
+   "modalidade": "Alongamento/Mobilidade"
+  },
+  {
+   "dia": "ter",
+   "hora": "19:30",
+   "modalidade": "Zumba"
+  },
+  {
+   "dia": "ter",
+   "hora": "19:45",
+   "modalidade": "Yoga"
+  },
+  {
+   "dia": "ter",
+   "hora": "20:30",
+   "modalidade": "Bike"
+  },
+  {
+   "dia": "ter",
+   "hora": "20:30",
+   "modalidade": "Kickboxing/Thai"
+  },
+  {
+   "dia": "ter",
+   "hora": "06:00",
+   "modalidade": "Fast Bike"
+  },
+  {
+   "dia": "ter",
+   "hora": "06:30",
+   "modalidade": "Funcional"
+  },
+  {
+   "dia": "ter",
+   "hora": "11:00",
+   "modalidade": "Pilates"
+  },
+  {
+   "dia": "ter",
+   "hora": "12:00",
+   "modalidade": "GAP"
+  },
+  {
+   "dia": "ter",
+   "hora": "12:30",
+   "modalidade": "Zumba"
+  },
+  {
+   "dia": "ter",
+   "hora": "13:30",
+   "modalidade": "Fullbody"
+  },
+  {
+   "dia": "ter",
+   "hora": "14:30",
+   "modalidade": "Yoga"
+  },
+  {
+   "dia": "ter",
+   "hora": "15:30",
+   "modalidade": "Step Iniciante"
+  },
+  {
+   "dia": "ter",
+   "hora": "16:30",
+   "modalidade": "Fitdance"
+  },
+  {
+   "dia": "ter",
+   "hora": "21:00",
+   "modalidade": "Bike Circuit"
+  },
+  {
+   "dia": "ter",
+   "hora": "21:30",
+   "modalidade": "Alongamento"
+  },
+  {
+   "dia": "qua",
+   "hora": "06:00",
+   "modalidade": "Funcional"
+  },
+  {
+   "dia": "qua",
+   "hora": "18:30",
+   "modalidade": "Ritmos"
+  },
+  {
+   "dia": "qui",
+   "hora": "06:00",
+   "modalidade": "Spinning"
+  },
+  {
+   "dia": "qui",
+   "hora": "19:00",
+   "modalidade": "Jump"
+  },
+  {
+   "dia": "sex",
+   "hora": "06:00",
+   "modalidade": "Funcional"
+  },
+  {
+   "dia": "sab",
+   "hora": "09:00",
+   "modalidade": "Ritmos"
+  }
+ ],
+ "cambui": [
+  {
+   "dia": "seg",
+   "hora": "07:30",
+   "modalidade": "Pilates"
+  },
+  {
+   "dia": "seg",
+   "hora": "19:30",
+   "modalidade": "Funcional"
+  },
+  {
+   "dia": "ter",
+   "hora": "07:00",
+   "modalidade": "Bike Class"
+  },
+  {
+   "dia": "ter",
+   "hora": "08:00",
+   "modalidade": "Workout"
+  },
+  {
+   "dia": "ter",
+   "hora": "08:45",
+   "modalidade": "Ritmos"
+  },
+  {
+   "dia": "ter",
+   "hora": "09:15",
+   "modalidade": "Yoga"
+  },
+  {
+   "dia": "ter",
+   "hora": "09:30",
+   "modalidade": "Yoga"
+  },
+  {
+   "dia": "ter",
+   "hora": "19:00",
+   "modalidade": "Power Body"
+  },
+  {
+   "dia": "ter",
+   "hora": "20:00",
+   "modalidade": "Yoga"
+  },
+  {
+   "dia": "ter",
+   "hora": "06:00",
+   "modalidade": "Workout"
+  },
+  {
+   "dia": "ter",
+   "hora": "06:30",
+   "modalidade": "Power Local"
+  },
+  {
+   "dia": "ter",
+   "hora": "10:15",
+   "modalidade": "Flex Mobility"
+  },
+  {
+   "dia": "ter",
+   "hora": "11:00",
+   "modalidade": "Pilates"
+  },
+  {
+   "dia": "ter",
+   "hora": "12:00",
+   "modalidade": "Fast Burn"
+  },
+  {
+   "dia": "ter",
+   "hora": "12:30",
+   "modalidade": "Funcional"
+  },
+  {
+   "dia": "ter",
+   "hora": "13:30",
+   "modalidade": "Ritmos"
+  },
+  {
+   "dia": "ter",
+   "hora": "14:30",
+   "modalidade": "Yoga"
+  },
+  {
+   "dia": "ter",
+   "hora": "15:30",
+   "modalidade": "Bike Class"
+  },
+  {
+   "dia": "ter",
+   "hora": "16:30",
+   "modalidade": "Power Body"
+  },
+  {
+   "dia": "ter",
+   "hora": "17:30",
+   "modalidade": "Pilates"
+  },
+  {
+   "dia": "ter",
+   "hora": "18:30",
+   "modalidade": "Fast Burn"
+  },
+  {
+   "dia": "ter",
+   "hora": "21:00",
+   "modalidade": "Alongamento"
+  },
+  {
+   "dia": "qua",
+   "hora": "07:30",
+   "modalidade": "Pilates"
+  },
+  {
+   "dia": "qua",
+   "hora": "19:30",
+   "modalidade": "Funcional"
+  },
+  {
+   "dia": "qui",
+   "hora": "07:30",
+   "modalidade": "Alongamento"
+  },
+  {
+   "dia": "qui",
+   "hora": "19:30",
+   "modalidade": "Spinning"
+  },
+  {
+   "dia": "sex",
+   "hora": "07:30",
+   "modalidade": "Pilates"
+  },
+  {
+   "dia": "sab",
+   "hora": "10:00",
+   "modalidade": "Alongamento"
+  }
+ ],
+ "lagoa": [
+  {
+   "dia": "seg",
+   "hora": "08:00",
+   "modalidade": "Funcional"
+  },
+  {
+   "dia": "seg",
+   "hora": "19:00",
+   "modalidade": "Ritmos"
+  },
+  {
+   "dia": "ter",
+   "hora": "07:30",
+   "modalidade": "Bike Class"
+  },
+  {
+   "dia": "ter",
+   "hora": "08:15",
+   "modalidade": "Alongamento"
+  },
+  {
+   "dia": "ter",
+   "hora": "10:45",
+   "modalidade": "Step"
+  },
+  {
+   "dia": "ter",
+   "hora": "18:00",
+   "modalidade": "Extreme 24H"
+  },
+  {
+   "dia": "ter",
+   "hora": "19:00",
+   "modalidade": "GAP"
+  },
+  {
+   "dia": "ter",
+   "hora": "20:00",
+   "modalidade": "Fight 24 Club"
+  },
+  {
+   "dia": "ter",
+   "hora": "06:00",
+   "modalidade": "Bike Express"
+  },
+  {
+   "dia": "ter",
+   "hora": "06:30",
+   "modalidade": "Club Funcional"
+  },
+  {
+   "dia": "ter",
+   "hora": "09:00",
+   "modalidade": "Yoga"
+  },
+  {
+   "dia": "ter",
+   "hora": "11:00",
+   "modalidade": "Localizada"
+  },
+  {
+   "dia": "ter",
+   "hora": "12:00",
+   "modalidade": "Power Gym"
+  },
+  {
+   "dia": "ter",
+   "hora": "12:30",
+   "modalidade": "Zumba"
+  },
+  {
+   "dia": "ter",
+   "hora": "13:30",
+   "modalidade": "Pilates"
+  },
+  {
+   "dia": "ter",
+   "hora": "14:30",
+   "modalidade": "Ritmos"
+  },
+  {
+   "dia": "ter",
+   "hora": "15:30",
+   "modalidade": "Bike Class"
+  },
+  {
+   "dia": "ter",
+   "hora": "16:30",
+   "modalidade": "Step"
+  },
+  {
+   "dia": "ter",
+   "hora": "17:30",
+   "modalidade": "Club Funcional"
+  },
+  {
+   "dia": "ter",
+   "hora": "18:30",
+   "modalidade": "Bike Class"
+  },
+  {
+   "dia": "ter",
+   "hora": "21:00",
+   "modalidade": "Yoga"
+  },
+  {
+   "dia": "qua",
+   "hora": "08:00",
+   "modalidade": "Funcional"
+  },
+  {
+   "dia": "qua",
+   "hora": "19:00",
+   "modalidade": "Ritmos"
+  },
+  {
+   "dia": "qui",
+   "hora": "08:00",
+   "modalidade": "Spinning"
+  },
+  {
+   "dia": "qui",
+   "hora": "19:00",
+   "modalidade": "Pilates"
+  },
+  {
+   "dia": "sex",
+   "hora": "08:00",
+   "modalidade": "Funcional"
+  },
+  {
+   "dia": "sab",
+   "hora": "09:30",
+   "modalidade": "Ritmos"
+  }
+ ]
+}

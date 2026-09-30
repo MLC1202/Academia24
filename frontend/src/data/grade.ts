@@ -1,7 +1,7 @@
 // Modelo da grade de aulas coletivas.
 // A grade e sempre semanal e se repete: nao existe "grade do dia 15/09",
-// existe "grade de segunda". O que muda toda semana e so o numero do dia,
-// que eu calculo a partir de hoje.
+// existe "grade de segunda". O site mostra sempre os proximos 7 dias a
+// partir de hoje (proximosDias), e so o numero de cada dia e calculado.
 
 import type { UnidadeSlug } from './unidades';
 
@@ -38,21 +38,22 @@ export function diaDeHoje(hoje = new Date()): Dia {
   return dias[indiceDoDia(hoje)].chave;
 }
 
-// Monta a semana atual, de segunda a domingo, ja com o numero de cada dia.
-// Vira o mes sozinho: se hoje e 30/09, a aba de domingo mostra 05.
-export function semanaAtual(hoje = new Date()) {
-  const segunda = new Date(hoje);
-  segunda.setHours(0, 0, 0, 0);
-  segunda.setDate(segunda.getDate() - indiceDoDia(hoje));
+// Os proximos 7 dias, comecando HOJE. Dia que ja passou sai da lista e o
+// mesmo dia da semana que vem entra no fim: se hoje e quarta 30/09, a lista
+// vai de qua 30 ate ter 06/10. Cada dia usa a grade do seu dia da semana
+// (a grade e semanal), so muda o numero. Vira o mes sozinho.
+export function proximosDias(hoje = new Date()) {
+  const inicio = new Date(hoje);
+  inicio.setHours(0, 0, 0, 0);
 
-  return dias.map((dia, i) => {
-    const data = new Date(segunda);
-    data.setDate(segunda.getDate() + i);
+  return Array.from({ length: 7 }, (_, i) => {
+    const data = new Date(inicio);
+    data.setDate(inicio.getDate() + i);
     return {
-      ...dia,
+      ...dias[indiceDoDia(data)],
       data,
       numero: String(data.getDate()).padStart(2, '0'),
-      hoje: dia.chave === diaDeHoje(hoje),
+      hoje: i === 0,
     };
   });
 }

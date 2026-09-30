@@ -9,14 +9,16 @@ seguranca (`SEGURANCA.md`, que fica so na maquina local, fora do git).
 ```
 backend/
 ├── public/api/        pontos de entrada (na Hostinger: public_html/api/)
-│   └── saude.php      GET -> {"ok":true} se PHP e banco respondem
+│   ├── saude.php      GET -> {"ok":true} se PHP e banco respondem
+│   └── grades.php     GET -> grade no ar de cada unidade + cancelamentos da semana
 ├── src/               fora da raiz web: config, banco, respostas, log
 ├── bin/migrate.php    roda as migrations (so pela linha de comando)
 ├── sql/migrations/    NNN_nome.up.sql + NNN_nome.down.sql
 ├── docker/            ambiente local (PHP+Apache e init do banco)
 ├── docker-compose.yml
 ├── .env.example       modelo -- o .env de verdade nunca vai pro git
-└── logs/              criado sozinho, ignorado pelo git
+├── logs/              criado sozinho, ignorado pelo git
+└── cache/             JSON pronto da grade (60 s), ignorado pelo git
 ```
 
 `src/` e `.env` ficam um nivel ACIMA de `public/`. Na Hostinger e igual:
@@ -59,6 +61,19 @@ docker compose exec php php bin/migrate.php down   # desfaz a ultima
 ```
 
 Nunca editar uma migration que ja rodou em producao: crie a proxima (`002_...`).
+
+## Dados de exemplo (seed)
+
+```bash
+docker compose exec php php bin/seed.php
+```
+
+Coloca a grade de exemplo (`sql/seeds/grade-exemplo.json`) no banco. So roda
+com `APP_ENV=dev`. Cada execucao cria uma versao nova da grade de cada
+unidade; as anteriores ficam guardadas.
+
+A validacao de aula (dia, hora `HH:MM`, nome da modalidade) fica em
+`src/grade.php` e vale pra tudo que grava grade: seed, upload e edicao.
 
 ## Banco
 

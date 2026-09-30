@@ -1,5 +1,7 @@
 // Grade de aulas coletivas. Mostra as abas da semana e as aulas do dia
-// escolhido, lendo o que estiver salvo pelo dashboard.
+// escolhido. A grade vem do backend (GET /api/grades.php, via useGrades):
+// enquanto chega mostra "Carregando", se falhar mostra um aviso, e aula
+// cancelada naquela data aparece riscada com a etiqueta "Cancelada".
 //
 // Na pagina /unidades aparece um seletor de unidade logo abaixo dos dias
 // (Alphaville vem marcada) e a grade mostra so a unidade escolhida. Na
@@ -25,11 +27,11 @@ import { slugsUnidades, unidades, type UnidadeSlug } from "../../../data/unidade
 import {
   diaDeHoje,
   ordenarPorHora,
-  semanaAtual,
+  proximosDias,
   type Aula,
   type Dia,
 } from "../../../data/grade";
-import { carregarGrades } from "../../../lib/grade-store";
+import { useGrades, type Cancelamento } from "../../../lib/grade-store";
 import "./GradeAulas.css";
 
 type Props = {
@@ -58,24 +60,45 @@ function proximoIndice(e: KeyboardEvent, indice: number, total: number) {
   return null;
 }
 
+// Data no formato do backend ('AAAA-MM-DD'), no fuso do navegador.
+function dataISO(d: Date) {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
+// Chave pra casar aula com cancelamento: mesma hora e mesma modalidade.
+const chaveAula = (hora: string, modalidade: string) => `${hora}|${modalidade}`;
+
+// Aulas canceladas de UMA unidade numa data.
+function canceladasDo(lista: Cancelamento[], unidade: UnidadeSlug, data: string) {
+  return new Set(
+    lista
+      .filter((c) => c.unidade === unidade && c.data === data)
+      .map((c) => chaveAula(c.hora, c.modalidade)),
+  );
+}
+
 type ListaProps = {
   aulas: Aula[];
   ehHoje: boolean;
   agora: string;
   proximaId?: string;
+  canceladas: Set<string>;
 };
 
-// Uma lista de aulas com os estados de hoje (passou / proxima).
-function ListaAulas({ aulas, ehHoje, agora, proximaId }: ListaProps) {
+// Uma lista de aulas com os estados de hoje (passou / proxima) e as
+// canceladas.
+function ListaAulas({ aulas, ehHoje, agora, proximaId, canceladas }: ListaProps) {
   return (
     <ul className="grade__aulas">
       {aulas.map((aula) => {
         const passou = ehHoje && aula.hora < agora;
         const ehProxima = aula.id === proximaId;
+        const cancelada = canceladas.has(chaveAula(aula.hora, aula.modalidade));
         const classes = [
           "grade__aula",
           passou ? "grade__aula--passou" : "",
           ehProxima ? "grade__aula--proxima" : "",
+          cancelada ? "grade__aula--cancelada" : "",
         ]
           .filter(Boolean)
           .join(" ");
@@ -98,6 +121,11 @@ function ListaAulas({ aulas, ehHoje, agora, proximaId }: ListaProps) {
               ))}
             </span>
             {ehProxima && <span className="grade__aula-tag">Próxima</span>}
+            {cancelada && (
+              <span className="grade__aula-tag grade__aula-tag--cancelada">
+                Cancelada
+              </span>
+            )}
           </li>
         );
       })}
@@ -108,9 +136,10 @@ function ListaAulas({ aulas, ehHoje, agora, proximaId }: ListaProps) {
 function GradeAulas({ slugs = slugsUnidades }: Props) {
   const unica = slugs.length === 1;
 
-  // Calculo a semana e a grade uma vez so por visita, nao a cada clique.
-  const semana = useMemo(() => semanaAtual(), []);
-  const grades = useMemo(() => carregarGrades(), []);
+  // Os 7 dias a partir de hoje (hoje e sempre a primeira aba), calculados
+  // uma vez so por visita. A grade vem do backend (uma busca so tambem).
+  const semana = useMemo(() => proximosDias(), []);
+  const estado = useGrades();
   const [dia, setDia] = useState<Dia>(() => diaDeHoje());
   const [unidade, setUnidade] = useState<UnidadeSlug>(() =>
     slugs.includes(PADRAO) ? PADRAO : slugs[0],
@@ -173,8 +202,17 @@ function GradeAulas({ slugs = slugsUnidades }: Props) {
   };
 
   const info = unidades[unidade];
-  const aulas = ordenarPorHora(grades[unidade][dia]);
-  const proximaId = ehHoje ? aulas.find((a) => a.hora >= agora)?.id : undefined;
+  const pronto = estado.status === "pronto";
+  const aulas = pronto ? ordenarPorHora(estado.dados.grades[unidade][dia]) : [];
+  const canceladas = pronto
+    ? canceladasDo(estado.dados.cancelamentos, unidade, dataISO(diaAtual.data))
+    : new Set<string>();
+  // "Proxima" pula aula cancelada: nao faz sentido apontar pra ela.
+  const proximaId = ehHoje
+    ? aulas.find(
+        (a) => a.hora >= agora && !canceladas.has(chaveAula(a.hora, a.modalidade)),
+      )?.id
+    : undefined;
 
   return (
     <section className="grade snap-section" id="grade">
@@ -283,13 +321,23 @@ function GradeAulas({ slugs = slugsUnidades }: Props) {
           </header>
 
           {/* A key com dia + unidade faz a lista entrar de novo (fade) ao trocar */}
-          {aulas.length > 0 ? (
+          {estado.status === "carregando" ? (
+            <p className="grade__vazio" aria-live="polite">
+              Carregando a grade…
+            </p>
+          ) : estado.status === "erro" ? (
+            <p className="grade__vazio" role="alert">
+              Não foi possível carregar a grade agora. Tente de novo em
+              instantes ou fale com a unidade.
+            </p>
+          ) : aulas.length > 0 ? (
             <ListaAulas
               key={`${unidade}-${dia}`}
               aulas={aulas}
               ehHoje={ehHoje}
               agora={agora}
               proximaId={proximaId}
+              canceladas={canceladas}
             />
           ) : (
             <p className="grade__vazio" key={`${unidade}-${dia}`}>

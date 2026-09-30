@@ -38,6 +38,8 @@ jobs:
         # O nome do repositorio vira o caminho do site no Pages.
         env:
           BASE_PATH: /${{ github.event.repository.name }}/
+          # O Pages nao roda PHP: a grade usa o exemplo em vez de chamar a API.
+          VITE_SEM_API: '1'
         run: npm run build
 
       - name: Fallback das rotas
