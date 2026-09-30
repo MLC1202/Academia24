@@ -1,0 +1,66 @@
+# Ambiente local do backend: PHP + Apache, banco e phpMyAdmin.
+# Tudo le as variaveis do .env desta pasta (copie o .env.example).
+#
+#   docker compose up -d --build              sobe tudo
+#   docker compose exec php php bin/migrate.php up   cria/atualiza as tabelas
+#   docker compose down                       desliga (os dados ficam no volume)
+#
+# As portas so escutam em 127.0.0.1: nada fica exposto pra rede do wifi.
+
+services:
+  php:
+    build:
+      context: ./docker/php
+      args:
+        PHP_VERSION: ${PHP_VERSION:-8.3}
+    # Pasta onde os comandos (docker compose exec php ...) rodam.
+    working_dir: /var/www
+    ports:
+      - "127.0.0.1:8080:80"
+    volumes:
+      # Mesmo layout da Hostinger: public/ e a raiz web, src/ e .env ficam
+      # um nivel acima, fora do alcance do navegador.
+      - ./:/var/www
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    # Mesmo banco da Hostinger. Se o phpMyAdmin de la mostrar MySQL em vez de
+    # MariaDB, troque a base em docker/db/Dockerfile (e MARIADB_* por MYSQL_*).
+    # O script de usuarios e copiado pra dentro da imagem (docker/db/Dockerfile)
+    # em vez de montado: assim nao depende das permissoes dos arquivos no Mac.
+    build:
+      context: ./docker/db
+      args:
+        DB_VERSION: ${DB_VERSION:-11.4}
+    environment:
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASS}
+      MARIADB_DATABASE: ${DB_NAME}
+      # Lidos pelo docker/db/01-usuarios.sh
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASS: ${DB_PASS}
+      DB_MIGRA_USER: ${DB_MIGRA_USER}
+      DB_MIGRA_PASS: ${DB_MIGRA_PASS}
+    ports:
+      - "127.0.0.1:3307:3306"
+    volumes:
+      - dados:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  phpmyadmin:
+    image: phpmyadmin:5
+    environment:
+      PMA_HOST: db
+    ports:
+      - "127.0.0.1:8081:80"
+    depends_on:
+      - db
+
+volumes:
+  dados:

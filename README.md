@@ -7,7 +7,7 @@ parte deste projeto.
 ```
 academia24/
 ├── frontend/   aplicação React + Vite (todo o site)
-└── backend/    API da grade de aulas (a fazer)
+└── backend/    API em PHP + MariaDB (ver backend/README.md)
 ```
 
 ## Rodar o site

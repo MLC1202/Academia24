@@ -9,4 +9,9 @@ import { defineConfig } from 'vite'
 export default defineConfig({
   base: process.env.BASE_PATH ?? '/',
   plugins: [react()],
+  // Em dev, /api vai pro PHP do Docker (backend/docker-compose.yml).
+  // Em producao nao precisa: front e API ficam no mesmo dominio.
+  server: {
+    proxy: { '/api': 'http://localhost:8080' },
+  },
 })

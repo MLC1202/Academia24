@@ -15,6 +15,7 @@ dist-ssr
 
 # backend
 backend/.env
+backend/SEGURANCA.md
 backend/vendor
 
 # Editor directories and files
