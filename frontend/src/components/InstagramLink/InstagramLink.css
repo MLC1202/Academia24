@@ -1,0 +1,44 @@
+/* Botao redondo com o icone do Instagram. Herda a cor do texto em volta
+   (currentColor) e fica vermelho no hover. 40px de area de toque. */
+
+.insta {
+  display: inline-grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  color: inherit;
+  box-shadow: inset 0 0 0 1px currentColor;
+  opacity: 0.8;
+  transition: color 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+}
+
+.insta svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+}
+
+.insta .insta__ponto {
+  fill: currentColor;
+  stroke: none;
+}
+
+.insta:hover {
+  color: var(--color-red);
+  opacity: 1;
+}
+
+.insta:focus-visible {
+  outline: 2px solid var(--color-red);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .insta {
+    transition: none;
+  }
+}

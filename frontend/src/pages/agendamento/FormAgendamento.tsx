@@ -280,7 +280,7 @@ function FormAgendamento() {
           <fieldset className="agendar__passo">
             <legend className="agendar__pergunta">
               <span className="agendar__numero">2</span>
-              Quando prefere treinar?
+              Qual horario prefere treinar?
             </legend>
 
             <div

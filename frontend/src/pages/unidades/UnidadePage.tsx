@@ -5,6 +5,7 @@ import { Navigate, useParams } from "react-router-dom";
 import Pagina from "../../components/Pagina/Pagina";
 import CardUnidade from "./components/CardUnidade";
 import GradeAulas from "./components/GradeAulas";
+import InstagramLink from "../../components/InstagramLink/InstagramLink";
 import { ehSlugUnidade, unidades } from "../../data/unidades";
 import "./components/Unidades.css";
 
@@ -22,6 +23,11 @@ function UnidadePage() {
           <header className="unidades__head">
             <p className="unidades__eyebrow">
               {u.marca} · Unidade {u.n}
+              <InstagramLink
+                usuario={u.instagram}
+                unidade={u.nome}
+                className="unidades__insta"
+              />
             </p>
 
             <h1 className="unidades__title">

@@ -350,6 +350,11 @@
 }
 
 .agendar__objetivo {
+  /* position: relative prende o input escondido dentro da pilula. Sem isso
+     ele se posicionava pelo #root, e ao receber foco (clique no modo mobile
+     do DevTools) o navegador rolava o #root pra mostrar o input — o conteudo
+     todo subia e a tela ficava branca. */
+  position: relative;
   border-radius: 999px;
 }
 

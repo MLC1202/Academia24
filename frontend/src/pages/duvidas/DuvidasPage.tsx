@@ -30,7 +30,7 @@ const perguntas = [
   },
   {
     p: "As unidades possuem estacionamento?",
-    r: "Alphaville e Cambuí oferecem serviço de manobrista. A Unidade Norte conta com mais de 80 vagas. Consulte as condições da unidade escolhida.",
+    r: "Alphaville e Cambuí oferecem serviço de manobrista. A Unidade Norte conta com mais de 80 vagas e a Unidade Lagoa possui estacionamento com vagas limitadas. Consulte as condições da unidade escolhida.",
   },
   {
     p: "Onde encontro a grade de aulas?",

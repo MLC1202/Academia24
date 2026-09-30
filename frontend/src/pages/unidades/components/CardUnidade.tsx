@@ -4,6 +4,7 @@
 
 import { Link } from "react-router-dom";
 import { unidades, type UnidadeSlug } from "../../../data/unidades";
+import InstagramLink from "../../../components/InstagramLink/InstagramLink";
 import "./Unidades.css";
 
 type CardProps = {
@@ -62,9 +63,12 @@ function CardUnidade({ slug, invertida, detalhe }: CardProps) {
               {u.marca} · Unidade {u.n}
             </p>
 
-            <h3 className="unidade__nome">
-              <Link to={rotaUnidade}>{u.nome}</Link>
-            </h3>
+            <div className="unidade__nome-linha">
+              <h3 className="unidade__nome">
+                <Link to={rotaUnidade}>{u.nome}</Link>
+              </h3>
+              <InstagramLink usuario={u.instagram} unidade={u.nome} />
+            </div>
 
             <p className="unidade__frase">{u.frase}</p>
 

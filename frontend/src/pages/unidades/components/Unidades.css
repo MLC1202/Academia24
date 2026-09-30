@@ -479,3 +479,21 @@
   padding-top: 40px;
   padding-bottom: 40px;
 }
+
+/* Nome da unidade + icone do Instagram na mesma linha */
+.unidade__nome-linha {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 8px;
+}
+
+.unidade__nome-linha .unidade__nome {
+  margin: 0;
+}
+
+/* Subpagina: icone no fim da linha "24 Health Club · Unidade 03" */
+.unidades__insta {
+  margin-left: auto;
+  color: var(--color-cream);
+}
