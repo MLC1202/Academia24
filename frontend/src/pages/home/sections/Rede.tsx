@@ -1,7 +1,8 @@
 // Secao "A Rede": os 4 pilares em acordeao.
 // As 4 fotos ficam em public/imagens/rede/. Estrutura e equipamentos sao
-// fotos reais da academia; bioimpedancia e atendimento sao de banco de
-// imagens. Foto nova: mesmo nome, mesma pasta.
+// fotos reais da academia; bioimpedancia e de banco de imagens e
+// atendimento foi montada (foto de banco + fundo da unidade, rostos
+// trocados e camiseta com a logo Health Club). Foto nova: mesmo nome, mesma pasta.
 //
 // O BASE_URL e o caminho onde o site esta hospedado ('/' na Hostinger,
 // '/Academia24/' no GitHub Pages). Sem ele a foto da 404 no Pages.
