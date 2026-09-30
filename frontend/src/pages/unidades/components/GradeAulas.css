@@ -344,7 +344,7 @@
   margin-left: auto;
   padding: 3px 9px;
   border-radius: 999px;
-  background: rgba(224, 52, 44, 0.1);
+  background: rgba(237, 26, 61, 0.1);
   color: var(--color-red);
   font-size: 12px;
   font-weight: 600;
@@ -416,7 +416,7 @@
 
 .grade__card-btn--cheio:hover {
   text-decoration: none;
-  background: #c62a23;
+  background: var(--color-red-escuro);
 }
 
 .grade__card-btn--cheio:active {

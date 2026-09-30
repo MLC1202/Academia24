@@ -65,29 +65,31 @@
 
 /* ---------- logo ---------- */
 
+/* As duas logos da rede lado a lado, separadas por um fio. O espaco entre
+   elas respeita a area de respiro do manual (metade da altura da logo). */
 .header__logo {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
 }
 
-.header__logo-number {
-  font-family: var(--font-display);
-  font-size: 32px;
-  font-weight: 800;
-  color: var(--color-red);
+.header__logo img {
+  display: block;
+  width: auto;
 }
 
-.header__logo-name {
-  font-family: var(--font-display);
-  font-size: 20px;
-  font-weight: 700;
-  letter-spacing: 0.05em;
+.header__logo-wellness {
+  height: 22px;
 }
 
-.header__logo-tagline {
-  font-size: 11px;
-  color: #d5d5d5;
+.header__logo-healthclub {
+  height: 46px;
+}
+
+.header__logo-divisor {
+  width: 1px;
+  height: 34px;
+  background: rgba(255, 255, 255, 0.3);
 }
 
 /* ---------- menu fluido em cima do video ----------
@@ -106,6 +108,46 @@
 
 .header:not(.header--solid) .fluid__toggle:hover {
   background: rgba(255, 255, 255, 0.16);
+}
+
+/* ---------- botao Planos (a esquerda do menu) ---------- */
+
+.header__planos {
+  margin-left: auto;
+  flex-shrink: 0;
+  padding: 10px 22px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--color-red);
+  color: var(--color-white);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.header__planos:hover {
+  background: var(--color-red-escuro);
+}
+
+.header__planos:active {
+  transform: scale(0.97);
+}
+
+.header__planos:focus-visible {
+  outline: 2px solid var(--color-white);
+  outline-offset: 3px;
+}
+
+/* Quem empurra pra direita e o botao Planos (ou a trilha, se existir) */
+.header__planos + .fluid {
+  margin-left: 0;
+}
+
+.header__trilha + .header__planos {
+  margin-left: 0;
 }
 
 /* ---------- trilha de volta: Home › Unidades › Alphaville ---------- */
@@ -196,12 +238,20 @@ a.header__trilha-item:hover {
     padding: 12px 20px;
   }
 
-  .header__logo-tagline {
-    display: none;
+  .header__logo {
+    gap: 12px;
   }
 
-  .header__logo-number {
-    font-size: 26px;
+  .header__logo-wellness {
+    height: 17px;
+  }
+
+  .header__logo-healthclub {
+    height: 36px;
+  }
+
+  .header__logo-divisor {
+    height: 26px;
   }
 
   .header__trilha {
@@ -212,6 +262,21 @@ a.header__trilha-item:hover {
 
   .header__trilha + .fluid {
     margin-left: auto;
+  }
+
+  /* No celular a trilha vai pra linha de baixo, entao o Planos volta a
+     empurrar ele e o menu pra direita */
+  .header__trilha + .header__planos {
+    margin-left: auto;
+  }
+
+  .header {
+    column-gap: 12px;
+  }
+
+  .header__planos {
+    padding: 9px 16px;
+    font-size: 13px;
   }
 
   .header__trilha ol,

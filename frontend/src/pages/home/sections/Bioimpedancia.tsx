@@ -21,7 +21,7 @@ function Bioimpedancia() {
       <div
         className="bio__foto"
         style={{
-          backgroundImage: `linear-gradient(rgba(224, 52, 44, 0.82), rgba(224, 52, 44, 0.82)), url(${foto})`,
+          backgroundImage: `linear-gradient(rgba(237, 26, 61, 0.82), rgba(237, 26, 61, 0.82)), url(${foto})`,
         }}
       >
         <p className="bio__frase">

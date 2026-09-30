@@ -20,13 +20,21 @@ function CardUnidade({ slug, invertida, detalhe }: CardProps) {
 
   const foto = (
     <>
-      <span className="unidade__foto-n">{u.n}</span>
+      <span className="unidade__foto-topo">
+        <img
+          className={`unidade__logo unidade__logo--${u.marca === "24 Wellness" ? "wellness" : "healthclub"}`}
+          src={u.logo}
+          alt={u.marca}
+        />
+        <span className="unidade__foto-n">{u.n}</span>
+      </span>
       <span className="unidade__foto-local">{u.local}</span>
     </>
   );
 
   const estiloFoto = {
-    backgroundImage: `linear-gradient(to top, rgba(0,0,0,.75), rgba(0,0,0,.15)), url(${u.foto})`,
+    // Escuro em cima (logo) e embaixo (local); o meio fica livre pra foto.
+    backgroundImage: `linear-gradient(to bottom, rgba(0,0,0,.5), rgba(0,0,0,.1) 35%, rgba(0,0,0,.15) 55%, rgba(0,0,0,.75)), url(${u.foto})`,
   };
 
   return (

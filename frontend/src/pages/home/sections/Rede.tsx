@@ -41,7 +41,9 @@ const pilares = [
     texto:
       "Acompanhe composição corporal, percentual de gordura, massa muscular e sua evolução.",
     foto: `${import.meta.env.BASE_URL}imagens/rede/bioimpedancia.jpg`,
-    posicao: "center 40%",
+    // Foto vertical (3:4) num painel deitado: o corte pega do ombro ate as
+    // maos, com a tela da balanca no meio.
+    posicao: "center 28%",
   },
   {
     n: "04",

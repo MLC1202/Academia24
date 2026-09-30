@@ -11,16 +11,37 @@
   font-family: var(--font-display);
 }
 
-.footer__logo-number {
-  color: var(--color-red);
-  font-weight: 800;
+/* As duas logos da rede, igual ao cabecalho */
+.footer__logos {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.footer__logos img {
+  display: block;
+  width: auto;
+}
+
+.footer__logo-wellness {
+  height: 18px;
+}
+
+.footer__logo-healthclub {
+  height: 38px;
+}
+
+.footer__logo-divisor {
+  width: 1px;
+  height: 28px;
+  background: rgba(255, 255, 255, 0.3);
 }
 
 .footer__tagline {
   font-size: 11px;
   color: var(--color-gray);
   font-family: var(--font-body);
-  margin-top: 4px;
+  margin-top: 10px;
 }
 
 .footer__unidades {

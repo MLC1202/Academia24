@@ -4,8 +4,13 @@
 .hero {
     position: relative;
     display: flex;
-    align-items: flex-end;
-    padding: 64px 48px;
+    /* Texto a direita e um pouco acima do meio: no video da dona as
+       fachadas vem quase sempre na esquerda, e as legendas das unidades
+       ficam gravadas no rodape (uns 80-95% da altura) — essa faixa fica
+       so pra elas. */
+    align-items: center;
+    justify-content: flex-end;
+    padding: calc(var(--header-height) + 24px) 48px 18vh;
     background-image: linear-gradient(
         to top,
         rgba(0, 0, 0, 0.8),
@@ -31,11 +36,16 @@
     position: absolute;
     inset: 0;
     z-index: 1;
-    background: linear-gradient(
-      to top,
-      rgba(0, 0, 0, 0.8),
-      rgba(0, 0, 0, 0.2)
-    );
+    /* Escurece so a direita (onde fica o texto) e o topo (header). A
+       esquerda, com as fachadas, e o rodape, com as legendas, ficam claros. */
+    background:
+      linear-gradient(
+        270deg,
+        rgba(0, 0, 0, 0.7) 0%,
+        rgba(0, 0, 0, 0.45) 35%,
+        rgba(0, 0, 0, 0) 65%
+      ),
+      linear-gradient(to bottom, rgba(0, 0, 0, 0.45) 0%, rgba(0, 0, 0, 0) 22%);
     pointer-events: none;
   }
 
@@ -49,7 +59,9 @@
   .hero__content {
     position: relative;
     z-index: 2;
-    max-width: 1100px;
+    max-width: 460px;
+    /* Sombra leve no texto pra ele nao sumir quando passa algo claro atras. */
+    text-shadow: 0 2px 16px rgba(0, 0, 0, 0.45);
   }
   
   .hero__location {
@@ -62,10 +74,10 @@
   
   .hero__title {
     font-family: var(--font-display);
-    font-size: 88px;
+    font-size: 50px;
     font-weight: 800;
     line-height: 1;
-    margin-bottom: 24px;
+    margin-bottom: 20px;
   }
   
   .hero__title-accent {
@@ -73,10 +85,10 @@
   }
   
   .hero__subtitle {
-    font-size: 20px;
+    font-size: 17px;
     color: #e5e5e5;
-    max-width: 640px;
-    margin-bottom: 32px;
+    max-width: 440px;
+    margin-bottom: 28px;
     line-height: 1.5;
   }
   
@@ -103,31 +115,31 @@
   }
   
   .hero__stats {
-    position: absolute;
-    z-index: 2;
-    bottom: 40px;
-    right: 48px;
     display: flex;
     gap: 0;
+    margin-top: 28px;
+    padding-top: 22px;
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
   }
   
   .hero__stat {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start;
     color: var(--color-white);
-    padding: 6px 28px;
+    padding: 2px 24px;
     border-left: 1px solid rgba(255, 255, 255, 0.3);
   }
   
   .hero__stat-number {
     font-family: var(--font-display);
-    font-size: 50px;
+    font-size: 34px;
     font-weight: 800;
+    line-height: 1;
   }
   
   .hero__stat-label {
-    font-size: 13px;
+    font-size: 11px;
     letter-spacing: 0.1em;
     text-transform: uppercase;
     color: #ccc;
@@ -136,6 +148,7 @@
   
   .hero__stat:first-child {
     border-left: none;
+    padding-left: 0;
   }
 
 
@@ -146,24 +159,34 @@
 /* Tablet: so encolhe o que estoura, o desenho continua o mesmo. */
 @media (max-width: 1024px) and (min-width: 768px) {
   .hero {
-    padding: 56px 32px;
+    padding: calc(var(--header-height) + 16px) 32px 13vh;
+  }
+
+  .hero__content {
+    max-width: 460px;
   }
 
   .hero__title {
-    font-size: clamp(52px, 7vw, 88px);
+    font-size: clamp(40px, 4.6vw, 52px);
   }
 
-  .hero__stats {
-    right: 32px;
-    bottom: 32px;
+  .hero__subtitle {
+    font-size: 16px;
+    margin-bottom: 24px;
+  }
+
+  .hero__btn-primary,
+  .hero__btn-secondary {
+    white-space: nowrap;
+    padding: 14px 20px;
   }
 
   .hero__stat {
-    padding: 6px 20px;
+    padding: 2px 20px;
   }
 
   .hero__stat-number {
-    font-size: 38px;
+    font-size: 30px;
   }
 }
 
@@ -177,18 +200,21 @@
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
-    padding: calc(var(--header-height) + 8px) 20px 24px;
+    /* Pouca folga embaixo: o texto encosta no rodape e o video fica com
+       o resto da tela. */
+    padding: calc(var(--header-height) + 8px) 20px
+      calc(16px + env(safe-area-inset-bottom, 0px));
     background-position: 62% center;
   }
 
-  /* Mais escuro em cima e embaixo, claro no meio: o texto le bem sem
-     apagar a imagem inteira. */
+  /* O veu da tela so escurece o topo (pro header). O escuro de baixo vem
+     do proprio bloco de texto (::before), entao ele acompanha a altura do
+     texto em qualquer celular e o video aparece ate onde o texto comeca. */
   .hero__veu {
     background: linear-gradient(
       180deg,
-      rgba(0, 0, 0, 0.62) 0%,
-      rgba(0, 0, 0, 0.18) 35%,
-      rgba(0, 0, 0, 0.82) 100%
+      rgba(0, 0, 0, 0.55) 0%,
+      rgba(0, 0, 0, 0) 16%
     );
   }
 
@@ -196,51 +222,77 @@
     width: 100%;
     max-width: 520px;
     margin-top: auto;
-    padding: 32px 0 28px;
+    padding: 0;
+  }
+
+  .hero__content::before {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    /* Sobe 110px acima do texto pra fazer o degrade, e vai ate as bordas
+       e o fundo da tela (compensa o padding do .hero). */
+    inset: -110px -20px calc(-16px - env(safe-area-inset-bottom, 0px));
+    background: linear-gradient(
+      180deg,
+      rgba(0, 0, 0, 0) 0,
+      rgba(0, 0, 0, 0.88) 110px,
+      rgba(0, 0, 0, 0.95) 100%
+    );
+    pointer-events: none;
   }
 
   .hero__location {
     font-size: 11px;
     letter-spacing: 0.08em;
-    margin-bottom: 12px;
+    margin-bottom: 8px;
   }
 
   .hero__title {
     max-width: 390px;
-    font-size: clamp(2.5rem, 12vw, 4rem);
-    line-height: 0.96;
-    letter-spacing: -0.055em;
+    /* Menor que antes pra "Seu ritmo. Sua 24." caber numa linha e o bloco
+       todo nao tomar a tela. */
+    font-size: clamp(1.9rem, 8.4vw, 2.6rem);
+    line-height: 1;
+    letter-spacing: -0.04em;
     margin-bottom: 0;
   }
 
   .hero__subtitle {
     max-width: 430px;
-    margin: 22px 0 24px;
-    font-size: 15px;
-    line-height: 1.45;
+    margin: 10px 0 14px;
+    font-size: 12.5px;
+    line-height: 1.4;
     color: rgba(255, 255, 255, 0.9);
   }
 
+  /* Os dois botoes lado a lado, meio a meio. Em tela bem estreita o texto
+     quebra em duas linhas dentro do botao, sem estourar. */
   .hero__actions {
-    flex-direction: column;
-    gap: 10px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
   }
 
   .hero__btn-primary,
   .hero__btn-secondary {
-    width: 100%;
-    min-height: 50px;
+    min-width: 0;
+    min-height: 44px;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 0 18px;
-    font-size: 14px;
+    padding: 6px 10px;
+    font-size: 12px;
+    line-height: 1.2;
+    text-align: center;
   }
 
-  /* Sai do canto absoluto e vira a faixa de baixo, em tres colunas. */
+  /* Vira a faixa de baixo, em tres colunas. O padding da direita deixa
+     livre o canto do botao flutuante do WhatsApp. */
   .hero__stats {
-    position: relative;
-    inset: auto;
+    padding-right: 64px;
+    margin-top: 14px;
+    padding-top: 0;
+    border-top: 0;
     width: 100%;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -260,7 +312,7 @@
   }
 
   .hero__stat-number {
-    font-size: clamp(2rem, 9vw, 3rem);
+    font-size: clamp(1.1rem, 4.8vw, 1.4rem);
     line-height: 1;
     letter-spacing: -0.06em;
   }

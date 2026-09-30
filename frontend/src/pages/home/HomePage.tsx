@@ -8,6 +8,7 @@ import Rede from "./sections/Rede";
 import Bioimpedancia from "./sections/Bioimpedancia";
 import Convite from "./sections/Convite";
 import Footer from "../../components/Footer/Footer";
+import WhatsApp from "../../components/WhatsApp/WhatsApp";
 
 function HomePage() {
   return (
@@ -17,6 +18,8 @@ function HomePage() {
       <Bioimpedancia />
       <Convite />
       <Footer />
+      {/* Fixo no canto da tela: acompanha a rolagem da home inteira. */}
+      <WhatsApp />
     </div>
   );
 }

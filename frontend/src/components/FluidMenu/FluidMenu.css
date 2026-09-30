@@ -13,7 +13,7 @@
   --passo: 48px;
   --fluid-fundo: #1f2937;
   --fluid-icone: #d1d5db;
-  --fluid-luz: #ff4a40;
+  --fluid-luz: #ff3a57;
   --fluid-curva: cubic-bezier(0.4, 0, 0.2, 1);
 
   position: relative;
@@ -83,8 +83,8 @@
 .fluid__item:focus-visible svg {
   stroke-width: 2.5;
   color: var(--fluid-luz);
-  filter: drop-shadow(0 0 4px rgba(255, 74, 64, 0.9))
-    drop-shadow(0 0 10px rgba(224, 52, 44, 0.6));
+  filter: drop-shadow(0 0 4px rgba(255, 58, 87, 0.9))
+    drop-shadow(0 0 10px rgba(237, 26, 61, 0.6));
 }
 
 /* Menu <-> X: um gira e some enquanto o outro gira e aparece */
@@ -166,7 +166,7 @@
 }
 
 .fluid__item--ativo .fluid__rotulo {
-  border-color: rgba(224, 52, 44, 0.7);
+  border-color: rgba(237, 26, 61, 0.7);
 }
 
 .fluid--aberto .fluid__item:hover .fluid__rotulo,
@@ -185,13 +185,17 @@
   .fluid--aberto .fluid__rotulo {
     opacity: 1;
     transform: translate(0, -50%);
+    /* No toque o nome tambem e clicavel: area de toque bem maior */
+    pointer-events: auto;
   }
 }
 
 @media (max-width: 860px) {
+  /* Celular: bolinhas menores, mas bem espacadas pra facilitar o
+     toque (~48px por item). Ainda encaixam 4px, entao a emenda continua. */
   .fluid {
     --bolha: 52px;
-    --passo: 39px;
+    --passo: 48px;
     margin-top: -4px;
     margin-bottom: -4px;
   }

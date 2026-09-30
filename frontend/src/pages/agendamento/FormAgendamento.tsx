@@ -12,8 +12,7 @@
 //   3. O que voce busca?       -> pilulas
 //   4. Seus dados              -> campos agrupados num card so (estilo iPhone)
 // No computador o texto de abertura fica preso a esquerda enquanto o
-// formulario rola a direita. O botao so libera com tudo certo e, enquanto
-// nao libera, diz o que ainda falta.
+// formulario rola a direita. O botao so libera com tudo certo.
 //
 // ATENCAO: por enquanto isso e so a tela. O botao valida os campos e mostra a
 // confirmacao, mas NAO manda os dados pra lugar nenhum — so joga no console.
@@ -55,15 +54,6 @@ const periodos = [
   { valor: "noite", texto: "Noite", horas: "18h às 23h" },
 ];
 
-// Nome de cada campo na frase "Falta: ..." embaixo do botao.
-const nomesCampos: Record<Campo, string> = {
-  unidade: "unidade",
-  periodo: "período",
-  objetivo: "objetivo",
-  nome: "nome",
-  whatsapp: "telefone",
-  email: "e-mail",
-};
 const ordemCampos: Campo[] = ["unidade", "periodo", "objetivo", "nome", "whatsapp", "email"];
 
 // Vai formatando o telefone enquanto a pessoa digita: (11) 90000-0000.
@@ -99,12 +89,6 @@ function validar(campo: Campo, valor: string) {
   }
 
   return v === "" ? "Selecione uma opção." : "";
-}
-
-// "a, b e c"
-function juntar(itens: string[]) {
-  if (itens.length <= 1) return itens.join("");
-  return `${itens.slice(0, -1).join(", ")} e ${itens[itens.length - 1]}`;
 }
 
 type Estado = "parado" | "enviando" | "enviado";
@@ -439,15 +423,6 @@ function FormAgendamento() {
             >
               {estado === "enviando" ? "Enviando…" : "Agendar aula experimental"}
             </button>
-
-            {/* Enquanto o botao esta travado, explica o porque */}
-            <p className="agendar__status" aria-live="polite">
-              {faltando.length > 0
-                ? `Falta: ${juntar(faltando.map((c) => nomesCampos[c]))}.`
-                : !consentimento
-                  ? "Falta marcar a autorização de contato."
-                  : "Leva só 2 minutos. Seus dados ficam seguros com a gente."}
-            </p>
           </div>
         </form>
       </div>

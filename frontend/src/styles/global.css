@@ -1,16 +1,29 @@
 /* Base do site: as cores, as fontes e o container que rola.
-   Cor ou fonte nova entra aqui no :root e o resto do site usa a variavel. */
+   Cor ou fonte nova entra aqui no :root e o resto do site usa a variavel.
+
+   Cores e fontes seguem o manual de marca 24wellness (2025):
+   - vermelho Pantone 199 C  = RGB 237 26 61   (#ED1A3D)
+   - Cool Gray 9 C           = RGB 88 89 91    (#58595B)
+   - Cool Gray 4 C           = RGB 190 191 193 (#BEBFC1)
+   - preto Black C           = RGB 1 1 1
+   - fonte oficial: Cisco (paga, nao tem no Google Fonts). Enquanto a gente
+     nao tiver os arquivos, cai pra Helvetica/Arial, que e o que o proprio
+     manual manda usar na falta dela. Quando chegarem os arquivos, e so
+     declarar o @font-face da "Cisco" e nada mais muda. */
 
 :root {
-  --color-black: #0a0a0a;
+  --color-black: #010101;
   --color-white: #ffffff;
   --color-offwhite: #f2f1ee;
-  --color-red: #e0342c;
-  --color-gray: #6b6b6b;
+  --color-red: #ed1a3d;
+  /* hover dos botoes vermelhos */
+  --color-red-escuro: #c8102e;
+  --color-gray: #58595b;
+  --color-gray-claro: #bebfc1;
   --color-cream: #f5f1ea;
 
-  --font-display: "Archivo", "Helvetica Neue", Arial, sans-serif;
-  --font-body: "Inter", "Helvetica Neue", Arial, sans-serif;
+  --font-display: "Cisco", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-body: "Cisco", "Helvetica Neue", Helvetica, Arial, sans-serif;
   --header-height: 88px;
 }
 

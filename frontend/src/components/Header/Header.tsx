@@ -1,5 +1,7 @@
-// Cabecalho fixo, igual em todas as paginas: 24 REDE na esquerda e o menu
-// fluido (bolinhas que descem) na direita com os 4 topicos do site.
+// Cabecalho fixo, igual em todas as paginas: as logos das duas marcas da rede
+// (24wellness e Academia 24 Health Club) na esquerda e o menu fluido
+// (bolinhas que descem) na direita com os 4 topicos do site.
+// Logos em public/logos/ — versoes claras, porque o cabecalho e sempre escuro.
 //
 // - Home: nasce transparente em cima do hero e vai escurecendo conforme eu
 //   rolo.
@@ -10,8 +12,11 @@ import { useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { ehSlugUnidade, unidades } from '../../data/unidades';
 import FluidMenu, { type ItemMenu } from '../FluidMenu/FluidMenu';
+import PlanosModal from '../PlanosModal/PlanosModal';
 import { icones } from '../FluidMenu/icones';
 import './Header.css';
+
+const base = import.meta.env.BASE_URL;
 
 // Os 4 topicos do menu.
 const topicos: ItemMenu[] = [
@@ -57,6 +62,8 @@ function Header() {
   // qualquer botao, o menu ja aparece fechado na pagina nova.
   const [menuAbertoEm, setMenuAbertoEm] = useState<string | null>(null);
   const menuAberto = menuAbertoEm === pathname;
+  // Janela de escolher a unidade pros planos (botao ao lado do menu).
+  const [planosAberto, setPlanosAberto] = useState(false);
 
   const isHome = pathname === '/';
 
@@ -120,14 +127,23 @@ function Header() {
 
   return (
     <header className={classes} ref={headerRef}>
-      <Link to="/" className="header__logo" onClick={fechar}>
-        <span className="header__logo-number">24</span>
-        <div>
-          <div className="header__logo-name">REDE</div>
-          <div className="header__logo-tagline">
-            Quatro unidades. Uma mesma essência.
-          </div>
-        </div>
+      <Link
+        to="/"
+        className="header__logo"
+        onClick={fechar}
+        aria-label="Rede 24 — página inicial"
+      >
+        <img
+          className="header__logo-wellness"
+          src={`${base}logos/24wellness-negativo.svg`}
+          alt="24wellness"
+        />
+        <span className="header__logo-divisor" aria-hidden="true" />
+        <img
+          className="header__logo-healthclub"
+          src={`${base}logos/24healthclub-branco.svg`}
+          alt="Academia 24 Health Club"
+        />
       </Link>
 
       {/* Trilha de volta: so nas paginas internas (a home nao tem pra onde voltar). */}
@@ -165,6 +181,19 @@ function Header() {
         </nav>
       )}
 
+      {/* Planos: abre a janela pra escolher a unidade */}
+      <button
+        type="button"
+        className="header__planos"
+        aria-haspopup="dialog"
+        onClick={() => {
+          fechar();
+          setPlanosAberto(true);
+        }}
+      >
+        Planos
+      </button>
+
       <FluidMenu
         itens={topicos}
         aberto={menuAberto}
@@ -172,6 +201,11 @@ function Header() {
           setMenuAbertoEm((aberto) => (aberto === pathname ? null : pathname))
         }
         onEscolher={fechar}
+      />
+
+      <PlanosModal
+        aberto={planosAberto}
+        onFechar={() => setPlanosAberto(false)}
       />
     </header>
   );

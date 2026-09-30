@@ -20,8 +20,8 @@
   /* A foto (public/imagens/bioimpedancia.jpg) entra pelo Bioimpedancia.tsx,
      por causa do BASE_URL. Aqui fica so o vermelho, de reserva. */
   background-image: linear-gradient(
-    rgba(224, 52, 44, 0.82),
-    rgba(224, 52, 44, 0.82)
+    rgba(237, 26, 61, 0.82),
+    rgba(237, 26, 61, 0.82)
   );
   background-size: cover;
   background-position: center;

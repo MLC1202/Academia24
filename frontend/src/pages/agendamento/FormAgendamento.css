@@ -492,7 +492,7 @@
 }
 
 .agendar__submit:hover:not(:disabled) {
-  background: #c62a23;
+  background: var(--color-red-escuro);
 }
 
 .agendar__submit:active:not(:disabled) {
@@ -507,13 +507,6 @@
 .agendar__submit:disabled {
   opacity: 0.35;
   cursor: not-allowed;
-}
-
-.agendar__status {
-  margin: 12px 0 0;
-  font-size: 14px;
-  text-align: center;
-  color: var(--ag-texto-2);
 }
 
 /* ---------- Confirmacao ---------- */

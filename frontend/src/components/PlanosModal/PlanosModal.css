@@ -1,0 +1,278 @@
+/* Janela de escolha de unidade pros planos (components/PlanosModal).
+   Desktop: 4 cards lado a lado. Tablet: 2x2. Celular: 2x2 compacto. */
+
+.planos {
+  width: min(960px, calc(100vw - 32px));
+  max-width: none;
+  max-height: calc(100dvh - 32px);
+  margin: auto;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  background: #111;
+  color: var(--color-white);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
+.planos::backdrop {
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+/* Entrada suave */
+.planos[open] {
+  animation: planos-entra 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.planos[open]::backdrop {
+  animation: planos-fundo 0.25s ease;
+}
+
+@keyframes planos-entra {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+}
+
+@keyframes planos-fundo {
+  from {
+    opacity: 0;
+  }
+}
+
+.planos__caixa {
+  padding: 28px;
+}
+
+/* ---------- topo ---------- */
+
+.planos__topo {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 22px;
+}
+
+.planos__titulo {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1.15;
+}
+
+.planos__sub {
+  margin-top: 6px;
+  color: var(--color-gray-claro);
+  font-size: 14px;
+}
+
+.planos__fechar {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--color-white);
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.planos__fechar:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.planos__fechar svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.planos__fechar:focus-visible,
+.planos__card:focus-visible {
+  outline: 2px solid var(--color-red);
+  outline-offset: 3px;
+}
+
+/* ---------- cards ---------- */
+
+.planos__lista {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.planos__card {
+  position: relative;
+  display: block;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  border-radius: 14px;
+  background: #222;
+  color: var(--color-white);
+  text-decoration: none;
+  isolation: isolate;
+}
+
+.planos__foto {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Escurece embaixo pro texto ler bem em cima de qualquer foto */
+.planos__card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.85) 0%,
+    rgba(0, 0, 0, 0.35) 50%,
+    rgba(0, 0, 0, 0.05) 100%
+  );
+}
+
+.planos__card:hover .planos__foto {
+  transform: scale(1.05);
+}
+
+.planos__info {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 16px;
+}
+
+.planos__marca {
+  color: var(--color-gray-claro);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.planos__nome {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.planos__local {
+  color: var(--color-gray-claro);
+  font-size: 13px;
+}
+
+.planos__cta {
+  display: inline-flex;
+  align-self: flex-start;
+  gap: 6px;
+  margin-top: 10px;
+  padding: 7px 14px;
+  border-radius: 999px;
+  background: var(--color-red);
+  font-size: 13px;
+  font-weight: 700;
+  transition: background-color 0.2s ease;
+}
+
+.planos__card:hover .planos__cta {
+  background: var(--color-red-escuro);
+}
+
+/* ---------- telas menores ---------- */
+
+@media (max-width: 860px) {
+  .planos__lista {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .planos {
+    border-radius: 16px;
+  }
+
+  .planos__caixa {
+    padding: 18px;
+  }
+
+  .planos__topo {
+    margin-bottom: 16px;
+  }
+
+  .planos__titulo {
+    font-size: 20px;
+  }
+
+  .planos__sub {
+    font-size: 13px;
+  }
+
+  .planos__lista {
+    gap: 10px;
+  }
+
+  .planos__card {
+    aspect-ratio: 4 / 5;
+    border-radius: 12px;
+  }
+
+  .planos__info {
+    padding: 10px;
+  }
+
+  .planos__marca {
+    font-size: 9px;
+  }
+
+  .planos__nome {
+    font-size: 17px;
+  }
+
+  .planos__local {
+    font-size: 11px;
+  }
+
+  .planos__cta {
+    margin-top: 6px;
+    padding: 5px 10px;
+    font-size: 11px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .planos[open],
+  .planos[open]::backdrop {
+    animation: none;
+  }
+
+  .planos__foto {
+    transition: none;
+  }
+}

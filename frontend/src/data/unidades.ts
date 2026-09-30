@@ -7,6 +7,9 @@ export type UnidadeSlug = "alphaville" | "norte" | "cambui" | "lagoa";
 export type UnidadeInfo = {
   nome: string;
   marca: string;
+  // Logo oficial da marca da unidade, em versao clara (vai em cima da foto).
+  // Arquivos em frontend/public/logos/ — vieram do manual e do PDF de logos.
+  logo: string;
   // Caminho da foto que aparece no card da home.
   // O arquivo fica em frontend/public/imagens/unidades/<slug>.jpg.
   // Pra trocar a foto eu apago o arquivo e ponho o novo COM O MESMO NOME —
@@ -50,6 +53,7 @@ const registro: Record<UnidadeSlug, UnidadeInfo> = {
   alphaville: {
     nome: "Alphaville",
     marca: "24 Wellness",
+    logo: "/logos/24wellness-negativo.svg",
     foto: "/imagens/unidades/alphaville.jpg",
     lp: "alphaville.24wellness.com.br",
     planos: "https://vendas.online.sistemapacto.com.br/loja?un=1&k=95115352dc19ba38fc6b7c1f4931700d",
@@ -70,6 +74,7 @@ const registro: Record<UnidadeSlug, UnidadeInfo> = {
   norte: {
     nome: "Norte",
     marca: "24 Health Club",
+    logo: "/logos/24healthclub-branco.svg",
     foto: "/imagens/unidades/norte.jpg",
     lp: "unidadenorte.academia24hclub.com",
     planos: "https://vendas.online.sistemapacto.com.br/loja?un=4&k=95115352dc19ba38fc6b7c1f4931700d", 
@@ -90,6 +95,7 @@ const registro: Record<UnidadeSlug, UnidadeInfo> = {
   cambui: {
     nome: "Cambuí",
     marca: "24 Health Club",
+    logo: "/logos/24healthclub-branco.svg",
     foto: "/imagens/unidades/cambui.jpg",
     lp: "unidadecambui.academia24hclub.com",
     planos: "https://vendas.online.sistemapacto.com.br/loja?un=2&k=95115352dc19ba38fc6b7c1f4931700d",
@@ -110,6 +116,7 @@ const registro: Record<UnidadeSlug, UnidadeInfo> = {
   lagoa: {
     nome: "Lagoa",
     marca: "24 Health Club",
+    logo: "/logos/24healthclub-branco.svg",
     foto: "/imagens/unidades/lagoa.jpg",
     lp: "unidadelagoa.academia24hclub.com",
     planos: "https://vendas.online.sistemapacto.com.br/loja?un=3&k=95115352dc19ba38fc6b7c1f4931700d",
@@ -137,6 +144,7 @@ export const unidades = Object.fromEntries(
     {
       ...info,
       foto: caminhoPublico(info.foto),
+      logo: caminhoPublico(info.logo),
       lp: urlAbsoluta(info.lp),
       planos: urlAbsoluta(info.planos),
     },

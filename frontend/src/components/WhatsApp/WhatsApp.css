@@ -1,0 +1,80 @@
+/* Botao flutuante do WhatsApp (so na home). position: fixed prende ele na
+   tela, entao ele acompanha a rolagem. Fica abaixo do cabecalho (z 100). */
+
+.whatsapp {
+  position: fixed;
+  right: 28px;
+  bottom: 28px;
+  z-index: 90;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  /* Verde oficial do WhatsApp: e o que a pessoa reconhece de longe. */
+  background: #25d366;
+  color: #fff;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.whatsapp:hover {
+  transform: translateY(-2px) scale(1.04);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.32);
+}
+
+.whatsapp:focus-visible {
+  outline: 3px solid #25d366;
+  outline-offset: 4px;
+}
+
+.whatsapp__icone {
+  width: 32px;
+  height: 32px;
+}
+
+/* Balaozinho "Fale com a gente" que aparece ao passar o mouse. */
+.whatsapp__balao {
+  position: absolute;
+  right: calc(100% + 12px);
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: var(--color-black);
+  color: var(--color-white);
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateX(6px);
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.whatsapp:hover .whatsapp__balao,
+.whatsapp:focus-visible .whatsapp__balao {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Celular: menor e mais no canto, respeitando a barra de gestos do iPhone. */
+@media (max-width: 767px) {
+  .whatsapp {
+    right: 16px;
+    bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+    width: 52px;
+    height: 52px;
+  }
+
+  .whatsapp__icone {
+    width: 28px;
+    height: 28px;
+  }
+
+  .whatsapp__balao {
+    display: none;
+  }
+}

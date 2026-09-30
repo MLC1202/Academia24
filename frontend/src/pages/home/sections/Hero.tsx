@@ -56,20 +56,22 @@ function Hero() {
             Escolher minha unidade
           </Link>
         </div>
-      </div>
 
-      <div className="hero__stats">
-        <div className="hero__stat">
-          <span className="hero__stat-number">04</span>
-          <span className="hero__stat-label">Unidades</span>
-        </div>
-        <div className="hero__stat">
-          <span className="hero__stat-number">02</span>
-          <span className="hero__stat-label">Cidades</span>
-        </div>
-        <div className="hero__stat">
-          <span className="hero__stat-number">01</span>
-          <span className="hero__stat-label">Comunidade</span>
+        {/* Numeros dentro do bloco de texto: o rodape do video fica livre
+            pras legendas das unidades que vem gravadas nele. */}
+        <div className="hero__stats">
+          <div className="hero__stat">
+            <span className="hero__stat-number">04</span>
+            <span className="hero__stat-label">Unidades</span>
+          </div>
+          <div className="hero__stat">
+            <span className="hero__stat-number">02</span>
+            <span className="hero__stat-label">Cidades</span>
+          </div>
+          <div className="hero__stat">
+            <span className="hero__stat-number">01</span>
+            <span className="hero__stat-label">Comunidade</span>
+          </div>
         </div>
       </div>
     </section>
