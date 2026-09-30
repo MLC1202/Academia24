@@ -1,8 +1,12 @@
 // Secao da avaliacao fisica: foto com filtro vermelho a esquerda,
-// texto e itens medidos a direita. A foto ainda e placeholder do Unsplash.
+// texto e itens medidos a direita. Foto em public/imagens/bioimpedancia.jpg
+// (pra trocar: mesmo nome, mesma pasta). O BASE_URL garante o caminho
+// certo tanto na Hostinger quanto no GitHub Pages.
 
 import { Link } from "react-router-dom";
 import "./Bioimpedancia.css";
+
+const foto = `${import.meta.env.BASE_URL}imagens/bioimpedancia.jpg`;
 
 const itens = [
   "Composição corporal",
@@ -14,7 +18,12 @@ const itens = [
 function Bioimpedancia() {
   return (
     <section className="bio snap-section" id="bioimpedancia">
-      <div className="bio__foto">
+      <div
+        className="bio__foto"
+        style={{
+          backgroundImage: `linear-gradient(rgba(224, 52, 44, 0.82), rgba(224, 52, 44, 0.82)), url(${foto})`,
+        }}
+      >
         <p className="bio__frase">
           Evolução
           <br />

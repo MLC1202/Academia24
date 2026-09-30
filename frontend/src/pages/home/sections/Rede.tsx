@@ -1,6 +1,7 @@
 // Secao "A Rede": os 4 pilares em acordeao.
-// Estrutura e equipamentos ja usam foto real (public/imagens/rede/); os outros dois
-// ainda sao placeholder do Unsplash. Foto nova: mesmo nome, mesma pasta.
+// As 4 fotos ficam em public/imagens/rede/. Estrutura e equipamentos sao
+// fotos reais da academia; bioimpedancia e atendimento sao de banco de
+// imagens. Foto nova: mesmo nome, mesma pasta.
 //
 // O BASE_URL e o caminho onde o site esta hospedado ('/' na Hostinger,
 // '/Academia24/' no GitHub Pages). Sem ele a foto da 404 no Pages.
@@ -39,14 +40,17 @@ const pilares = [
     titulo: "Avaliação com bioimpedância",
     texto:
       "Acompanhe composição corporal, percentual de gordura, massa muscular e sua evolução.",
-    foto: "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=1600&q=80",
+    foto: `${import.meta.env.BASE_URL}imagens/rede/bioimpedancia.jpg`,
+    posicao: "center 40%",
   },
   {
     n: "04",
     titulo: "Atendimento próximo",
     texto:
       "Profissionais presentes para acolher, orientar e fazer você se sentir parte da comunidade.",
-    foto: "https://images.unsplash.com/photo-1540497077202-7c8a3999166f?w=1600&q=80",
+    foto: `${import.meta.env.BASE_URL}imagens/rede/atendimento.jpg`,
+    // Foto vertical: sobe o corte pra mostrar o rosto do professor.
+    posicao: "center 36%",
   },
 ];
 

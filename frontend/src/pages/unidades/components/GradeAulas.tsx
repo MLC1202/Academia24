@@ -1,27 +1,25 @@
 // Grade de aulas coletivas. Mostra as abas da semana e as aulas do dia
 // escolhido, lendo o que estiver salvo pelo dashboard.
 //
-// Na pagina /unidades aparece a grade das 4. Na subpagina de uma unidade eu
-// passo so o slug dela e a grade vira um card unico.
+// Na pagina /unidades aparece um seletor de unidade logo abaixo dos dias
+// (Alphaville vem marcada) e a grade mostra so a unidade escolhida. Na
+// subpagina de uma unidade eu passo so o slug dela e o seletor some.
 //
 // Visual no estilo Apple (skill apple-design): fundo claro, uma cor de
 // destaque so (o vermelho), hierarquia feita com tamanho de letra e espaco,
 // e movimento discreto porque aqui o cliente veio consultar, nao ver show.
 //   - Dias num "segmented control": uma capsula cinza com uma pilula branca
-//     que desliza ate o dia escolhido. Setas do teclado tambem trocam o dia.
-//   - Cada unidade e um card branco arredondado com a lista de aulas.
+//     que desliza ate o dia escolhido. Setas do teclado tambem trocam.
+//   - Unidade numa roleta vertical, igual ao seletor de hora do iPhone:
+//     ocupa a altura de uma linha so em destaque, as vizinhas aparecem
+//     apagadas em cima e embaixo, e rola com o dedo/mouse/setas.
+//   - A unidade vira um card branco unico com o dia inteiro, em colunas.
+//     Como cabe tudo, nao existe mais o botao de ampliar / card flutuante.
 //   - No dia de hoje, aula que ja passou fica apagada e a proxima ganha a
 //     etiqueta "Próxima". Em outro dia a lista aparece normal.
-//   - No celular os cards viram um carrossel de lado (arrasta pro lado),
-//     em vez de 4 listas empilhadas.
-//   - Com as 4 unidades lado a lado, cada card mostra so LIMITE aulas (hoje:
-//     a partir da proxima; outros dias: as primeiras). O botao de ampliar
-//     abre o dia inteiro num card flutuante (<dialog>), em duas colunas e
-//     separado em Manha / Tarde / Noite. Esc ou clicar fora fecha.
-//   - Na subpagina de uma unidade (card unico) a lista ja vem completa.
 
 import { Fragment, useEffect, useMemo, useRef, useState } from "react";
-import type { CSSProperties, KeyboardEvent, MouseEvent } from "react";
+import type { CSSProperties, KeyboardEvent } from "react";
 import { Link } from "react-router-dom";
 import { slugsUnidades, unidades, type UnidadeSlug } from "../../../data/unidades";
 import {
@@ -38,8 +36,11 @@ type Props = {
   slugs?: UnidadeSlug[];
 };
 
-// Quantas aulas cada card mostra quando as 4 unidades aparecem juntas.
-const LIMITE = 4;
+// Unidade que ja vem marcada no seletor.
+const PADRAO: UnidadeSlug = "alphaville";
+
+// Altura de cada linha da roleta de unidades (tem que bater com o CSS).
+const LINHA = 44;
 
 // Hora atual no mesmo formato da grade ('HH:MM'), pra comparar como texto.
 function horaAgora() {
@@ -47,41 +48,27 @@ function horaAgora() {
   return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
 }
 
-// Recorte do card: hoje comeca na proxima aula (se sobrar pouca coisa,
-// completa com as ultimas que ja passaram); nos outros dias, as primeiras.
-function recorte(aulas: Aula[], ehHoje: boolean, agora: string) {
-  if (aulas.length <= LIMITE) return aulas;
-  if (!ehHoje) return aulas.slice(0, LIMITE);
-  const i = aulas.findIndex((a) => a.hora >= agora);
-  const inicio = i === -1 ? aulas.length - LIMITE : Math.min(i, aulas.length - LIMITE);
-  return aulas.slice(inicio, inicio + LIMITE);
+// Setas esquerda/direita (e Home/End) andam pelas opcoes, como nas abas
+// nativas. Devolve o novo indice, ou null se a tecla nao e de navegacao.
+function proximoIndice(e: KeyboardEvent, indice: number, total: number) {
+  const passos: Record<string, number> = { ArrowRight: 1, ArrowLeft: -1 };
+  if (e.key in passos) return (indice + passos[e.key] + total) % total;
+  if (e.key === "Home") return 0;
+  if (e.key === "End") return total - 1;
+  return null;
 }
-
-const periodos = [
-  { nome: "Manhã", ate: "12:00" },
-  { nome: "Tarde", ate: "18:00" },
-  { nome: "Noite", ate: "24:00" },
-];
 
 type ListaProps = {
   aulas: Aula[];
   ehHoje: boolean;
   agora: string;
-  // id da proxima aula do dia inteiro (pode nem estar nesta lista)
   proximaId?: string;
-  className?: string;
 };
 
 // Uma lista de aulas com os estados de hoje (passou / proxima).
-function ListaAulas({
-  aulas,
-  ehHoje,
-  agora,
-  proximaId,
-  className = "grade__aulas",
-}: ListaProps) {
+function ListaAulas({ aulas, ehHoje, agora, proximaId }: ListaProps) {
   return (
-    <ul className={className}>
+    <ul className="grade__aulas">
       {aulas.map((aula) => {
         const passou = ehHoje && aula.hora < agora;
         const ehProxima = aula.id === proximaId;
@@ -125,34 +112,39 @@ function GradeAulas({ slugs = slugsUnidades }: Props) {
   const semana = useMemo(() => semanaAtual(), []);
   const grades = useMemo(() => carregarGrades(), []);
   const [dia, setDia] = useState<Dia>(() => diaDeHoje());
+  const [unidade, setUnidade] = useState<UnidadeSlug>(() =>
+    slugs.includes(PADRAO) ? PADRAO : slugs[0],
+  );
   const abasRef = useRef<(HTMLButtonElement | null)[]>([]);
 
-  // Unidade aberta no card flutuante (null = fechado).
-  const [aberta, setAberta] = useState<UnidadeSlug | null>(null);
-  const dialogRef = useRef<HTMLDialogElement>(null);
+  // Roleta: "centro" e a linha que esta no meio agora (muda enquanto rola,
+  // so pro destaque); "unidade" so troca quando a rolagem para, pra grade
+  // nao ficar piscando a cada linha que passa.
+  const rodaRef = useRef<HTMLDivElement>(null);
+  const paradaRef = useRef<number | undefined>(undefined);
+  const [centro, setCentro] = useState(() => slugs.indexOf(unidade));
 
-  // O <dialog> nativo ja prende o foco la dentro e fecha com Esc.
+  // Ao abrir, a roleta ja comeca parada na unidade padrao.
   useEffect(() => {
-    const d = dialogRef.current;
-    if (!d) return;
-    if (aberta && !d.open) {
-      d.showModal();
-      // Hoje: ja abre rolado ate a proxima aula (no celular a lista e longa).
-      const corpo = d.querySelector<HTMLElement>(".grade__modal-corpo");
-      const proxima = d.querySelector<HTMLElement>(".grade__aula--proxima");
-      if (corpo && proxima && corpo.scrollHeight > corpo.clientHeight) {
-        corpo.scrollTop =
-          proxima.getBoundingClientRect().top -
-          corpo.getBoundingClientRect().top -
-          corpo.clientHeight / 3;
-      }
-    }
-    if (!aberta && d.open) d.close();
-  }, [aberta]);
+    const roda = rodaRef.current;
+    if (roda) roda.scrollTop = slugs.indexOf(unidade) * LINHA;
+    return () => window.clearTimeout(paradaRef.current);
+    // so na montagem
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  // Clique no fundo escuro (fora do card) fecha.
-  const cliqueNoFundo = (e: MouseEvent<HTMLDialogElement>) => {
-    if (e.target === e.currentTarget) setAberta(null);
+  const girarPara = (i: number) => {
+    const suave = !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    rodaRef.current?.scrollTo({ top: i * LINHA, behavior: suave ? "smooth" : "auto" });
+  };
+
+  const onRolarRoda = () => {
+    const roda = rodaRef.current;
+    if (!roda) return;
+    const i = Math.min(slugs.length - 1, Math.max(0, Math.round(roda.scrollTop / LINHA)));
+    setCentro(i);
+    window.clearTimeout(paradaRef.current);
+    paradaRef.current = window.setTimeout(() => setUnidade(slugs[i]), 120);
   };
 
   const indice = semana.findIndex((d) => d.chave === dia);
@@ -160,19 +152,29 @@ function GradeAulas({ slugs = slugsUnidades }: Props) {
   const ehHoje = diaAtual.hoje;
   const agora = ehHoje ? horaAgora() : "";
 
-  // Setas esquerda/direita (e Home/End) andam pelos dias, como nas abas
-  // nativas. O foco vai junto pra quem navega pelo teclado.
-  const onTeclado = (e: KeyboardEvent<HTMLDivElement>) => {
-    const passos: Record<string, number> = { ArrowRight: 1, ArrowLeft: -1 };
-    let novo: number;
-    if (e.key in passos) novo = (indice + passos[e.key] + semana.length) % semana.length;
-    else if (e.key === "Home") novo = 0;
-    else if (e.key === "End") novo = semana.length - 1;
-    else return;
+  const onTecladoDias = (e: KeyboardEvent<HTMLDivElement>) => {
+    const novo = proximoIndice(e, indice, semana.length);
+    if (novo === null) return;
     e.preventDefault();
     setDia(semana[novo].chave);
     abasRef.current[novo]?.focus();
   };
+
+  // Setas cima/baixo (e Home/End) giram a roleta.
+  const onTecladoRoda = (e: KeyboardEvent<HTMLDivElement>) => {
+    const passos: Record<string, number> = { ArrowDown: 1, ArrowUp: -1 };
+    let novo: number;
+    if (e.key in passos) novo = Math.min(slugs.length - 1, Math.max(0, centro + passos[e.key]));
+    else if (e.key === "Home") novo = 0;
+    else if (e.key === "End") novo = slugs.length - 1;
+    else return;
+    e.preventDefault();
+    girarPara(novo);
+  };
+
+  const info = unidades[unidade];
+  const aulas = ordenarPorHora(grades[unidade][dia]);
+  const proximaId = ehHoje ? aulas.find((a) => a.hora >= agora)?.id : undefined;
 
   return (
     <section className="grade snap-section" id="grade">
@@ -185,16 +187,16 @@ function GradeAulas({ slugs = slugsUnidades }: Props) {
       <div className="grade__text">
         <p>
           {unica
-            ? `Escolha o dia para ver as aulas coletivas da unidade ${unidades[slugs[0]].nome}.`
-            : "As modalidades e os horários variam por unidade. Escolha o dia para ver a grade das quatro unidades."}
+            ? `Escolha o dia para ver as aulas coletivas da unidade ${info.nome}.`
+            : "As modalidades e os horários variam por unidade. Escolha o dia e a unidade para ver a grade."}
         </p>
       </div>
 
       <div
-        className="grade__dias"
+        className={unica ? "grade__dias" : "grade__dias grade__dias--com-roleta"}
         role="tablist"
         aria-label="Dia da semana"
-        onKeyDown={onTeclado}
+        onKeyDown={onTecladoDias}
         style={{ "--idx": indice, "--total": semana.length } as CSSProperties}
       >
         {/* A pilula branca que desliza atras do dia escolhido */}
@@ -228,156 +230,91 @@ function GradeAulas({ slugs = slugsUnidades }: Props) {
         ))}
       </div>
 
+      {/* Seletor de unidade: roleta vertical estilo iPhone, ao lado dos dias */}
+      {!unica && (
+        <div className="grade__roleta">
+          {/* Faixa cinza do meio: marca a linha escolhida */}
+          <span className="grade__roleta-faixa" aria-hidden="true" />
+          <div
+            ref={rodaRef}
+            className="grade__roleta-roda"
+            role="listbox"
+            aria-label="Unidade"
+            aria-activedescendant={`grade-unidade-${slugs[centro]}`}
+            tabIndex={0}
+            onScroll={onRolarRoda}
+            onKeyDown={onTecladoRoda}
+          >
+            {slugs.map((slug, i) => (
+              <div
+                key={slug}
+                id={`grade-unidade-${slug}`}
+                role="option"
+                aria-selected={i === centro}
+                className={
+                  i === centro
+                    ? "grade__roleta-item grade__roleta-item--ativo"
+                    : "grade__roleta-item"
+                }
+                onClick={() => girarPara(i)}
+              >
+                <span className="grade__roleta-marca">{unidades[slug].marca}</span>
+                <span className="grade__roleta-nome">{unidades[slug].nome}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div
         id="grade-cards"
         role="tabpanel"
-        aria-label={`${diaAtual.longo}, dia ${diaAtual.numero}`}
-        className={unica ? "grade__cards grade__cards--unica" : "grade__cards"}
+        aria-label={`${info.nome}, ${diaAtual.longo}, dia ${diaAtual.numero}`}
+        className="grade__cards"
       >
-        {slugs.map((slug) => {
-          const info = unidades[slug];
-          const aulas = ordenarPorHora(grades[slug][dia]);
-          const visiveis = unica ? aulas : recorte(aulas, ehHoje, agora);
-          const escondidas = aulas.length - visiveis.length;
-          const proximaId = ehHoje ? aulas.find((a) => a.hora >= agora)?.id : undefined;
+        <article className="grade__card">
+          <header className="grade__card-topo">
+            <div className="grade__card-marca">{info.marca}</div>
+            <h3 className="grade__card-title">{info.nome}</h3>
+            <p className="grade__card-text">
+              {ehHoje ? "Hoje" : diaAtual.longo}, {diaAtual.numero}
+              {aulas.length > 0 && ` · ${aulas.length} ${aulas.length === 1 ? "aula" : "aulas"}`}
+            </p>
+          </header>
 
-          return (
-            <article className="grade__card" key={slug}>
-              <header className="grade__card-topo">
-                <div className="grade__card-marca">{info.marca}</div>
-                <h3 className="grade__card-title">{info.nome}</h3>
-                <p className="grade__card-text">
-                  {ehHoje ? "Hoje" : diaAtual.longo}, {diaAtual.numero}
-                  {aulas.length > 0 && ` · ${aulas.length} ${aulas.length === 1 ? "aula" : "aulas"}`}
-                </p>
+          {/* A key com dia + unidade faz a lista entrar de novo (fade) ao trocar */}
+          {aulas.length > 0 ? (
+            <ListaAulas
+              key={`${unidade}-${dia}`}
+              aulas={aulas}
+              ehHoje={ehHoje}
+              agora={agora}
+              proximaId={proximaId}
+            />
+          ) : (
+            <p className="grade__vazio" key={`${unidade}-${dia}`}>
+              Sem aulas coletivas neste dia.
+            </p>
+          )}
 
-                {escondidas > 0 && (
-                  <button
-                    type="button"
-                    className="grade__ampliar"
-                    aria-label={`Ver o dia inteiro da unidade ${info.nome}`}
-                    onClick={() => setAberta(slug)}
-                  >
-                    <svg viewBox="0 0 20 20" aria-hidden="true">
-                      <path d="M12 3h5v5M17 3l-6 6M8 17H3v-5M3 17l6-6" />
-                    </svg>
-                  </button>
-                )}
-              </header>
-
-              {/* A key com o dia faz a lista entrar de novo (fade) ao trocar */}
-              {visiveis.length > 0 ? (
-                <ListaAulas
-                  key={dia}
-                  aulas={visiveis}
-                  ehHoje={ehHoje}
-                  agora={agora}
-                  proximaId={proximaId}
-                />
-              ) : (
-                <p className="grade__vazio" key={dia}>
-                  Sem aulas coletivas neste dia.
-                </p>
-              )}
-
-              {escondidas > 0 && (
-                <button
-                  type="button"
-                  className="grade__mais"
-                  onClick={() => setAberta(slug)}
-                >
-                  + {escondidas} {escondidas === 1 ? "aula" : "aulas"} neste dia
-                </button>
-              )}
-
-              {unica ? (
-                <Link
-                  to={`/agendamento?unidade=${slug}`}
-                  className="grade__card-btn grade__card-btn--cheio"
-                >
-                  Agendar aula experimental
-                </Link>
-              ) : (
-                <Link to={`/unidades/${slug}`} className="grade__card-btn">
-                  Ver unidade
-                  <span aria-hidden="true" className="grade__card-seta">
-                    ›
-                  </span>
-                </Link>
-              )}
-            </article>
-          );
-        })}
-      </div>
-
-      {/* Card flutuante com o dia inteiro de uma unidade */}
-      <dialog
-        ref={dialogRef}
-        className="grade__modal"
-        aria-labelledby="grade-modal-titulo"
-        onClose={() => setAberta(null)}
-        onClick={cliqueNoFundo}
-      >
-        {aberta && (
-          <div className="grade__modal-caixa">
-            <header className="grade__modal-topo">
-              <div>
-                <div className="grade__card-marca">{unidades[aberta].marca}</div>
-                <h3 className="grade__modal-titulo" id="grade-modal-titulo">
-                  {unidades[aberta].nome}
-                </h3>
-                <p className="grade__card-text">
-                  {ehHoje ? "Hoje" : diaAtual.longo}, {diaAtual.numero} ·{" "}
-                  {grades[aberta][dia].length} aulas
-                </p>
-              </div>
-              <button
-                type="button"
-                className="grade__fechar"
-                aria-label="Fechar"
-                onClick={() => setAberta(null)}
-              >
-                <svg viewBox="0 0 20 20" aria-hidden="true">
-                  <path d="M5 5l10 10M15 5L5 15" />
-                </svg>
-              </button>
-            </header>
-
-            <div className="grade__modal-corpo">
-              {periodos.map((per, i) => {
-                const todas = ordenarPorHora(grades[aberta][dia]);
-                const proximaId = ehHoje
-                  ? todas.find((a) => a.hora >= agora)?.id
-                  : undefined;
-                const de = i === 0 ? "00:00" : periodos[i - 1].ate;
-                const aulas = todas.filter(
-                  (a) => a.hora >= de && a.hora < per.ate,
-                );
-                if (aulas.length === 0) return null;
-                return (
-                  <section className="grade__periodo" key={per.nome}>
-                    <h4 className="grade__periodo-nome">{per.nome}</h4>
-                    <ListaAulas
-                      aulas={aulas}
-                      ehHoje={ehHoje}
-                      agora={agora}
-                      proximaId={proximaId}
-                      className="grade__aulas grade__aulas--modal"
-                    />
-                  </section>
-                );
-              })}
-            </div>
-
-            <footer className="grade__modal-rodape">
-              <Link to={`/unidades/${aberta}`} className="grade__card-btn">
+          <div className="grade__card-acoes">
+            <Link
+              to={`/agendamento?unidade=${unidade}`}
+              className="grade__card-btn grade__card-btn--cheio"
+            >
+              Agendar aula experimental
+            </Link>
+            {!unica && (
+              <Link to={`/unidades/${unidade}`} className="grade__card-btn">
                 Ver unidade
-                <span aria-hidden="true" className="grade__card-seta">›</span>
+                <span aria-hidden="true" className="grade__card-seta">
+                  ›
+                </span>
               </Link>
-            </footer>
+            )}
           </div>
-        )}
-      </dialog>
+        </article>
+      </div>
 
       <p className="grade__disclaimer">
         A grade pode sofrer alterações. Confirme a aula e a disponibilidade

@@ -1,4 +1,5 @@
-/* Cabecalho fixo: 24 REDE na esquerda, menu de 3 tracinhos na direita.
+/* Cabecalho fixo: 24 REDE na esquerda, menu fluido na direita
+   (components/FluidMenu).
    --solid e o estado depois que eu saio do hero: preto meio transparente com
    o fundo desfocado por tras. --interna e o das paginas sem hero. */
 
@@ -89,48 +90,22 @@
   color: #d5d5d5;
 }
 
-/* ---------- botao de 3 tracinhos ---------- */
+/* ---------- menu fluido em cima do video ----------
+   Enquanto o cabecalho esta transparente (topo da home), a bolinha do menu
+   acompanha: vidro fosco com contorno branco, deixando o video aparecer.
+   Quando o cabecalho escurece (rolou ou abriu o menu) ela volta pro cinza
+   escuro normal. */
 
-.header__toggle {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  flex-shrink: 0;
-  gap: 5px;
-  width: 44px;
-  height: 44px;
-  margin-left: auto;
-  padding: 0;
-  border: 1px solid rgba(255, 255, 255, 0.35);
-  background: transparent;
-  transition: border-color 0.2s ease;
+.header:not(.header--solid) .fluid__toggle {
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.4);
+  color: var(--color-white);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
-.header__toggle:hover,
-.header--aberto .header__toggle {
-  border-color: var(--color-white);
-}
-
-.header__toggle-barra {
-  display: block;
-  width: 18px;
-  height: 2px;
-  margin: 0 auto;
-  background: var(--color-white);
-  transition: transform 0.25s ease, opacity 0.2s ease;
-}
-
-/* Os 3 tracinhos viram um X com o menu aberto. */
-.header--aberto .header__toggle-barra:nth-child(1) {
-  transform: translateY(7px) rotate(45deg);
-}
-
-.header--aberto .header__toggle-barra:nth-child(2) {
-  opacity: 0;
-}
-
-.header--aberto .header__toggle-barra:nth-child(3) {
-  transform: translateY(-7px) rotate(-45deg);
+.header:not(.header--solid) .fluid__toggle:hover {
+  background: rgba(255, 255, 255, 0.16);
 }
 
 /* ---------- trilha de volta: Home › Unidades › Alphaville ---------- */
@@ -141,7 +116,7 @@
 }
 
 /* Com trilha, e ela que empurra o botao pra direita. */
-.header__trilha + .header__toggle {
+.header__trilha + .fluid {
   margin-left: 0;
 }
 
@@ -199,74 +174,6 @@ a.header__trilha-item:hover {
   color: var(--color-white);
 }
 
-/* ---------- menu dos 4 topicos ---------- */
-
-/* Painel que desce do cabecalho, alinhado a direita. */
-.header__menu {
-  position: absolute;
-  top: calc(100% + 8px);
-  right: 48px;
-  width: 280px;
-  display: flex;
-  flex-direction: column;
-  padding: 8px;
-  background: #0d0d0d;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.35);
-  animation: header-menu-entra 0.2s ease;
-}
-
-.header__menu[hidden] {
-  display: none;
-}
-
-@keyframes header-menu-entra {
-  from {
-    opacity: 0;
-    transform: translateY(-6px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-
-.header__menu-item {
-  display: flex;
-  align-items: baseline;
-  gap: 14px;
-  padding: 14px 16px;
-  font-family: var(--font-display);
-  font-size: 18px;
-  font-weight: 700;
-  color: #cfcfcf;
-  border-left: 2px solid transparent;
-  transition: color 0.2s ease, background-color 0.2s ease,
-    border-color 0.2s ease;
-}
-
-.header__menu-item + .header__menu-item {
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.header__menu-item:hover {
-  color: var(--color-white);
-  background: rgba(255, 255, 255, 0.05);
-}
-
-.header__menu-item--ativo {
-  color: var(--color-white);
-  border-left-color: var(--color-red);
-}
-
-.header__menu-n {
-  font-family: var(--font-body);
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  color: var(--color-red);
-}
-
 /* ---------- telas menores ---------- */
 
 @media (max-width: 1024px) {
@@ -274,10 +181,6 @@ a.header__trilha-item:hover {
   .header--solid {
     padding-left: 24px;
     padding-right: 24px;
-  }
-
-  .header__menu {
-    right: 24px;
   }
 }
 
@@ -307,7 +210,7 @@ a.header__trilha-item:hover {
     margin-left: 0;
   }
 
-  .header__trilha + .header__toggle {
+  .header__trilha + .fluid {
     margin-left: auto;
   }
 
@@ -321,40 +224,4 @@ a.header__trilha-item:hover {
     padding: 6px 12px 6px 10px;
   }
 
-  /* Menu aberto: cabecalho escuro de vez pra dar contraste. */
-  .header--aberto,
-  .header--aberto.header--solid {
-    background: #0d0d0d;
-  }
-
-  .header__menu {
-    top: 100%;
-    left: 0;
-    right: 0;
-    width: auto;
-    padding: 4px 20px 16px;
-    border-left: 0;
-    border-right: 0;
-  }
-
-  .header__menu-item {
-    padding: 16px 4px;
-    border-left: 0;
-  }
-
-  .header__menu-item--ativo {
-    background: rgba(255, 255, 255, 0.05);
-    padding-left: 12px;
-    border-left: 2px solid var(--color-red);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .header__menu {
-    animation: none;
-  }
-
-  .header__toggle-barra {
-    transition: none;
-  }
 }

@@ -17,11 +17,12 @@
   padding: 56px 48px;
   overflow: hidden;
   background-color: var(--color-red);
+  /* A foto (public/imagens/bioimpedancia.jpg) entra pelo Bioimpedancia.tsx,
+     por causa do BASE_URL. Aqui fica so o vermelho, de reserva. */
   background-image: linear-gradient(
-      rgba(224, 52, 44, 0.82),
-      rgba(224, 52, 44, 0.82)
-    ),
-    url("https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1600&q=80");
+    rgba(224, 52, 44, 0.82),
+    rgba(224, 52, 44, 0.82)
+  );
   background-size: cover;
   background-position: center;
 }

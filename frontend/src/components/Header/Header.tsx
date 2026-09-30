@@ -1,5 +1,5 @@
 // Cabecalho fixo, igual em todas as paginas: 24 REDE na esquerda e o menu
-// de 3 tracinhos na direita com os 4 topicos do site.
+// fluido (bolinhas que descem) na direita com os 4 topicos do site.
 //
 // - Home: nasce transparente em cima do hero e vai escurecendo conforme eu
 //   rolo.
@@ -7,16 +7,18 @@
 //   ganha a trilha de volta (Home › Unidades › Alphaville).
 
 import { useEffect, useRef, useState } from 'react';
-import { Link, NavLink, useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { ehSlugUnidade, unidades } from '../../data/unidades';
+import FluidMenu, { type ItemMenu } from '../FluidMenu/FluidMenu';
+import { icones } from '../FluidMenu/icones';
 import './Header.css';
 
 // Os 4 topicos do menu.
-const topicos = [
-  { label: 'Home', to: '/' },
-  { label: 'Unidades', to: '/unidades' },
-  { label: 'Agendamento', to: '/agendamento' },
-  { label: 'Dúvidas', to: '/duvidas' },
+const topicos: ItemMenu[] = [
+  { label: 'Home', to: '/', icone: icones.home },
+  { label: 'Unidades', to: '/unidades', icone: icones.unidades },
+  { label: 'Agendamento', to: '/agendamento', icone: icones.agendamento },
+  { label: 'Dúvidas', to: '/duvidas', icone: icones.duvidas },
 ];
 
 type Passo = { label: string; to?: string };
@@ -163,44 +165,14 @@ function Header() {
         </nav>
       )}
 
-      <button
-        type="button"
-        className="header__toggle"
-        aria-label={menuAberto ? 'Fechar menu' : 'Abrir menu'}
-        aria-expanded={menuAberto}
-        aria-controls="menu-topicos"
-        onClick={() =>
+      <FluidMenu
+        itens={topicos}
+        aberto={menuAberto}
+        onAlternar={() =>
           setMenuAbertoEm((aberto) => (aberto === pathname ? null : pathname))
         }
-      >
-        <span className="header__toggle-barra" />
-        <span className="header__toggle-barra" />
-        <span className="header__toggle-barra" />
-      </button>
-
-      <nav
-        id="menu-topicos"
-        className="header__menu"
-        aria-label="Menu principal"
-        hidden={!menuAberto}
-      >
-        {topicos.map((t, i) => (
-          <NavLink
-            key={t.to}
-            to={t.to}
-            end={t.to === '/'}
-            className={({ isActive }) =>
-              isActive
-                ? 'header__menu-item header__menu-item--ativo'
-                : 'header__menu-item'
-            }
-            onClick={fechar}
-          >
-            <span className="header__menu-n">0{i + 1}</span>
-            <span>{t.label}</span>
-          </NavLink>
-        ))}
-      </nav>
+        onEscolher={fechar}
+      />
     </header>
   );
 }

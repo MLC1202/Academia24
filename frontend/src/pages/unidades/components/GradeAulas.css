@@ -143,6 +143,99 @@
   background: var(--color-red);
 }
 
+/* ---------- Seletor de unidade: roleta vertical (estilo iPhone) ----------
+   Mostra 3 linhas: a do meio em destaque sobre uma faixa cinza e as
+   vizinhas apagadas, sumindo nas bordas. Rola com snap linha a linha.
+   A altura da linha (44px) tem que bater com LINHA no GradeAulas.tsx. */
+
+.grade__roleta {
+  --linha: 44px;
+  grid-column: 1 / -1;
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  margin-top: 64px;
+  /* Fica na coluna da direita, na mesma linha dos dias. Os dois centralizam
+     um no outro (a roleta e mais alta que a capsula dos dias). */
+  grid-column: 2;
+  align-self: center;
+}
+
+.grade__dias--com-roleta {
+  grid-column: 1;
+  align-self: center;
+}
+
+.grade__roleta-faixa {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: var(--linha);
+  height: var(--linha);
+  border-radius: 12px;
+  background: rgba(10, 10, 10, 0.06);
+  pointer-events: none;
+}
+
+.grade__roleta-roda {
+  position: relative;
+  height: calc(var(--linha) * 3);
+  padding: var(--linha) 0;
+  overflow-y: auto;
+  scroll-snap-type: y mandatory;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+  border-radius: 12px;
+  /* As linhas de cima e de baixo vao sumindo, como numa roda */
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 38%, #000 62%, transparent);
+  mask-image: linear-gradient(to bottom, transparent, #000 38%, #000 62%, transparent);
+}
+
+.grade__roleta-roda::-webkit-scrollbar {
+  display: none;
+}
+
+.grade__roleta-roda:focus-visible {
+  outline: 2px solid var(--color-red);
+  outline-offset: 2px;
+}
+
+.grade__roleta-item {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 10px;
+  height: var(--linha);
+  line-height: var(--linha);
+  scroll-snap-align: center;
+  color: var(--grade-texto-2);
+  cursor: pointer;
+  user-select: none;
+  transition: color 0.2s ease, transform 0.2s ease;
+  transform: scale(0.92);
+}
+
+.grade__roleta-item--ativo {
+  color: var(--grade-texto);
+  transform: none;
+}
+
+.grade__roleta-marca {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.grade__roleta-nome {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.grade__roleta-item--ativo .grade__roleta-marca {
+  color: var(--grade-texto-2);
+}
+
 /* Texto so pra leitor de tela */
 .grade__sr {
   position: absolute;
@@ -157,93 +250,19 @@
 
 .grade__cards {
   grid-column: 1 / -1;
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 16px;
   margin-top: 24px;
 }
 
 .grade__card {
   display: flex;
   flex-direction: column;
-  padding: 28px 24px 18px;
+  padding: 36px 36px 28px;
   border-radius: 24px;
   background: var(--color-white);
 }
 
 .grade__card-topo {
-  position: relative;
   margin-bottom: 18px;
-  padding-right: 48px;
-}
-
-/* Botao de ampliar: circulo discreto no canto do card */
-.grade__ampliar,
-.grade__fechar {
-  display: grid;
-  place-items: center;
-  width: 40px;
-  height: 40px;
-  padding: 0;
-  border: 0;
-  border-radius: 50%;
-  background: rgba(10, 10, 10, 0.05);
-  color: var(--grade-texto);
-  cursor: pointer;
-  transition: background-color 0.2s ease, transform 0.2s ease;
-}
-
-.grade__ampliar {
-  position: absolute;
-  top: -6px;
-  right: -8px;
-}
-
-.grade__ampliar:hover,
-.grade__fechar:hover {
-  background: rgba(10, 10, 10, 0.1);
-}
-
-.grade__ampliar:active,
-.grade__fechar:active {
-  transform: scale(0.94);
-}
-
-.grade__ampliar:focus-visible,
-.grade__fechar:focus-visible,
-.grade__mais:focus-visible {
-  outline: 2px solid var(--color-red);
-  outline-offset: 2px;
-}
-
-.grade__ampliar svg,
-.grade__fechar svg {
-  width: 18px;
-  height: 18px;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.8;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-/* "+ 10 aulas neste dia": abre o mesmo card flutuante */
-.grade__mais {
-  align-self: flex-start;
-  min-height: 44px;
-  margin-top: 4px;
-  padding: 0;
-  border: 0;
-  background: none;
-  font-family: inherit;
-  font-size: 15px;
-  font-weight: 500;
-  color: var(--grade-texto-2);
-  cursor: pointer;
-}
-
-.grade__mais:hover {
-  color: var(--grade-texto);
 }
 
 .grade__card-marca {
@@ -268,15 +287,20 @@
 }
 
 /* Lista de aulas: linhas finas entre elas, hora com numeros alinhados */
+/* Dia inteiro em colunas que se leem de cima pra baixo, como uma grade
+   de horarios. Cabe tudo, entao nao precisa de ampliar. */
 .grade__aulas {
   list-style: none;
   margin: 0;
   padding: 0;
   flex: 1;
+  columns: 3;
+  column-gap: 48px;
   animation: grade-entra 0.28s ease-out both;
 }
 
 .grade__aula {
+  break-inside: avoid;
   display: flex;
   align-items: center;
   gap: 14px;
@@ -350,6 +374,19 @@
   color: var(--color-red);
 }
 
+/* Acoes do card: botao cheio + link "Ver unidade" ao lado */
+.grade__card-acoes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 28px;
+  margin-top: 20px;
+}
+
+.grade__card-acoes .grade__card-btn {
+  margin-top: 0;
+}
+
 .grade__card-seta {
   font-size: 20px;
   line-height: 1;
@@ -370,7 +407,6 @@
 .grade__card-btn--cheio {
   justify-content: center;
   min-height: 50px;
-  margin-top: 20px;
   padding: 0 28px;
   border-radius: 999px;
   background: var(--color-red);
@@ -402,125 +438,11 @@
 }
 
 
-/* ---------- Card flutuante (dia inteiro de uma unidade) ---------- */
-
-.grade__modal {
-  width: min(880px, calc(100vw - 48px));
-  max-width: none;
-  max-height: min(86vh, 820px);
-  margin: auto;
-  padding: 0;
-  border: 0;
-  border-radius: 28px;
-  background: var(--color-white);
-  color: var(--grade-texto, var(--color-black));
-  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.25);
-  overflow: hidden;
-}
-
-.grade__modal[open] {
-  display: flex;
-  animation: grade-modal-entra 0.32s var(--grade-mola, ease-out) both;
-}
-
-.grade__modal::backdrop {
-  background: rgba(10, 10, 10, 0.4);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  animation: grade-fundo-entra 0.25s ease-out both;
-}
-
-.grade__modal-caixa {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  min-height: 0;
-}
-
-.grade__modal-topo {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 32px 36px 20px;
-}
-
-.grade__modal-titulo {
-  margin: 4px 0 0;
-  font-family: var(--font-display);
-  font-size: clamp(30px, 4vw, 40px);
-  font-weight: 800;
-  line-height: 1.05;
-  letter-spacing: -0.03em;
-}
-
-/* Duas colunas: Manha numa, Tarde/Noite na outra (o navegador equilibra) */
-.grade__modal-corpo {
-  flex: 1;
-  min-height: 0;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  padding: 0 36px 8px;
-  columns: 2;
-  column-gap: 48px;
-}
-
-.grade__periodo {
-  break-inside: avoid;
-  margin-bottom: 20px;
-}
-
-.grade__periodo-nome {
-  margin: 0 0 4px;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--grade-texto-2);
-}
-
-.grade__aulas--modal {
-  animation: none;
-}
-
-.grade__modal-rodape {
-  padding: 8px 36px 20px;
-  border-top: 1px solid var(--grade-linha, rgba(10, 10, 10, 0.08));
-}
-
-@keyframes grade-modal-entra {
-  from {
-    opacity: 0;
-    transform: translateY(12px) scale(0.97);
-  }
-}
-
-@keyframes grade-fundo-entra {
-  from {
-    opacity: 0;
-  }
-}
-
-/* ---------- Grade de uma unidade so (subpagina) ---------- */
-
-.grade__cards--unica {
-  grid-template-columns: 1fr;
-}
-
-.grade__cards--unica .grade__card {
-  padding: 36px 36px 28px;
-}
-
-.grade__cards--unica .grade__aulas {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  column-gap: 48px;
-  align-content: start;
-}
-
 /* ---------- Tablet ---------- */
 
 @media (max-width: 1100px) {
-  .grade__cards {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  .grade__aulas {
+    columns: 2;
   }
 }
 
@@ -555,72 +477,42 @@
     font-size: 18px;
   }
 
-  /* Carrossel de lado: cada card ocupa quase a tela e o proximo aparece
-     na beirada, avisando que da pra arrastar. */
-  .grade__cards {
-    display: flex;
-    gap: 12px;
-    margin: 4px -20px 0;
-    padding: 0 20px 4px;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    scroll-padding: 0 20px;
-    overscroll-behavior-x: contain;
-    scrollbar-width: none;
+  /* Celular: uma coluna so, a roleta volta pra baixo dos dias */
+  .grade__dias--com-roleta,
+  .grade__roleta {
+    grid-column: 1;
   }
 
-  .grade__cards::-webkit-scrollbar {
-    display: none;
+  /* Puxa um pouco pra cima: a linha vazia acima de Alphaville ja da o
+     respiro em relacao aos dias */
+  .grade__roleta {
+    margin-top: -16px;
+    max-width: none;
+  }
+
+  .grade__cards {
+    margin-top: 4px;
   }
 
   .grade__card {
-    flex: 0 0 84%;
-    scroll-snap-align: start;
-    padding: 24px 20px 14px;
+    padding: 24px 20px 20px;
   }
 
   .grade__card-title {
     font-size: 26px;
   }
 
-  /* Card flutuante no celular: quase a tela toda, uma coluna */
-  .grade__modal {
-    width: calc(100vw - 24px);
-    max-height: 88svh;
-    border-radius: 24px;
-  }
-
-  .grade__modal-topo {
-    padding: 24px 20px 12px;
-  }
-
-  .grade__modal-corpo {
+  .grade__aulas {
     columns: 1;
-    padding: 0 20px 8px;
   }
 
-  .grade__modal-rodape {
-    padding: 4px 20px 12px;
+  .grade__card-acoes {
+    flex-direction: column;
+    align-items: stretch;
   }
 
-  /* Subpagina: um card so, sem carrossel */
-  .grade__cards--unica {
-    display: block;
-    margin: 4px 0 0;
-    padding: 0;
-    overflow: visible;
-  }
-
-  .grade__cards--unica .grade__card {
-    padding: 24px 20px 20px;
-  }
-
-  .grade__cards--unica .grade__aulas {
-    grid-template-columns: 1fr;
-  }
-
-  .grade__cards--unica .grade__card-btn--cheio {
-    align-self: stretch;
+  .grade__card-acoes .grade__card-btn:not(.grade__card-btn--cheio) {
+    align-self: center;
   }
 }
 
@@ -629,19 +521,13 @@
   .grade__dia,
   .grade__aula,
   .grade__card-seta,
-  .grade__card-btn--cheio {
+  .grade__card-btn--cheio,
+  .grade__roleta-item {
     transition: none;
   }
 
   .grade__aulas,
-  .grade__vazio,
-  .grade__modal[open],
-  .grade__modal::backdrop {
+  .grade__vazio {
     animation: none;
-  }
-
-  .grade__ampliar,
-  .grade__fechar {
-    transition: none;
   }
 }

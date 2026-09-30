@@ -1,0 +1,207 @@
+/* Menu fluido do cabecalho.
+   - Fechado: so a bolinha de cima, com o icone de menu.
+   - Aberto: as outras descem --passo por vez. Como --passo e menor que a
+     bolinha, uma fica encaixada atras da outra e o recorte (clip-path) um
+     pouco pra baixo faz a emenda parecer "liquida".
+   - O nome da secao aparece a esquerda da bolinha no hover/foco. Em tela
+     de toque (sem hover) os nomes ja aparecem todos com o menu aberto. */
+
+.fluid {
+  /* Mesmo tamanho e cor do original: bolinha de 64px, cinza-azulado
+     escuro, icone claro, e cada uma desce 48px (encaixa 16px na anterior) */
+  --bolha: 64px;
+  --passo: 48px;
+  --fluid-fundo: #1f2937;
+  --fluid-icone: #d1d5db;
+  --fluid-luz: #ff4a40;
+  --fluid-curva: cubic-bezier(0.4, 0, 0.2, 1);
+
+  position: relative;
+  flex-shrink: 0;
+  width: var(--bolha);
+  height: var(--bolha);
+  /* A bolinha e maior que a altura do cabecalho: a margem negativa deixa
+     ela "vazar" sem deixar o cabecalho mais alto */
+  margin: -10px 0 -10px auto;
+}
+
+/* ---------- bolinhas ---------- */
+
+.fluid__bolha {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: var(--bolha);
+  height: var(--bolha);
+  padding: 0;
+  border: 0;
+  background: var(--fluid-fundo);
+  color: var(--fluid-icone);
+  /* Recorte um pouco pra baixo: a parte de cima some atras da bolinha
+     anterior e a emenda fica arredondada */
+  clip-path: circle(50% at 50% 55%);
+}
+
+.fluid__item--ultimo .fluid__bolha {
+  clip-path: circle(50% at 50% 50%);
+}
+
+.fluid__toggle {
+  z-index: 50;
+  border-radius: 50%;
+  clip-path: none;
+  cursor: pointer;
+  /* Pra poder "se misturar" com o video da home (ver Header.css) */
+  transition: background-color 0.35s ease, box-shadow 0.35s ease,
+    color 0.35s ease, backdrop-filter 0.35s ease,
+    -webkit-backdrop-filter 0.35s ease;
+}
+
+.fluid__toggle:focus-visible {
+  outline: 2px solid var(--color-red);
+  outline-offset: 3px;
+}
+
+.fluid__icone {
+  display: block;
+  width: 24px;
+  height: 24px;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.fluid__icone svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  transition: stroke-width 0.2s ease, color 0.2s ease, filter 0.2s ease;
+}
+
+/* Passar o mouse "acende" o icone: traco mais grosso (igual ao original)
+   e uma luz vermelha em volta */
+.fluid__toggle:hover svg,
+.fluid__item:hover svg,
+.fluid__item:focus-visible svg {
+  stroke-width: 2.5;
+  color: var(--fluid-luz);
+  filter: drop-shadow(0 0 4px rgba(255, 74, 64, 0.9))
+    drop-shadow(0 0 10px rgba(224, 52, 44, 0.6));
+}
+
+/* Menu <-> X: um gira e some enquanto o outro gira e aparece */
+.fluid__icone--menu,
+.fluid__icone--fechar {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin: -12px 0 0 -12px;
+}
+
+.fluid__icone--fechar {
+  opacity: 0;
+  transform: scale(0) rotate(-180deg);
+}
+
+.fluid--aberto .fluid__icone--menu {
+  opacity: 0;
+  transform: scale(0) rotate(180deg);
+}
+
+.fluid--aberto .fluid__icone--fechar {
+  opacity: 1;
+  transform: none;
+}
+
+/* ---------- itens que descem ---------- */
+
+.fluid__item {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: var(--z);
+  display: block;
+  width: var(--bolha);
+  height: var(--bolha);
+  opacity: 0;
+  transform: translateY(0);
+  transition: transform 0.3s var(--fluid-curva), opacity 0.35s ease;
+  will-change: transform;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.fluid--aberto .fluid__item {
+  opacity: 1;
+  transform: translateY(calc(var(--i) * var(--passo)));
+  transition: transform 0.3s var(--fluid-curva), opacity 0.3s ease;
+}
+
+.fluid__item:focus-visible {
+  outline: none;
+}
+
+/* Pagina atual: icone branco (os outros sao cinza claro) */
+.fluid__item--ativo .fluid__bolha {
+  color: var(--color-white);
+}
+
+/* ---------- nome da secao ---------- */
+
+.fluid__rotulo {
+  position: absolute;
+  top: 50%;
+  right: calc(100% + 12px);
+  padding: 7px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  background: var(--fluid-fundo);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+  color: var(--color-white);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.2;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(6px, -50%);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.fluid__item--ativo .fluid__rotulo {
+  border-color: rgba(224, 52, 44, 0.7);
+}
+
+.fluid--aberto .fluid__item:hover .fluid__rotulo,
+.fluid--aberto .fluid__item:focus-visible .fluid__rotulo {
+  opacity: 1;
+  transform: translate(0, -50%);
+}
+
+.fluid__item:focus-visible .fluid__rotulo {
+  outline: 2px solid var(--color-red);
+  outline-offset: 2px;
+}
+
+/* Toque (sem mouse): nao existe hover, entao os nomes ja vem a mostra */
+@media (hover: none) {
+  .fluid--aberto .fluid__rotulo {
+    opacity: 1;
+    transform: translate(0, -50%);
+  }
+}
+
+@media (max-width: 860px) {
+  .fluid {
+    --bolha: 52px;
+    --passo: 39px;
+    margin-top: -4px;
+    margin-bottom: -4px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fluid__item,
+  .fluid--aberto .fluid__item,
+  .fluid__icone,
+  .fluid__rotulo {
+    transition: opacity 0.15s ease;
+  }
+}
