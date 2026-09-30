@@ -64,10 +64,14 @@ function Hero() {
             <span className="hero__stat-number">04</span>
             <span className="hero__stat-label">Unidades</span>
           </div>
+          {/* Os fios sao elementos proprios: com space-between eles caem
+              bem no meio do espaco entre um numero e outro */}
+          <span className="hero__stat-sep" aria-hidden="true" />
           <div className="hero__stat">
             <span className="hero__stat-number">02</span>
             <span className="hero__stat-label">Cidades</span>
           </div>
+          <span className="hero__stat-sep" aria-hidden="true" />
           <div className="hero__stat">
             <span className="hero__stat-number">01</span>
             <span className="hero__stat-label">Comunidade</span>
