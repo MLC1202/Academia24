@@ -10,7 +10,11 @@ seguranca (`SEGURANCA.md`, que fica so na maquina local, fora do git).
 backend/
 ├── public/api/        pontos de entrada (na Hostinger: public_html/api/)
 │   ├── saude.php      GET -> {"ok":true} se PHP e banco respondem
-│   └── grades.php     GET -> grade no ar de cada unidade + cancelamentos da semana
+│   ├── grades.php     GET -> grade no ar de cada unidade + cancelamentos (7 dias)
+│   ├── sessao.php     GET -> logado? + token CSRF
+│   ├── login.php      POST {email, senha} (CSRF, rate limit) -> pede o codigo
+│   ├── login-mfa.php  POST {codigo} (6 digitos do app autenticador)
+│   └── logout.php     POST (CSRF)
 ├── src/               fora da raiz web: config, banco, respostas, log
 ├── bin/migrate.php    roda as migrations (so pela linha de comando)
 ├── sql/migrations/    NNN_nome.up.sql + NNN_nome.down.sql
@@ -62,6 +66,27 @@ docker compose exec php php bin/migrate.php down   # desfaz a ultima
 
 Nunca editar uma migration que ja rodou em producao: crie a proxima (`002_...`).
 
+## Conta do dashboard
+
+```bash
+docker compose exec php php bin/admin.php
+```
+
+Cria a conta da dona (ou troca a senha, se o e-mail ja existir). E o UNICO
+jeito de criar conta: o site nao tem pagina de cadastro. Senha com no minimo
+12 caracteres, guardada so como hash Argon2id.
+
+## Verificacao em duas etapas (MFA)
+
+```bash
+docker compose exec php php bin/mfa.php
+```
+
+Liga o MFA de uma conta (mostra a chave pra cadastrar no Google/Microsoft
+Authenticator e so grava depois de conferir um codigo). Rodando de novo numa
+conta com MFA, oferece desligar -- e o caminho se a dona perder o celular.
+Em producao (`APP_ENV=prod`) conta sem MFA nao entra.
+
 ## Dados de exemplo (seed)
 
 ```bash
@@ -74,6 +99,18 @@ unidade; as anteriores ficam guardadas.
 
 A validacao de aula (dia, hora `HH:MM`, nome da modalidade) fica em
 `src/grade.php` e vale pra tudo que grava grade: seed, upload e edicao.
+
+## Rotas da API (nada exposto sem querer)
+
+```bash
+docker compose exec php php bin/rotas.php
+```
+
+Confere todo arquivo de `public/api/`: rota que nao esta na lista de publicas
+precisa de `exigir_admin()`, rota que grava precisa de `exigir_csrf()`, e
+toda rota precisa de `exigir_metodo()`. Rodar antes de todo commit que mexe
+na API. O `public/api/.htaccess` so deixa responder `nome.php` (arquivo com
+`_` no comeco, backup ou `.txt` dao 403).
 
 ## Banco
 
@@ -98,3 +135,9 @@ A validacao de aula (dia, hora `HH:MM`, nome da modalidade) fica em
 - Migrations: pelo SSH (se o plano tiver) ou colando o `.up.sql` no phpMyAdmin.
 - O `.env` do servidor tem so o `DB_USER`; o usuario de migration nao fica la.
 - `APP_ENV=prod`.
+- HTTPS: ligar o SSL e o "Forcar HTTPS" no hPanel.
+- Banco fechado: NAO liberar "MySQL remoto" no hPanel (o banco so aceita
+  conexao do proprio servidor). phpMyAdmin so pelo login do hPanel.
+- Senhas do banco de producao novas e longas (nunca as do `.env` local).
+- Segredos: nada de chave em variavel `VITE_*` -- tudo que comeca com
+  `VITE_` vai parar no JavaScript publico do site.

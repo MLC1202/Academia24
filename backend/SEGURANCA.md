@@ -44,3 +44,10 @@ domínio. Grade de aulas pública, dashboard admin, leads com dados pessoais.
 - [ ] **Backups** — backup da Hostinger (conferir frequência do plano) + `mysqldump` próprio periódico. Restauração testada.
 - [ ] **Monitoramento e alertas** — uptime externo (ex.: UptimeRobot) + alerta por e-mail em picos de falha de login/erro 500.
 - [ ] **Plano de recuperação** — onde estão os backups, como restaurar, como trocar senhas/secrets se vazarem, contato da Hostinger.
+
+## Exposicao
+
+- [ ] **XSS** — CSP no `.htaccess` do site (`script-src 'self'`, sem script inline/externo); React sem `dangerouslySetInnerHTML`; lista branca nos textos gravados; API com CSP `default-src 'none'`.
+- [ ] **Rota de API exposta** — `php bin/rotas.php` passa (admin -> `exigir_admin()`, escrita -> `exigir_csrf()`, toda rota -> `exigir_metodo()`); `api/.htaccess` so serve `nome.php`; `/api/` inexistente da 404 (nao cai no index.html).
+- [ ] **Chave de API exposta** — nada secreto em `VITE_*` nem no codigo do front; `.env`, `*.pem`, `*.key`, dumps no `.gitignore`; `.htaccess` bloqueia `.env`, `.git/`, `.sql`, `.log`, backups mesmo se forem parar no `public_html`.
+- [ ] **Banco aberto** — local: porta so em 127.0.0.1; producao: "MySQL remoto" desligado no hPanel, senhas novas e longas, usuario da aplicacao sem DROP/ALTER, nenhuma rota devolve SQL ou erro do banco.

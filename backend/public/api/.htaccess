@@ -1,0 +1,11 @@
+# Pasta da API (na Hostinger: public_html/api/).
+# Regra: SO arquivo .php com nome simples responde. Qualquer outra coisa que
+# parar aqui (backup.zip, notas.txt, grades.php.bak, _ajudante.php) da 403.
+# Convencao: arquivo que comeca com "_" nunca e rota publica.
+
+Options -Indexes
+
+Require all denied
+<FilesMatch "^[a-z0-9-]+\.php$">
+  Require all granted
+</FilesMatch>

@@ -37,3 +37,26 @@ function exigir_metodo(string ...$permitidos): void
         responder(405, ['erro' => 'metodo_nao_permitido']);
     }
 }
+
+// Le o corpo JSON de um POST. Exige Content-Type JSON (formulario HTML de
+// outro site nao consegue mandar isso sem CORS) e limita o tamanho.
+function ler_json(int $maxBytes = 10_000): array
+{
+    $tipo = $_SERVER['CONTENT_TYPE'] ?? '';
+    if (!str_starts_with(strtolower($tipo), 'application/json')) {
+        responder(415, ['erro' => 'use_json']);
+    }
+    $corpo = file_get_contents('php://input', false, null, 0, $maxBytes + 1);
+    if ($corpo === false || strlen($corpo) > $maxBytes) {
+        responder(413, ['erro' => 'corpo_grande_demais']);
+    }
+    try {
+        $dados = json_decode($corpo, true, 20, JSON_THROW_ON_ERROR);
+    } catch (JsonException) {
+        responder(400, ['erro' => 'json_invalido']);
+    }
+    if (!is_array($dados)) {
+        responder(400, ['erro' => 'json_invalido']);
+    }
+    return $dados;
+}

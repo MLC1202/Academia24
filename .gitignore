@@ -31,3 +31,14 @@ backend/vendor
 *.sw?
 
 Claude outputs/
+
+# segredos: nenhum .env (so os .example), chave ou dump de banco vai pro git
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.dump
+backup*.sql
+dump*.sql

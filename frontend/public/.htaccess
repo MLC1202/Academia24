@@ -1,3 +1,40 @@
+# Configuracao da raiz do site na Hostinger (public_html). Vai junto no build
+# porque fica em frontend/public/. O GitHub Pages e o Vite (dev) ignoram.
+
+# --- Sem listagem de pastas -------------------------------------------------
+Options -Indexes
+
+# --- Arquivos que NUNCA podem ser servidos ----------------------------------
+# Se um .env, backup, dump de banco ou log parar aqui por engano no deploy,
+# o servidor responde 404 em vez de entregar o conteudo.
+# - Qualquer caminho com parte comecando com ponto (.env, .git/, .DS_Store),
+#   menos .well-known (a Hostinger usa pra emitir o certificado SSL).
+RedirectMatch 404 "/\.(?!well-known/)"
+# - Extensoes de arquivo que nao sao do site.
+<FilesMatch "\.(env|sql|gz|zip|tar|log|ini|sh|bak|old|orig|swp|md|lock|yml|yaml|php~)$">
+  Require all denied
+</FilesMatch>
+
+# --- Headers de seguranca (todas as paginas) --------------------------------
+<IfModule mod_headers.c>
+  # CSP: o navegador so executa/carrega o que vier destas origens.
+  # E a principal barreira contra XSS: mesmo que um texto malicioso entre na
+  # pagina, script de fora ou inline nao roda.
+  #   script-src 'self'          -> so os JS do proprio site (nada inline)
+  #   img-src ... unsplash       -> fotos de fundo que ainda vem de la
+  #   connect-src 'self'         -> fetch so pra nossa API
+  #   frame-ancestors 'none'     -> ninguem coloca o site dentro de um iframe
+  #   style-src 'unsafe-inline'  -> estilos inline (CSS nao executa codigo)
+  Header always set Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://images.unsplash.com; media-src 'self'; font-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "DENY"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=()"
+  # Depois do primeiro acesso em HTTPS, o navegador nunca mais tenta HTTP.
+  Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+</IfModule>
+
+# --- Rotas do React -----------------------------------------------------------
 # O site e uma pagina so (React Router), entao qualquer rota que nao seja um
 # arquivo de verdade tem que cair no index.html.
 # Sem isso, abrir /admin/dashboard direto ou dar F5 nele da 404 na Hostinger.
@@ -5,6 +42,9 @@
   RewriteEngine On
   RewriteBase /
   RewriteRule ^index\.html$ - [L]
+  # /api/ nunca cai no index.html: endpoint que nao existe tem que dar 404
+  # de verdade (e nao "200 com a pagina do site").
+  RewriteRule ^api/ - [L]
   RewriteCond %{REQUEST_FILENAME} -f [OR]
   RewriteCond %{REQUEST_FILENAME} -d
   RewriteRule ^ - [L]
