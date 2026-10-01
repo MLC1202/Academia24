@@ -310,6 +310,11 @@
   color: #1c7a45;
 }
 
+.admin__estado-erro {
+  color: var(--color-red-escuro);
+  font-weight: 600;
+}
+
 .admin__salvar {
   padding: 14px 26px;
   border-radius: 999px;

@@ -1,29 +1,74 @@
 // Editor da grade de aulas (/admin/dashboard).
 // Escolho unidade + dia, mexo nas aulas e salvo. So abre logado (o App
-// envolve esta pagina no RotaAdmin). O salvar ainda grava so no
-// localStorage deste navegador -- vira gravacao no banco no proximo passo.
+// envolve esta pagina no RotaAdmin). Le a grade do banco e salva no
+// banco: o que for salvo aparece no site na hora (a versao anterior fica
+// guardada).
 
-import { useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { sair, SEM_API } from "../../lib/api";
+import { ErroApi, sair, SEM_API } from "../../lib/api";
 import { slugsUnidades, unidades, type UnidadeSlug } from "../../data/unidades";
 import {
   dias,
+  gradeVazia,
   novaAula,
   ordenarPorHora,
   type Aula,
   type Dia,
   type GradeUnidade,
+  type Grades,
 } from "../../data/grade";
-import { carregarGrades, salvarGrade } from "../../lib/grade-store";
+import { buscarGrades, salvarGrade } from "../../lib/grade-store";
 import "./DashboardPage.css";
 
 type Estado = "limpo" | "alterado" | "salvo";
 
+// Frase pra dona a partir do erro da API. Quando o servidor recusa um dado
+// ("Terça, aula 3: horário inválido"), mostro exatamente o que ele disse.
+function mensagemDeErro(err: unknown): string {
+  if (err instanceof ErroApi) {
+    if (err.detalhe) return err.detalhe;
+    if (err.codigo === "muitas_tentativas") return "Muitos salvamentos seguidos. Espere alguns minutos.";
+    if (err.codigo === "sem_conexao") return "Sem conexão com o servidor. Nada foi salvo; tente de novo.";
+  }
+  return "Não foi possível salvar. Nada foi alterado no site; tente de novo.";
+}
+
+type Carga =
+  | { status: "carregando" }
+  | { status: "erro" }
+  | { status: "pronto"; grades: Grades };
+
 function DashboardPage({ email }: { email: string | null }) {
   const navigate = useNavigate();
-  const iniciais = useMemo(() => carregarGrades(), []);
+  const [carga, setCarga] = useState<Carga>({ status: "carregando" });
+  const [unidade, setUnidade] = useState<UnidadeSlug>("alphaville");
+  const [dia, setDia] = useState<Dia>("seg");
+  const [grade, setGrade] = useState<GradeUnidade>(gradeVazia);
+  const [estado, setEstado] = useState<Estado>("limpo");
+  const [salvando, setSalvando] = useState(false);
+  const [erro, setErro] = useState("");
   const [saindo, setSaindo] = useState(false);
+
+  // Grade atual do banco (sem cache do navegador: aqui quero a mais nova).
+  useEffect(() => {
+    let ativo = true;
+    buscarGrades(true)
+      .then(({ grades }) => {
+        if (!ativo) return;
+        setCarga({ status: "pronto", grades });
+        setGrade(grades.alphaville);
+      })
+      .catch(() => ativo && setCarga({ status: "erro" }));
+    return () => {
+      ativo = false;
+    };
+  }, []);
+
+  // Sessao venceu (30 min parado / 8 h): volta pro login.
+  function sessaoExpirou() {
+    navigate("/admin/login", { replace: true, state: { expirou: true } });
+  }
 
   async function encerrar() {
     if (estado === "alterado" && !confirm("Sair descarta as alterações não salvas. Continuar?")) return;
@@ -36,16 +81,13 @@ function DashboardPage({ email }: { email: string | null }) {
     navigate("/admin/login", { replace: true });
   }
 
-  const [unidade, setUnidade] = useState<UnidadeSlug>("alphaville");
-  const [dia, setDia] = useState<Dia>("seg");
-  const [grade, setGrade] = useState<GradeUnidade>(iniciais.alphaville);
-  const [estado, setEstado] = useState<Estado>("limpo");
-
   function trocarUnidade(slug: UnidadeSlug) {
+    if (carga.status !== "pronto") return;
     if (estado === "alterado" && !confirm("Trocar de unidade descarta as alterações não salvas. Continuar?")) return;
     setUnidade(slug);
-    setGrade(carregarGrades()[slug]);
+    setGrade(carga.grades[slug]);
     setEstado("limpo");
+    setErro("");
   }
 
   function mexer(indice: number, campo: keyof Aula, valor: string) {
@@ -54,34 +96,51 @@ function DashboardPage({ email }: { email: string | null }) {
       [dia]: g[dia].map((a, i) => (i === indice ? { ...a, [campo]: valor } : a)),
     }));
     setEstado("alterado");
+    setErro("");
   }
 
   function adicionar() {
     setGrade((g) => ({ ...g, [dia]: [...g[dia], novaAula()] }));
     setEstado("alterado");
+    setErro("");
   }
 
   function remover(indice: number) {
     setGrade((g) => ({ ...g, [dia]: g[dia].filter((_, i) => i !== indice) }));
     setEstado("alterado");
+    setErro("");
   }
 
   function ordenar() {
     setGrade((g) => ({ ...g, [dia]: ordenarPorHora(g[dia]) }));
     setEstado("alterado");
+    setErro("");
   }
 
-  function salvar() {
+  async function salvar() {
+    if (SEM_API || salvando || carga.status !== "pronto") return;
     // Linha sem horario ou sem modalidade eu descarto na hora de salvar.
     const limpa: GradeUnidade = { ...grade };
     for (const d of dias) {
       limpa[d.chave] = ordenarPorHora(
-        grade[d.chave].filter((a) => a.modalidade.trim() && a.hora.trim()),
+        grade[d.chave]
+          .map((a) => ({ ...a, modalidade: a.modalidade.trim() }))
+          .filter((a) => a.modalidade && a.hora.trim()),
       );
     }
-    salvarGrade(unidade, limpa);
-    setGrade(limpa);
-    setEstado("salvo");
+    setSalvando(true);
+    setErro("");
+    try {
+      await salvarGrade(unidade, limpa);
+      setGrade(limpa);
+      setCarga({ status: "pronto", grades: { ...carga.grades, [unidade]: limpa } });
+      setEstado("salvo");
+    } catch (err) {
+      if (err instanceof ErroApi && err.codigo === "nao_autenticado") return sessaoExpirou();
+      setErro(mensagemDeErro(err));
+    } finally {
+      setSalvando(false);
+    }
   }
 
   // Aulas do dia que esta aberto + quantas estao pela metade.
@@ -111,10 +170,21 @@ function DashboardPage({ email }: { email: string | null }) {
       </header>
 
       <p className="admin__aviso">
-        Por enquanto, o que você salvar aqui fica guardado
-        <strong> apenas neste navegador</strong> e não aparece para os
-        visitantes. A gravação no site de verdade entra na próxima etapa.
+        {SEM_API ? (
+          <>Prévia: aqui dá para mexer, mas <strong>não é possível salvar</strong>.</>
+        ) : (
+          <>Ao salvar, a grade da unidade <strong>vai para o site na hora</strong>.
+          A versão anterior fica guardada.</>
+        )}
       </p>
+
+      {carga.status === "carregando" && <p className="admin__vazio">Carregando a grade…</p>}
+      {carga.status === "erro" && (
+        <p className="admin__vazio" role="alert">
+          Não foi possível carregar a grade. Recarregue a página.
+        </p>
+      )}
+      {carga.status === "pronto" && (<>
 
       <section className="admin__bloco">
         <h2 className="admin__bloco-titulo">Unidade</h2>
@@ -187,6 +257,7 @@ function DashboardPage({ email }: { email: string | null }) {
                   className="admin__modalidade"
                   type="text"
                   placeholder="Modalidade (ex.: Spinning)"
+                  maxLength={60}
                   value={aula.modalidade}
                   aria-label="Modalidade"
                   onChange={(e) => mexer(i, "modalidade", e.target.value)}
@@ -209,19 +280,26 @@ function DashboardPage({ email }: { email: string | null }) {
         </button>
       </section>
 
+      </>)}
+
       <div className="admin__rodape">
         <div className="admin__rodape-inner">
         <div className="admin__estado">
-          {estado === "alterado" && (
+          {estado === "alterado" && !erro && (
             <span className="admin__estado-alterado">
               Alterações não salvas
               {incompletas > 0 &&
                 ` · ${incompletas} linha(s) em branco serão descartadas`}
             </span>
           )}
-          {estado === "salvo" && (
+          {estado === "salvo" && !erro && (
             <span className="admin__estado-salvo">
-              Grade da unidade {unidades[unidade].nome} salva.
+              Grade da unidade {unidades[unidade].nome} salva e publicada.
+            </span>
+          )}
+          {erro && (
+            <span className="admin__estado-erro" role="alert">
+              {erro}
             </span>
           )}
         </div>
@@ -229,10 +307,10 @@ function DashboardPage({ email }: { email: string | null }) {
         <button
           type="button"
           className="admin__salvar"
-          disabled={estado !== "alterado"}
+          disabled={estado !== "alterado" || salvando || SEM_API}
           onClick={salvar}
         >
-          Salvar grade
+          {salvando ? "Salvando…" : "Salvar grade"}
         </button>
         </div>
       </div>

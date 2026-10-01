@@ -21,13 +21,17 @@ export type Sessao = {
 };
 
 // Erro com o codigo que a API mandou (ex.: "credenciais_invalidas").
+// "detalhe" e a frase que o servidor manda quando recusa um dado
+// (ex.: "Terça, aula 3: horário inválido.").
 export class ErroApi extends Error {
   status: number;
   codigo: string;
-  constructor(status: number, codigo: string) {
+  detalhe?: string;
+  constructor(status: number, codigo: string, detalhe?: string) {
     super(codigo);
     this.status = status;
     this.codigo = codigo;
+    this.detalhe = detalhe;
   }
 }
 
@@ -54,7 +58,11 @@ async function chamar(caminho: string, init: RequestInit = {}) {
   }
   const dados = await lerJson(resposta);
   if (!resposta.ok) {
-    throw new ErroApi(resposta.status, typeof dados.erro === 'string' ? dados.erro : 'erro_interno');
+    throw new ErroApi(
+      resposta.status,
+      typeof dados.erro === 'string' ? dados.erro : 'erro_interno',
+      typeof dados.detalhe === 'string' ? dados.detalhe : undefined,
+    );
   }
   return dados;
 }

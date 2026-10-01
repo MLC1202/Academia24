@@ -7,7 +7,7 @@
 // a tela nao conta se o e-mail existe.
 
 import { useEffect, useRef, useState, type FormEvent } from 'react';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { buscarSessao, confirmarCodigo, entrar, ErroApi, SEM_API } from '../../lib/api';
 import './DashboardPage.css'; // visual base do .admin
 import './LoginPage.css';
@@ -35,13 +35,17 @@ function mensagemDeErro(erro: unknown): string {
 
 function LoginPage() {
   const navigate = useNavigate();
+  // O dashboard manda { expirou: true } quando a sessao venceu no meio do uso.
+  const expirou = (useLocation().state as { expirou?: boolean } | null)?.expirou === true;
   const [etapa, setEtapa] = useState<Etapa>('verificando');
   // Na previa (sem API) nao ha login: o painel abre direto.
   const [logado, setLogado] = useState(SEM_API);
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [codigo, setCodigo] = useState('');
-  const [erro, setErro] = useState('');
+  const [erro, setErro] = useState(
+    expirou ? 'Sua sessão expirou por segurança. Entre de novo; o que não foi salvo se perdeu.' : '',
+  );
   const [enviando, setEnviando] = useState(false);
   const codigoRef = useRef<HTMLInputElement>(null);
 

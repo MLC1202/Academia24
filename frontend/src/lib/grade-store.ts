@@ -7,14 +7,12 @@ import {
 import { slugsUnidades, type UnidadeSlug } from '../data/unidades';
 // No GitHub Pages (previa pra dona) nao existe PHP: SEM_API liga a grade
 // de exemplo em vez de dar erro.
-import { SEM_API } from './api';
+import { enviar, SEM_API } from './api';
 
 // Onde a grade e lida/salva. O resto do site so fala com este arquivo.
 //
-// LEITURA (site publico): vem do backend, GET /api/grades.php.
-// ESCRITA (dashboard): por enquanto ainda no localStorage deste navegador.
-// Vira POST pro backend quando existir login -- gravar sem login seria
-// deixar qualquer pessoa trocar a grade do site.
+// LEITURA (site e dashboard): GET /api/grades.php.
+// ESCRITA (so dashboard, logado): POST /api/admin-grade.php.
 
 // ---------------------------------------------------------------------------
 // Leitura: backend
@@ -55,11 +53,14 @@ function formatoValido(dados: unknown): dados is DadosGrade {
   );
 }
 
-export async function buscarGrades(): Promise<DadosGrade> {
+// semCache: o dashboard sempre quer a versao mais nova (o site pode usar a
+// copia de ate 1 min que o navegador guarda).
+export async function buscarGrades(semCache = false): Promise<DadosGrade> {
   if (SEM_API) return { grades: gradesPadrao, cancelamentos: [] };
 
   const resposta = await fetch(`${import.meta.env.BASE_URL}api/grades.php`, {
     headers: { Accept: 'application/json' },
+    cache: semCache ? 'no-store' : 'default',
     signal: AbortSignal.timeout(TEMPO_LIMITE_MS),
   });
   if (!resposta.ok) throw new Error(`HTTP ${resposta.status}`);
@@ -90,38 +91,17 @@ export function useGrades(): EstadoGrade {
 }
 
 // ---------------------------------------------------------------------------
-// Escrita: localStorage (TEMPORARIO, so o dashboard usa)
+// Escrita: so admin logado (o backend confere sessao + CSRF)
 // ---------------------------------------------------------------------------
 
-const CHAVE = 'academia24:grades';
-
-// Le o que estiver salvo neste navegador e completa com a grade de exemplo.
-export function carregarGrades(): Grades {
-  try {
-    const salvo = localStorage.getItem(CHAVE);
-    if (!salvo) return gradesPadrao;
-
-    const parcial = JSON.parse(salvo) as Partial<Grades>;
-    const grades = { ...gradesPadrao };
-    for (const slug of slugsUnidades) {
-      const grade = parcial[slug];
-      if (grade) grades[slug] = grade;
-    }
-    return grades;
-  } catch (erro) {
-    console.error('[grade] não foi possível ler o que estava salvo', erro);
-    return gradesPadrao;
-  }
-}
-
-// Salva a grade de UMA unidade, preservando as outras.
-export function salvarGrade(unidade: UnidadeSlug, grade: GradeUnidade) {
-  const grades = carregarGrades();
-  grades[unidade] = grade;
-  try {
-    localStorage.setItem(CHAVE, JSON.stringify(grades));
-  } catch (erro) {
-    console.error('[grade] não foi possível salvar', erro);
-    throw erro;
-  }
+// Manda a grade de UMA unidade. O servidor valida tudo de novo, grava como
+// versao nova (a anterior fica guardada) e limpa o cache do site.
+export async function salvarGrade(unidade: UnidadeSlug, grade: GradeUnidade) {
+  const corpo = Object.fromEntries(
+    Object.entries(grade).map(([dia, aulas]) => [
+      dia,
+      aulas.map(({ hora, modalidade }) => ({ hora, modalidade })),
+    ]),
+  );
+  return enviar('admin-grade.php', { unidade, grade: corpo });
 }
