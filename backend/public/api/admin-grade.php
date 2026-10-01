@@ -5,7 +5,11 @@ declare(strict_types=1);
 // Salva a grade de UMA unidade e ja coloca no ar.
 //
 // Corpo: { "unidade": "alphaville",
-//          "grade": { "seg": [ {"hora":"07:00","modalidade":"Yoga"} ], ... } }
+//          "grade": { "seg": [ {"hora":"07:00","modalidade":"Yoga",
+//                               "duracao":60, "professor":"Carol", "categoria":"Body Mind",
+//                               "estudio":"Studio 2"} ], ... } }
+// (duracao/professor/categoria/estudio sao opcionais; campo desconhecido e ignorado)
+// "origem": "upload" (veio da planilha) ou "edicao" (padrao, editor manual).
 //
 //   200 { ok: true, versao: 12 }
 //   400 { erro: "dados_invalidos", detalhe: "Terça, aula 3: horário inválido" }
@@ -53,7 +57,15 @@ foreach (array_keys($grade) as $chaveDia) {
 }
 
 // Valida dia a dia pra devolver uma mensagem que a dona entenda.
-$motivos = ['dia' => 'dia inválido', 'hora' => 'horário inválido', 'modalidade' => 'nome da aula inválido (use só letras, números e / - & + . , ( ) \')'];
+$motivos = [
+    'dia' => 'dia inválido',
+    'hora' => 'horário inválido',
+    'modalidade' => 'nome da aula inválido (use só letras, números e / - & + . , ( ) \')',
+    'duracao' => 'duração inválida (de ' . DURACAO_MIN . ' a ' . DURACAO_MAX . ' minutos)',
+    'professor' => 'nome do professor inválido',
+    'categoria' => 'categoria inválida',
+    'estudio' => 'estúdio inválido',
+];
 $aulas = [];
 foreach ($diasNomes as $dia => $nomeDia) {
     $doDia = $grade[$dia] ?? [];
@@ -65,9 +77,15 @@ foreach ($diasNomes as $dia => $nomeDia) {
             responder(400, ['erro' => 'dados_invalidos', 'detalhe' => "{$nomeDia}, aula " . ($i + 1) . ': formato inválido.']);
         }
         try {
-            $aulas[] = validar_aula(['dia' => $dia, 'hora' => $aula['hora'] ?? null, 'modalidade' => $aula['modalidade'] ?? null], $i + 1);
+            $aulas[] = validar_aula(['dia' => $dia] + $aula, $i + 1);
         } catch (InvalidArgumentException $e) {
-            $campo = str_contains($e->getMessage(), 'hora') ? 'hora' : (str_contains($e->getMessage(), 'modalidade') ? 'modalidade' : 'dia');
+            // A mensagem interna e "aula N: <campo> invalido(a)".
+            $campo = 'dia';
+            foreach (array_keys($motivos) as $c) {
+                if (str_contains($e->getMessage(), ": {$c} ")) {
+                    $campo = $c;
+                }
+            }
             responder(400, ['erro' => 'dados_invalidos', 'detalhe' => "{$nomeDia}, aula " . ($i + 1) . ": {$motivos[$campo]}."]);
         }
     }
@@ -76,7 +94,10 @@ if (count($aulas) > AULAS_MAX_POR_GRADE) {
     responder(400, ['erro' => 'dados_invalidos', 'detalhe' => 'Aulas demais (máximo ' . AULAS_MAX_POR_GRADE . ').']);
 }
 
-$versao = salvar_nova_versao(db(), $unidade, $aulas, 'edicao', $adminId);
-registrar('info', 'grade_salva', ['admin_id' => $adminId, 'unidade' => $unidade, 'versao' => $versao, 'aulas' => count($aulas)]);
+// So estas duas: 'seed' e coisa do terminal, nunca da web.
+$origem = ($dados['origem'] ?? null) === 'upload' ? 'upload' : 'edicao';
+
+$versao = salvar_nova_versao(db(), $unidade, $aulas, $origem, $adminId);
+registrar('info', 'grade_salva', ['admin_id' => $adminId, 'unidade' => $unidade, 'versao' => $versao, 'aulas' => count($aulas), 'origem' => $origem]);
 
 responder(200, ['ok' => true, 'versao' => $versao]);

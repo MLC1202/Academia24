@@ -1,0 +1,1 @@
+ALTER TABLE aulas ADD COLUMN observacao VARCHAR(200) NULL AFTER estudio;

@@ -15,7 +15,9 @@ backend/
 │   ├── login.php      POST {email, senha} (CSRF, rate limit) -> pede o codigo
 │   ├── login-mfa.php  POST {codigo} (6 digitos do app autenticador)
 │   ├── logout.php     POST (CSRF)
-│   └── admin-grade.php POST {unidade, grade} -- so admin logado (CSRF)
+│   ├── admin-grade.php POST {unidade, grade, origem} -- so admin (CSRF)
+│   ├── admin-versoes.php GET ?unidade= -- historico (so admin)
+│   └── admin-desfazer.php POST {unidade} -- volta pra versao anterior (so admin, CSRF)
 ├── src/               fora da raiz web: config, banco, respostas, log
 ├── bin/migrate.php    roda as migrations (so pela linha de comando)
 ├── sql/migrations/    NNN_nome.up.sql + NNN_nome.down.sql
@@ -126,7 +128,9 @@ na API. O `public/api/.htaccess` so deixa responder `nome.php` (arquivo com
 
 ## Proximos passos
 
-1. Upload da grade (Excel lido no navegador), desfazer versao e cancelamentos.
+1. Cancelamento de aula pelo dashboard.
+2. Formulario de agendamento (leads, LGPD).
+3. Deploy na Hostinger.
 4. Leads do agendamento (destino a decidir; LGPD).
 
 ## Producao (Hostinger) -- a detalhar no deploy

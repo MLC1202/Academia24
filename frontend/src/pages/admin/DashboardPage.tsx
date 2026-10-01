@@ -4,7 +4,7 @@
 // banco: o que for salvo aparece no site na hora (a versao anterior fica
 // guardada).
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ErroApi, sair, SEM_API } from "../../lib/api";
 import { slugsUnidades, unidades, type UnidadeSlug } from "../../data/unidades";
@@ -19,6 +19,8 @@ import {
   type Grades,
 } from "../../data/grade";
 import { buscarGrades, salvarGrade } from "../../lib/grade-store";
+import ImportarPlanilha from "./ImportarPlanilha";
+import VersoesUnidade from "./VersoesUnidade";
 import "./DashboardPage.css";
 
 type Estado = "limpo" | "alterado" | "salvo";
@@ -49,6 +51,8 @@ function DashboardPage({ email }: { email: string | null }) {
   const [salvando, setSalvando] = useState(false);
   const [erro, setErro] = useState("");
   const [saindo, setSaindo] = useState(false);
+  // Muda sempre que a grade no banco muda -> o historico recarrega.
+  const [versaoChave, setVersaoChave] = useState(0);
 
   // Grade atual do banco (sem cache do navegador: aqui quero a mais nova).
   useEffect(() => {
@@ -65,10 +69,24 @@ function DashboardPage({ email }: { email: string | null }) {
     };
   }, []);
 
-  // Sessao venceu (30 min parado / 8 h): volta pro login.
-  function sessaoExpirou() {
-    navigate("/admin/login", { replace: true, state: { expirou: true } });
+  // Depois de importar a planilha: busca de novo e mostra a unidade aberta.
+  async function recarregar() {
+    try {
+      const { grades } = await buscarGrades(true);
+      setCarga({ status: "pronto", grades });
+      setGrade(grades[unidade]);
+      setEstado("limpo");
+      setErro("");
+      setVersaoChave((n) => n + 1);
+    } catch {
+      setCarga({ status: "erro" });
+    }
   }
+
+  // Sessao venceu (30 min parado / 8 h): volta pro login.
+  const sessaoExpirou = useCallback(() => {
+    navigate("/admin/login", { replace: true, state: { expirou: true } });
+  }, [navigate]);
 
   async function encerrar() {
     if (estado === "alterado" && !confirm("Sair descarta as alterações não salvas. Continuar?")) return;
@@ -135,6 +153,7 @@ function DashboardPage({ email }: { email: string | null }) {
       setGrade(limpa);
       setCarga({ status: "pronto", grades: { ...carga.grades, [unidade]: limpa } });
       setEstado("salvo");
+      setVersaoChave((n) => n + 1);
     } catch (err) {
       if (err instanceof ErroApi && err.codigo === "nao_autenticado") return sessaoExpirou();
       setErro(mensagemDeErro(err));
@@ -185,6 +204,15 @@ function DashboardPage({ email }: { email: string | null }) {
         </p>
       )}
       {carga.status === "pronto" && (<>
+      <ImportarPlanilha
+        desativado={SEM_API}
+        antesDePublicar={() =>
+          estado !== "alterado" ||
+          confirm("Você tem alterações não salvas no editor abaixo. Publicar a planilha descarta essas alterações. Continuar?")
+        }
+        aoPublicar={recarregar}
+        aoExpirar={sessaoExpirou}
+      />
 
       <section className="admin__bloco">
         <h2 className="admin__bloco-titulo">Unidade</h2>
@@ -202,6 +230,15 @@ function DashboardPage({ email }: { email: string | null }) {
             </button>
           ))}
         </div>
+        <VersoesUnidade
+          key={unidade}
+          unidade={unidade}
+          chave={versaoChave}
+          desativado={SEM_API}
+          temAlteracao={estado === "alterado"}
+          aoMudar={recarregar}
+          aoExpirar={sessaoExpirou}
+        />
       </section>
 
       <section className="admin__bloco">

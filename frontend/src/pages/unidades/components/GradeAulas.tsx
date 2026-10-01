@@ -65,6 +65,17 @@ function dataISO(d: Date) {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
 
+// Linha pequena embaixo do nome: "60 min · Carol · Studio 2 · Body Mind".
+// So o que existir aparece; sem nada, a linha nem e criada.
+function detalhesDa(aula: Aula) {
+  return [
+    aula.duracao ? `${aula.duracao} min` : '',
+    aula.professor ?? '',
+    aula.estudio ?? '',
+    aula.categoria ?? '',
+  ].filter(Boolean);
+}
+
 // Chave pra casar aula com cancelamento: mesma hora e mesma modalidade.
 const chaveAula = (hora: string, modalidade: string) => `${hora}|${modalidade}`;
 
@@ -106,19 +117,24 @@ function ListaAulas({ aulas, ehHoje, agora, proximaId, canceladas }: ListaProps)
         return (
           <li className={classes} key={aula.id}>
             <span className="grade__aula-hora">{aula.hora}</span>
-            <span className="grade__aula-modalidade">
-              {/* Nome com barra (Alongamento/Mobilidade) quebra depois da
-                  barra, e nao no meio da palavra */}
-              {aula.modalidade.split("/").map((parte, i) => (
-                <Fragment key={i}>
-                  {i > 0 && (
-                    <>
-                      /<wbr />
-                    </>
-                  )}
-                  {parte}
-                </Fragment>
-              ))}
+            <span className="grade__aula-corpo">
+              <span className="grade__aula-modalidade">
+                {/* Nome com barra (Alongamento/Mobilidade) quebra depois da
+                    barra, e nao no meio da palavra */}
+                {aula.modalidade.split("/").map((parte, i) => (
+                  <Fragment key={i}>
+                    {i > 0 && (
+                      <>
+                        /<wbr />
+                      </>
+                    )}
+                    {parte}
+                  </Fragment>
+                ))}
+              </span>
+              {detalhesDa(aula).length > 0 && (
+                <span className="grade__aula-detalhes">{detalhesDa(aula).join(" · ")}</span>
+              )}
             </span>
             {ehProxima && <span className="grade__aula-tag">Próxima</span>}
             {cancelada && (

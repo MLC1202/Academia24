@@ -13,6 +13,12 @@ export type Aula = {
   modalidade: string;
   // Sempre em 24h, no formato 'HH:MM'.
   hora: string;
+  // Detalhes opcionais (vem da planilha). Na grade do site aparecem numa
+  // linha pequena embaixo do nome da aula.
+  duracao?: number; // minutos
+  professor?: string;
+  categoria?: string;
+  estudio?: string;
 };
 
 export type GradeUnidade = Record<Dia, Aula[]>;

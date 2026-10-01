@@ -11,6 +11,38 @@ const ORIGENS = ['upload', 'edicao', 'seed'];
 const MODALIDADE_MAX = 60;
 const AULAS_MAX_POR_GRADE = 500;
 
+// Detalhes opcionais (vindos da planilha). campo => tamanho maximo.
+// Todos usam a mesma lista branca do nome da aula.
+// (Observacoes da planilha ficam de fora de proposito: eram anotacoes
+// internas, nao recado pra aluno.)
+const DETALHES = [
+    'professor' => 60,
+    'categoria' => 40,
+    'estudio' => 40,
+];
+const DURACAO_MIN = 5;
+const DURACAO_MAX = 300;
+
+// Texto opcional: devolve null se vazio, o texto limpo se valido, ou lanca.
+function validar_detalhe(mixed $valor, string $campo, int $linha): ?string
+{
+    if ($valor === null || $valor === '') {
+        return null;
+    }
+    $max = DETALHES[$campo];
+    if (!is_string($valor) || !mb_check_encoding($valor, 'UTF-8')) {
+        throw new InvalidArgumentException("aula {$linha}: {$campo} invalido");
+    }
+    $valor = trim(preg_replace('/\s+/u', ' ', $valor));
+    if ($valor === '') {
+        return null;
+    }
+    if (mb_strlen($valor) > $max || !preg_match("/^[\\p{L}\\p{N} \\/\\-&+.,()']+$/u", $valor)) {
+        throw new InvalidArgumentException("aula {$linha}: {$campo} invalido");
+    }
+    return $valor;
+}
+
 // Confere uma aula e devolve ela limpa. Se algo estiver errado, lanca
 // InvalidArgumentException com a linha e o motivo (sem ecoar o conteudo).
 function validar_aula(mixed $aula, int $linha): array
@@ -47,7 +79,20 @@ function validar_aula(mixed $aula, int $linha): array
         throw new InvalidArgumentException("aula {$linha}: modalidade invalida");
     }
 
-    return ['dia' => $dia, 'hora' => $hora, 'modalidade' => $modalidade];
+    $duracao = $aula['duracao'] ?? null;
+    if ($duracao !== null && $duracao !== '') {
+        if (!is_int($duracao) || $duracao < DURACAO_MIN || $duracao > DURACAO_MAX) {
+            throw new InvalidArgumentException("aula {$linha}: duracao invalida");
+        }
+    } else {
+        $duracao = null;
+    }
+
+    $limpa = ['dia' => $dia, 'hora' => $hora, 'modalidade' => $modalidade, 'duracao' => $duracao];
+    foreach (array_keys(DETALHES) as $campo) {
+        $limpa[$campo] = validar_detalhe($aula[$campo] ?? null, $campo, $linha);
+    }
+    return $limpa;
 }
 
 function unidade_existe(PDO $pdo, string $slug): bool
@@ -89,9 +134,15 @@ function salvar_nova_versao(
             ->execute([$unidade, $origem, $adminId]);
         $versaoId = (int) $pdo->lastInsertId();
 
-        $insere = $pdo->prepare('INSERT INTO aulas (versao_id, dia, hora, modalidade) VALUES (?, ?, ?, ?)');
+        $insere = $pdo->prepare(
+            'INSERT INTO aulas (versao_id, dia, hora, modalidade, duracao_min, professor, categoria, estudio)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
+        );
         foreach ($limpas as $a) {
-            $insere->execute([$versaoId, $a['dia'], $a['hora'], $a['modalidade']]);
+            $insere->execute([
+                $versaoId, $a['dia'], $a['hora'], $a['modalidade'],
+                $a['duracao'], $a['professor'], $a['categoria'], $a['estudio'],
+            ]);
         }
 
         $pdo->prepare('UPDATE unidades SET grade_ativa_id = ? WHERE slug = ?')
@@ -136,17 +187,28 @@ function carregar_grades_publicas(PDO $pdo): array
     // So as aulas da versao ATIVA de cada unidade. ORDER BY dia segue a ordem
     // do ENUM (seg..dom).
     $aulas = $pdo->query(
-        "SELECT u.slug, a.id, a.dia, TIME_FORMAT(a.hora, '%H:%i') AS hora, a.modalidade
+        "SELECT u.slug, a.id, a.dia, TIME_FORMAT(a.hora, '%H:%i') AS hora, a.modalidade,
+                a.duracao_min, a.professor, a.categoria, a.estudio
            FROM unidades u
            JOIN aulas a ON a.versao_id = u.grade_ativa_id
           ORDER BY u.slug, a.dia, a.hora, a.modalidade"
     );
     foreach ($aulas as $a) {
-        $grades[$a['slug']][$a['dia']][] = [
+        $aula = [
             'id' => (string) $a['id'],
             'hora' => $a['hora'],
             'modalidade' => $a['modalidade'],
         ];
+        // Detalhes so entram no JSON quando existem (resposta menor).
+        if ($a['duracao_min'] !== null) {
+            $aula['duracao'] = (int) $a['duracao_min'];
+        }
+        foreach (array_keys(DETALHES) as $campo) {
+            if ($a[$campo] !== null) {
+                $aula[$campo] = $a[$campo];
+            }
+        }
+        $grades[$a['slug']][$a['dia']][] = $aula;
     }
 
     [$inicio, $fim] = janela_de_dias();
@@ -164,4 +226,68 @@ function carregar_grades_publicas(PDO $pdo): array
         'cancelamentos' => $st->fetchAll(),
         'periodo' => ['inicio' => $inicio, 'fim' => $fim],
     ];
+}
+
+// ---------------------------------------------------------------------------
+// Versoes (historico + desfazer)
+// ---------------------------------------------------------------------------
+
+// Ultimas versoes de uma unidade, da mais nova pra mais antiga.
+function listar_versoes(PDO $pdo, string $unidade, int $limite = 10): array
+{
+    $st = $pdo->prepare(
+        "SELECT v.id, v.origem,
+                DATE_FORMAT(v.criada_em, '%Y-%m-%dT%H:%i:%sZ') AS criada_em,
+                (SELECT COUNT(*) FROM aulas a WHERE a.versao_id = v.id) AS aulas,
+                (v.id = u.grade_ativa_id) AS ativa
+           FROM grade_versoes v
+           JOIN unidades u ON u.slug = v.unidade
+          WHERE v.unidade = ?
+          ORDER BY v.id DESC
+          LIMIT " . max(1, min(50, $limite))
+    );
+    $st->execute([$unidade]);
+    return array_map(fn($v) => [
+        'id' => (int) $v['id'],
+        'origem' => $v['origem'],
+        'criada_em' => $v['criada_em'],
+        'aulas' => (int) $v['aulas'],
+        'ativa' => (bool) $v['ativa'],
+    ], $st->fetchAll());
+}
+
+// Coloca no ar a versao imediatamente ANTERIOR a que esta no ar agora.
+// Nada e apagado: a versao que saiu continua no historico. Chamar de novo
+// volta mais um passo. Devolve o id que entrou, ou null se nao ha anterior.
+function voltar_versao_anterior(PDO $pdo, string $unidade): ?int
+{
+    $pdo->beginTransaction();
+    try {
+        // FOR UPDATE: duas abas clicando ao mesmo tempo nao se atropelam.
+        $st = $pdo->prepare('SELECT grade_ativa_id FROM unidades WHERE slug = ? FOR UPDATE');
+        $st->execute([$unidade]);
+        $ativa = $st->fetchColumn();
+        if ($ativa === false || $ativa === null) {
+            $pdo->rollBack();
+            return null;
+        }
+
+        $st = $pdo->prepare('SELECT MAX(id) FROM grade_versoes WHERE unidade = ? AND id < ?');
+        $st->execute([$unidade, $ativa]);
+        $anterior = $st->fetchColumn();
+        if ($anterior === false || $anterior === null) {
+            $pdo->rollBack();
+            return null;
+        }
+
+        $pdo->prepare('UPDATE unidades SET grade_ativa_id = ? WHERE slug = ?')
+            ->execute([$anterior, $unidade]);
+        $pdo->commit();
+    } catch (Throwable $e) {
+        $pdo->rollBack();
+        throw $e;
+    }
+
+    cache_limpar('grades');
+    return (int) $anterior;
 }

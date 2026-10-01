@@ -319,6 +319,22 @@
   letter-spacing: -0.01em;
 }
 
+/* Nome da aula + linha de detalhes, empilhados */
+.grade__aula-corpo {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+/* "60 min · Carol · Studio 2 · Body Mind" */
+.grade__aula-detalhes {
+  font-size: 13px;
+  line-height: 1.35;
+  color: var(--grade-texto-2);
+}
+
 .grade__aula-modalidade {
   flex: 1;
   min-width: 0;

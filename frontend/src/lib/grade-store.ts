@@ -7,7 +7,7 @@ import {
 import { slugsUnidades, type UnidadeSlug } from '../data/unidades';
 // No GitHub Pages (previa pra dona) nao existe PHP: SEM_API liga a grade
 // de exemplo em vez de dar erro.
-import { enviar, SEM_API } from './api';
+import { enviar, obter, SEM_API } from './api';
 
 // Onde a grade e lida/salva. O resto do site so fala com este arquivo.
 //
@@ -96,12 +96,54 @@ export function useGrades(): EstadoGrade {
 
 // Manda a grade de UMA unidade. O servidor valida tudo de novo, grava como
 // versao nova (a anterior fica guardada) e limpa o cache do site.
-export async function salvarGrade(unidade: UnidadeSlug, grade: GradeUnidade) {
+// origem: 'upload' quando vem da planilha (aparece assim no historico).
+export async function salvarGrade(
+  unidade: UnidadeSlug,
+  grade: GradeUnidade,
+  origem: 'edicao' | 'upload' = 'edicao',
+) {
   const corpo = Object.fromEntries(
     Object.entries(grade).map(([dia, aulas]) => [
       dia,
-      aulas.map(({ hora, modalidade }) => ({ hora, modalidade })),
+      // Tudo menos o id (o banco cria o dele).
+      aulas.map(({ hora, modalidade, duracao, professor, categoria, estudio }) => ({
+        hora,
+        modalidade,
+        duracao,
+        professor,
+        categoria,
+        estudio,
+      })),
     ]),
   );
-  return enviar('admin-grade.php', { unidade, grade: corpo });
+  return enviar('admin-grade.php', { unidade, grade: corpo, origem });
+}
+
+// ---------------------------------------------------------------------------
+// Versoes: historico e desfazer (so admin)
+// ---------------------------------------------------------------------------
+
+export type Versao = {
+  id: number;
+  origem: 'upload' | 'edicao' | 'seed';
+  criadaEm: Date;
+  aulas: number;
+  ativa: boolean;
+};
+
+export async function listarVersoes(unidade: UnidadeSlug): Promise<Versao[]> {
+  const dados = await obter(`admin-versoes.php?unidade=${encodeURIComponent(unidade)}`);
+  const lista = Array.isArray(dados.versoes) ? dados.versoes : [];
+  return lista.map((v: Record<string, unknown>) => ({
+    id: Number(v.id),
+    origem: v.origem as Versao['origem'],
+    criadaEm: new Date(String(v.criada_em)),
+    aulas: Number(v.aulas),
+    ativa: v.ativa === true,
+  }));
+}
+
+// Volta a unidade pra versao anterior a que esta no ar (nada e apagado).
+export async function desfazerUnidade(unidade: UnidadeSlug) {
+  return enviar('admin-desfazer.php', { unidade });
 }

@@ -82,6 +82,11 @@ export async function buscarSessao(): Promise<Sessao> {
   };
 }
 
+// GET numa rota (ex.: so-admin). Erros viram ErroApi, igual ao enviar().
+export async function obter(caminho: string) {
+  return chamar(caminho);
+}
+
 export async function enviar(caminho: string, corpo: unknown = {}) {
   const token = await tokenCsrf();
   return chamar(caminho, {
