@@ -8,10 +8,16 @@ declare(strict_types=1);
 // Muita gente abre o site ao mesmo tempo, e a grade muda pouco. Entao:
 //  1. Cache no servidor: o JSON pronto fica guardado CACHE_SEGUNDOS; nesse
 //     tempo ninguem toca no banco.
-//  2. Cache no navegador (Cache-Control) + ETag: se o visitante ja tem a
-//     versao atual, a resposta e um 304 vazio.
-// Quando a grade mudar (upload/cancelamento), o arquivo de cache e apagado
-// na hora -- ver salvar_nova_versao() em src/grade.php.
+//  2. Navegador: "no-cache" + ETag. O navegador GUARDA a copia, mas
+//     pergunta toda vez "ainda e esta?". Se for, a resposta e um 304 vazio
+//     (quase nada de dados); se nao for, vem a nova.
+// Quando a grade mudar (upload/edicao/cancelamento), o arquivo de cache do
+// servidor e apagado na hora -- ver salvar_nova_versao() em src/grade.php e
+// gravar/apagar_cancelamentos() em src/cancelamentos.php.
+//
+// Antes era "max-age=60": o navegador nem perguntava por 60 s, entao
+// cancelar/desfazer aula demorava ate 1 min pra aparecer pra quem ja tinha
+// aberto o site (achado pelo Matheus em 01/10/2026).
 
 require __DIR__ . '/../../src/bootstrap.php';
 require __DIR__ . '/../../src/grade.php'; // ja traz o cache.php
@@ -29,14 +35,21 @@ if ($json === null) {
     cache_gravar('grades', $json);
 }
 
-// Conteudo publico: pode ficar no navegador/CDN por um minuto.
-header('Cache-Control: public, max-age=' . CACHE_SEGUNDOS);
-$etag = '"' . hash('sha256', $json) . '"';
+// Conteudo publico, mas SEMPRE confere com o servidor antes de usar a copia.
+header('Cache-Control: public, no-cache');
+$hash = hash('sha256', $json);
+$etag = '"' . $hash . '"';
 header('ETag: ' . $etag);
 
-if (($_SERVER['HTTP_IF_NONE_MATCH'] ?? '') === $etag) {
-    http_response_code(304);
-    exit;
+// If-None-Match pode vir como lista ("a", "b") ou fraco (W/"a"), e alguns
+// servidores acrescentam "-gzip" ao comprimir. Compara so o hash.
+$pedido = (string) ($_SERVER['HTTP_IF_NONE_MATCH'] ?? '');
+foreach (explode(',', $pedido) as $tag) {
+    $tag = trim(preg_replace('/^W\//', '', trim($tag)), '"');
+    if ($tag === $hash || $tag === $hash . '-gzip') {
+        http_response_code(304);
+        exit;
+    }
 }
 
 http_response_code(200);

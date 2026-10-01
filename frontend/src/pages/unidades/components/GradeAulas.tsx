@@ -369,12 +369,13 @@ function GradeAulas({ slugs = slugsUnidades }: Props) {
               Agendar aula experimental
             </Link>
             {!unica && (
-              <Link to={`/unidades/${unidade}`} className="grade__card-btn">
+              // Sobe ate o card da unidade nesta mesma pagina (/unidades).
+              <a href={`#${unidade}`} className="grade__card-btn">
                 Ver unidade
                 <span aria-hidden="true" className="grade__card-seta">
                   ›
                 </span>
-              </Link>
+              </a>
             )}
           </div>
         </article>

@@ -1,0 +1,17 @@
+// Endereco do site em producao. E o UNICO lugar onde o dominio aparece:
+// sitemap.xml, robots.txt, a imagem de previa de link (Open Graph) e o
+// redirecionamento dos outros dominios usam daqui (plugin "seo" do
+// vite.config.ts).
+//
+// Decidido com a dona/Matheus em 01/10/2026: UM site so (as 4 unidades e os
+// dois logos), dominio principal academia24hclub.com, com www.
+// Vazio = o "npm run build" para com erro, de proposito.
+// (A previa do GitHub Pages nao usa isto e fica fora do Google.)
+export const SITE_URL = 'https://www.academia24hclub.com';
+
+// Outros dominios da rede que devem cair no site acima (redirecionamento
+// 301, mantendo o caminho: 24wellness.com.br/agendamento ->
+// www.academia24hclub.com/agendamento). Vale com e sem "www".
+// O principal sem/com "www" (o contrario do SITE_URL) tambem redireciona.
+// Subdominios (ex.: alphaville.24wellness.com.br, das LPs) NAO sao afetados.
+export const DOMINIOS_QUE_REDIRECIONAM = ['24wellness.com.br'];

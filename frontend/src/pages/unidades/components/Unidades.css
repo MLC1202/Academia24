@@ -111,14 +111,13 @@
     flex-direction: column;
     justify-content: space-between;
     align-items: flex-start;
-    /* Foto de reserva, so aparece se a de src/data/unidades.ts falhar */
+    /* Se a foto de src/data/unidades.ts falhar, fica so a cor escura (sem foto de fora) */
     background-color: #17161a;
     background-image: linear-gradient(
         to top,
         rgba(0, 0, 0, 0.75),
         rgba(0, 0, 0, 0.15)
-      ),
-      url("https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=2400&q=80");
+      );
     background-size: cover;
     background-position: center;
   }
@@ -496,4 +495,10 @@
 .unidades__insta {
   margin-left: auto;
   color: var(--color-cream);
+}
+
+/* /unidades#norte rola ate o card: sobra espaco pro cabecalho fixo nao
+   cobrir o topo do card. */
+.unidade {
+  scroll-margin-top: calc(var(--header-height) + 24px);
 }

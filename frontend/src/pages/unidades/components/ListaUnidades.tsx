@@ -11,12 +11,12 @@ function ListaUnidades() {
         <header className="unidades__head">
           <p className="unidades__eyebrow">Encontre a sua 24</p>
 
-          <h2 className="unidades__title">
+          <h1 className="unidades__title">
             <span className="unidades__title-destaque">Quatro unidades.</span>
             <br />
             Uma experiência para cada rotina.
             <br />
-          </h2>
+          </h1>
 
           <div className="unidades__intro">
             <p>

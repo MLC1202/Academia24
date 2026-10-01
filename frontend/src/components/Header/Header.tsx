@@ -6,11 +6,10 @@
 // - Home: nasce transparente em cima do hero e vai escurecendo conforme eu
 //   rolo.
 // - Paginas internas (Unidades, Agendamento, Duvidas): ja nasce escuro e
-//   ganha a trilha de volta (Home › Unidades › Alphaville).
+//   ganha a trilha de volta (Home › Unidades).
 
 import { useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { ehSlugUnidade, unidades } from '../../data/unidades';
 import FluidMenu, { type ItemMenu } from '../FluidMenu/FluidMenu';
 import PlanosModal from '../PlanosModal/PlanosModal';
 import { icones } from '../FluidMenu/icones';
@@ -31,16 +30,9 @@ type Passo = { label: string; to?: string };
 // Monta a trilha a partir da URL. O ultimo passo e onde eu estou (sem link).
 function montarTrilha(pathname: string): Passo[] {
   const partes = pathname.replace(/\/+$/, '').split('/').filter(Boolean);
-  const [pagina, sub] = partes;
+  const [pagina] = partes;
 
   if (pagina === 'unidades') {
-    if (ehSlugUnidade(sub)) {
-      return [
-        { label: 'Home', to: '/' },
-        { label: 'Unidades', to: '/unidades' },
-        { label: unidades[sub].nome },
-      ];
-    }
     return [{ label: 'Home', to: '/' }, { label: 'Unidades' }];
   }
 

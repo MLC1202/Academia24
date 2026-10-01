@@ -15,9 +15,17 @@ backend/
 │   ├── login.php      POST {email, senha} (CSRF, rate limit) -> pede o codigo
 │   ├── login-mfa.php  POST {codigo} (6 digitos do app autenticador)
 │   ├── logout.php     POST (CSRF)
+│   ├── lead.php       POST formulario de agendamento (publico: CSRF, honeypot, rate limit)
 │   ├── admin-grade.php POST {unidade, grade, origem} -- so admin (CSRF)
 │   ├── admin-versoes.php GET ?unidade= -- historico (so admin)
-│   └── admin-desfazer.php POST {unidade} -- volta pra versao anterior (so admin, CSRF)
+│   ├── admin-desfazer.php POST {unidade} -- volta pra versao anterior (so admin, CSRF)
+│   ├── admin-cancelamentos.php GET ?unidade=&data= -- aulas do dia + proximos cancelamentos (so admin)
+│   ├── admin-cancelar.php POST {unidade, data, hora, modalidade} ou {unidade, data, dia_inteiro} (so admin, CSRF)
+│   ├── admin-descancelar.php POST (mesmo formato) -- desfaz (so admin, CSRF)
+│   ├── admin-leads.php GET ?unidade=&status=&pagina= -- lista de leads (so admin)
+│   ├── admin-leads-resumo.php GET ?unidade= -- numeros por mes, sem dado pessoal (so admin)
+│   ├── admin-lead-status.php POST {id, status} (so admin, CSRF)
+│   └── admin-lead-excluir.php POST {id} -- apaga de vez, LGPD (so admin, CSRF)
 ├── src/               fora da raiz web: config, banco, respostas, log
 ├── bin/migrate.php    roda as migrations (so pela linha de comando)
 ├── sql/migrations/    NNN_nome.up.sql + NNN_nome.down.sql
@@ -90,6 +98,12 @@ Authenticator e so grava depois de conferir um codigo). Rodando de novo numa
 conta com MFA, oferece desligar -- e o caminho se a dona perder o celular.
 Em producao (`APP_ENV=prod`) conta sem MFA nao entra.
 
+**Mantenha-me conectado** (`src/aparelho.php`): marcando a caixinha no login,
+depois do codigo aquele navegador fica lembrado por 30 dias e nao pede mais o
+codigo (a senha e pedida sempre). Trocar a senha (`bin/admin.php`) ou
+ligar/desligar o MFA (`bin/mfa.php`) faz TODOS os aparelhos pedirem o codigo
+de novo -- e o caminho se a dona perder o celular ou o notebook.
+
 ## Dados de exemplo (seed)
 
 ```bash
@@ -102,6 +116,19 @@ unidade; as anteriores ficam guardadas.
 
 A validacao de aula (dia, hora `HH:MM`, nome da modalidade) fica em
 `src/grade.php` e vale pra tudo que grava grade: seed, upload e edicao.
+
+## Limpeza dos leads (LGPD, 6 meses)
+
+```bash
+docker compose exec php php bin/limpar-leads.php --simular   # so conta
+docker compose exec php php bin/limpar-leads.php             # apaga
+```
+
+Apaga leads com mais de 6 meses (`LEAD_RETENCAO_MESES` em `src/leads.php`),
+qualquer status. Na Hostinger roda sozinho por Cron Job (hPanel > Avancado >
+Cron Jobs), 1x por dia de madrugada:
+`/usr/bin/php /home/<usuario>/domains/<dominio>/bin/limpar-leads.php`.
+O log guarda so quantos foram apagados.
 
 ## Rotas da API (nada exposto sem querer)
 
@@ -125,13 +152,13 @@ na API. O `public/api/.htaccess` so deixa responder `nome.php` (arquivo com
 | `cancelamentos` | aula cancelada numa DATA real (vale so aquela semana) |
 | `admins` | login do dashboard (senha em hash, segredo do MFA criptografado) |
 | `tentativas` | rate limit de login/lead/upload (so HMAC do IP/e-mail) |
+| `dispositivos_confiaveis` | "mantenha-me conectado": aparelho que pula o codigo do MFA por 30 dias (so hash do segredo) |
+| `leads` | formulario de agendamento: so o necessario + prova do consentimento (retencao 6 meses) |
 
 ## Proximos passos
 
-1. Cancelamento de aula pelo dashboard.
-2. Formulario de agendamento (leads, LGPD).
-3. Deploy na Hostinger.
-4. Leads do agendamento (destino a decidir; LGPD).
+1. Politica de Privacidade (aguardando o advogado).
+2. Deploy na Hostinger.
 
 ## Producao (Hostinger) -- a detalhar no deploy
 

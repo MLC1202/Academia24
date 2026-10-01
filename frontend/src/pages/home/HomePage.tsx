@@ -9,8 +9,12 @@ import Bioimpedancia from "./sections/Bioimpedancia";
 import Convite from "./sections/Convite";
 import Footer from "../../components/Footer/Footer";
 import WhatsApp from "../../components/WhatsApp/WhatsApp";
+import { SEO } from "../../data/seo";
+import { useSeo } from "../../lib/useSeo";
 
 function HomePage() {
+  useSeo(SEO.inicio);
+
   return (
     <div className="snap-container">
       <Hero />

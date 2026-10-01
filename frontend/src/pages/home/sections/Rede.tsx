@@ -25,7 +25,7 @@ const pilares = [
     titulo: "Estrutura de verdade",
     texto:
       "Unidades amplas, organizadas e preparadas para diferentes objetivos e níveis de treino.",
-    foto: `${import.meta.env.BASE_URL}imagens/rede/estrutura.jpg`,
+    foto: `${import.meta.env.BASE_URL}imagens/rede/estrutura.webp`,
     // Enquadramento so quando fugir do padrao (o CSS ancora embaixo).
     posicao: "center center",
   },
@@ -34,14 +34,14 @@ const pilares = [
     titulo: "Equipamentos reconhecidos",
     texto:
       "Parques diversificados com marcas como Life Fitness, Hammer Strength e Technogym, conforme a unidade.",
-    foto: `${import.meta.env.BASE_URL}imagens/rede/equipamentos.jpg`,
+    foto: `${import.meta.env.BASE_URL}imagens/rede/equipamentos.webp`,
   },
   {
     n: "03",
     titulo: "Avaliação com bioimpedância",
     texto:
       "Acompanhe composição corporal, percentual de gordura, massa muscular e sua evolução.",
-    foto: `${import.meta.env.BASE_URL}imagens/rede/bioimpedancia.jpg`,
+    foto: `${import.meta.env.BASE_URL}imagens/rede/bioimpedancia.webp`,
     // Foto vertical (3:4) num painel deitado: o corte pega do ombro ate as
     // maos, com a tela da balanca no meio.
     posicao: "center 28%",
@@ -51,7 +51,7 @@ const pilares = [
     titulo: "Atendimento próximo",
     texto:
       "Profissionais presentes para acolher, orientar e fazer você se sentir parte da comunidade.",
-    foto: `${import.meta.env.BASE_URL}imagens/rede/atendimento.jpg`,
+    foto: `${import.meta.env.BASE_URL}imagens/rede/atendimento.webp`,
     // Foto vertical: sobe o corte pra mostrar o rosto do professor.
     posicao: "center 36%",
   },

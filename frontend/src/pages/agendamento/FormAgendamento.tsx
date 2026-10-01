@@ -14,13 +14,18 @@
 // No computador o texto de abertura fica preso a esquerda enquanto o
 // formulario rola a direita. O botao so libera com tudo certo.
 //
-// ATENCAO: por enquanto isso e so a tela. O botao valida os campos e mostra a
-// confirmacao, mas NAO manda os dados pra lugar nenhum — so joga no console.
-// Quando o endpoint existir, e so trocar o corpo do submeter().
+// Envio: POST /api/lead.php (backend/public/api/lead.php). A validacao
+// daqui e so conforto -- quem decide e o servidor. Seguranca:
+//  - token CSRF (pego na sessao) e honeypot "referencia" (campo escondido
+//    que pessoa nao ve; robo preenche e o servidor descarta);
+//  - ao abrir o formulario, a sessao marca a hora: envio rapido demais e
+//    recusado ("muito_rapido") e a pessoa so precisa clicar de novo;
+//  - nada de dado pessoal no console, localStorage ou URL.
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { ChangeEvent, CSSProperties, FormEvent } from "react";
 import { Link, useSearchParams } from "react-router-dom";
+import { ErroApi, SEM_API, abrirFormularioLead, enviarLead } from "../../lib/api";
 import {
   unidades,
   slugsUnidades,
@@ -56,6 +61,32 @@ const periodos = [
 
 const ordemCampos: Campo[] = ["unidade", "periodo", "objetivo", "nome", "whatsapp", "email"];
 
+// Versao do texto da caixinha de consentimento (LGPD). Mudou o texto?
+// Mude a data aqui E em backend/src/leads.php (LEAD_CONSENTIMENTO_VERSAO).
+const CONSENTIMENTO_VERSAO = "2026-10-01";
+
+// Codigo de erro da API -> frase pra pessoa.
+const mensagensErro: Record<string, string> = {
+  muito_rapido: "Confira seus dados e toque em enviar de novo.",
+  muitas_tentativas:
+    "Recebemos vários envios seguidos. Tente de novo mais tarde ou fale com a unidade pelo WhatsApp.",
+  consentimento_desatualizado:
+    "O texto de autorização foi atualizado. Recarregue a página e envie de novo.",
+  dados_invalidos: "Confira os campos destacados.",
+  sem_conexao: "Sem conexão. Verifique sua internet e tente de novo.",
+};
+const erroGenerico = "Não foi possível enviar agora. Tente de novo em instantes.";
+
+// Nome do campo no servidor -> nome do campo nesta tela.
+const campoDaApi: Record<string, Campo> = {
+  unidade: "unidade",
+  periodo: "periodo",
+  objetivo: "objetivo",
+  nome: "nome",
+  telefone: "whatsapp",
+  email: "email",
+};
+
 // Vai formatando o telefone enquanto a pessoa digita: (11) 90000-0000.
 function mascararWhatsapp(valor: string) {
   const d = valor.replace(/\D/g, "").slice(0, 11);
@@ -72,6 +103,8 @@ function validar(campo: Campo, valor: string) {
 
   if (campo === "nome") {
     if (v.length < 3) return "Digite seu nome.";
+    // Mesma regra do servidor (backend/src/leads.php).
+    if (!/^\p{L}[\p{L}\p{M}'’ .-]*$/u.test(v)) return "Use só letras no nome.";
     if (v.split(/\s+/).length < 2) return "Digite nome e sobrenome.";
     return "";
   }
@@ -80,6 +113,8 @@ function validar(campo: Campo, valor: string) {
     const d = v.replace(/\D/g, "");
     if (d.length < 10) return "Número incompleto.";
     if (d.length === 11 && d[2] !== "9") return "Celular deve começar com 9.";
+    if (d[0] === "0" || d[1] === "0") return "DDD inválido.";
+    if (d.length === 10 && !/[2-8]/.test(d[2])) return "Número inválido.";
     return "";
   }
 
@@ -102,6 +137,13 @@ function FormAgendamento() {
   const [erros, setErros] = useState<Partial<Record<Campo, string>>>({});
   const [consentimento, setConsentimento] = useState(false);
   const [estado, setEstado] = useState<Estado>("parado");
+  const [erroEnvio, setErroEnvio] = useState("");
+  const [isca, setIsca] = useState(""); // honeypot
+
+  // Abriu o formulario: avisa o servidor (marca a hora da visita).
+  useEffect(() => {
+    if (!SEM_API) void abrirFormularioLead();
+  }, []);
 
   const escolher = (campo: Campo, valor: string) => {
     setDados((d) => ({ ...d, [campo]: valor }));
@@ -122,23 +164,46 @@ function FormAgendamento() {
   const faltando = ordemCampos.filter((c) => validar(c, dados[c]) !== "");
   const completo = consentimento && faltando.length === 0;
 
-  function submeter(e: FormEvent) {
+  async function submeter(e: FormEvent) {
     e.preventDefault();
     if (!completo || estado === "enviando") return;
 
+    // Previa no GitHub Pages: nao existe servidor, entao nao finge que enviou.
+    if (SEM_API) {
+      setErroEnvio("Esta é uma prévia do site: o agendamento ainda não está ativo.");
+      return;
+    }
+
     setEstado("enviando");
+    setErroEnvio("");
 
-    // Aqui e o lugar do POST quando o backend existir. Por enquanto so mostro
-    // no console pra conferir que os dados estao chegando certos.
-    console.info("[agendamento]", {
-      ...dados,
-      nome: dados.nome.trim(),
-      email: dados.email.trim(),
-      origem: window.location.pathname,
-      criadoEm: new Date().toISOString(),
-    });
-
-    setEstado("enviado");
+    try {
+      await enviarLead({
+        unidade: dados.unidade,
+        periodo: dados.periodo,
+        objetivo: dados.objetivo,
+        nome: dados.nome.trim(),
+        telefone: dados.whatsapp,
+        email: dados.email.trim(),
+        consentimento: true,
+        consentimento_versao: CONSENTIMENTO_VERSAO,
+        referencia: isca,
+      });
+      setEstado("enviado");
+    } catch (erro) {
+      const codigo = erro instanceof ErroApi ? erro.codigo : "";
+      // Campo recusado pelo servidor: marca o campo, igual a validacao local.
+      if (erro instanceof ErroApi && erro.campos) {
+        const novos: Partial<Record<Campo, string>> = {};
+        for (const nomeApi of Object.keys(erro.campos)) {
+          const campo = campoDaApi[nomeApi];
+          if (campo) novos[campo] = "Confira este campo.";
+        }
+        setErros((x) => ({ ...x, ...novos }));
+      }
+      setErroEnvio(mensagensErro[codigo] ?? erroGenerico);
+      setEstado("parado");
+    }
   }
 
   // ---------- Tela de confirmacao ----------
@@ -155,9 +220,9 @@ function FormAgendamento() {
             <path d="M15 27l7 7 15-16" />
           </svg>
 
-          <h2 className="agendar__fim-titulo">
+          <h1 className="agendar__fim-titulo">
             Tudo certo, {dados.nome.trim().split(" ")[0]}.
-          </h2>
+          </h1>
           <p className="agendar__fim-texto">
             A equipe da unidade {info.nome} vai entrar em contato pelo telefone{" "}
             {dados.whatsapp} para combinar o dia da sua aula.
@@ -198,9 +263,9 @@ function FormAgendamento() {
         <div className="agendar__intro">
           <p className="agendar__eyebrow">Aula experimental</p>
 
-          <h2 className="agendar__title">
+          <h1 className="agendar__title">
             A sua próxima <span className="agendar__title-destaque">sessão.</span>
-          </h2>
+          </h1>
 
           <p className="agendar__subtitle">
             Uma aula para sentir o ritmo da Rede 24, conhecer a nossa forma de
@@ -414,6 +479,27 @@ function FormAgendamento() {
               </span>
             </label>
           </fieldset>
+
+          {/* Honeypot: fora da tela, fora do Tab e escondido do leitor de
+              tela. Pessoa nunca preenche; robo que preenche tudo cai aqui. */}
+          <div className="agendar__isca" aria-hidden="true">
+            <label htmlFor="referencia">Não preencha este campo</label>
+            <input
+              id="referencia"
+              name="referencia"
+              type="text"
+              tabIndex={-1}
+              autoComplete="off"
+              value={isca}
+              onChange={(e) => setIsca(e.target.value)}
+            />
+          </div>
+
+          {erroEnvio && (
+            <p className="agendar__erro-envio" role="alert">
+              {erroEnvio}
+            </p>
+          )}
 
           <div className="agendar__enviar">
             <button

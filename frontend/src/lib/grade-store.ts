@@ -53,8 +53,10 @@ function formatoValido(dados: unknown): dados is DadosGrade {
   );
 }
 
-// semCache: o dashboard sempre quer a versao mais nova (o site pode usar a
-// copia de ate 1 min que o navegador guarda).
+// semCache: o dashboard pula ate a copia do navegador. O site usa 'default':
+// o servidor manda "no-cache" + ETag, entao o navegador sempre confere se a
+// copia ainda vale (304 = vale, quase sem dados) -- cancelar/desfazer aparece
+// no proximo F5.
 export async function buscarGrades(semCache = false): Promise<DadosGrade> {
   if (SEM_API) return { grades: gradesPadrao, cancelamentos: [] };
 

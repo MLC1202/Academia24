@@ -6,6 +6,8 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import Pagina from "../../components/Pagina/Pagina";
 import "./DuvidasPage.css";
+import { SEO } from "../../data/seo";
+import { useSeo } from "../../lib/useSeo";
 
 const perguntas = [
   {
@@ -39,6 +41,7 @@ const perguntas = [
 ];
 
 function DuvidasPage() {
+  useSeo(SEO.duvidas);
   // Guardo os indices abertos: da pra deixar mais de um aberto ao mesmo tempo.
   const [abertas, setAbertas] = useState<number[]>([0]);
 
@@ -54,11 +57,11 @@ function DuvidasPage() {
           <div className="duvidas__intro">
             <p className="duvidas__eyebrow">Dúvidas frequentes</p>
 
-            <h2 className="duvidas__title">
+            <h1 className="duvidas__title">
               Antes de escolher
               <br />
               sua unidade.
-            </h2>
+            </h1>
 
             <p className="duvidas__subtitle">
               Reunimos as principais informações sobre a Rede 24. Condições

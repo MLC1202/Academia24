@@ -21,11 +21,11 @@ RedirectMatch 404 "/\.(?!well-known/)"
   # E a principal barreira contra XSS: mesmo que um texto malicioso entre na
   # pagina, script de fora ou inline nao roda.
   #   script-src 'self'          -> so os JS do proprio site (nada inline)
-  #   img-src ... unsplash       -> fotos de fundo que ainda vem de la
+  #   img-src 'self' data:       -> so imagens do proprio site
   #   connect-src 'self'         -> fetch so pra nossa API
   #   frame-ancestors 'none'     -> ninguem coloca o site dentro de um iframe
   #   style-src 'unsafe-inline'  -> estilos inline (CSS nao executa codigo)
-  Header always set Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://images.unsplash.com; media-src 'self'; font-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"
+  Header always set Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; media-src 'self'; font-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"
   Header always set X-Content-Type-Options "nosniff"
   Header always set X-Frame-Options "DENY"
   Header always set Referrer-Policy "strict-origin-when-cross-origin"
@@ -34,19 +34,36 @@ RedirectMatch 404 "/\.(?!well-known/)"
   Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
 </IfModule>
 
+# --- Um dominio so ------------------------------------------------------------
+# Os outros dominios da rede (24wellness.com.br, academia24hclub.com sem www)
+# redirecionam (301) pro principal, mantendo o caminho. A regra de verdade e
+# escrita aqui no "npm run build", a partir de src/data/site.ts (SITE_URL e
+# DOMINIOS_QUE_REDIRECIONAM). Nao apague a linha abaixo:
+# @@REDIRECIONAMENTO_DE_DOMINIOS@@
+
 # --- Rotas do React -----------------------------------------------------------
-# O site e uma pagina so (React Router), entao qualquer rota que nao seja um
-# arquivo de verdade tem que cair no index.html.
-# Sem isso, abrir /admin/dashboard direto ou dar F5 nele da 404 na Hostinger.
+# O site e uma pagina so (React Router): as rotas que EXISTEM entregam o
+# index.html com 200. Sem isso, abrir /admin/dashboard direto ou dar F5 nele
+# da 404 na Hostinger.
+# Qualquer outro endereco cai no ErrorDocument: status 404 DE VERDADE (o
+# Google nao indexa endereco errado), mas o conteudo continua sendo o
+# index.html, e o React mostra a pagina "nao encontrada".
+# Rota nova no App.tsx? Acrescente aqui tambem.
+ErrorDocument 404 /index.html
+
 <IfModule mod_rewrite.c>
   RewriteEngine On
   RewriteBase /
   RewriteRule ^index\.html$ - [L]
   # /api/ nunca cai no index.html: endpoint que nao existe tem que dar 404
-  # de verdade (e nao "200 com a pagina do site").
+  # (o public/api/.htaccess cuida das rotas da API).
   RewriteRule ^api/ - [L]
   RewriteCond %{REQUEST_FILENAME} -f [OR]
   RewriteCond %{REQUEST_FILENAME} -d
   RewriteRule ^ - [L]
-  RewriteRule . /index.html [L]
+  # As paginas de cada unidade sairam (01/10/2026): link antigo/compartilhado
+  # de /unidades/norte vai pra /unidades#norte (o card daquela unidade).
+  RewriteRule ^unidades/([a-z0-9-]+)/?$ /unidades#$1 [R=301,NE,L]
+  # /unidades, /agendamento, /duvidas, /admin e /admin/...
+  RewriteRule ^(unidades|agendamento|duvidas|admin(/[a-z0-9/-]*)?)/?$ /index.html [L]
 </IfModule>

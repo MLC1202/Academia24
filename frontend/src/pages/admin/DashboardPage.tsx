@@ -1,95 +1,62 @@
-// Editor da grade de aulas (/admin/dashboard).
-// Escolho unidade + dia, mexo nas aulas e salvo. So abre logado (o App
-// envolve esta pagina no RotaAdmin). Le a grade do banco e salva no
-// banco: o que for salvo aparece no site na hora (a versao anterior fica
-// guardada).
+// Dashboard (/admin/dashboard). So abre logado (o App envolve esta pagina
+// no RotaAdmin).
+//
+// Ao abrir mostra dois botoes grandes: "Grade de aulas" e "Leads". Cada um
+// abre o seu painel:
+//   /admin/dashboard            -> inicio (os dois botoes)
+//   /admin/dashboard?aba=grade  -> PainelGrade (editor da grade, como antes)
+//   /admin/dashboard?aba=leads  -> PainelLeads (pedidos de aula experimental)
+// A aba fica no endereco, entao o "voltar" do navegador funciona.
+//
+// O topo (e-mail, ver o site, sair) e o mesmo pros dois paineis.
 
-import { useCallback, useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { ErroApi, sair, SEM_API } from "../../lib/api";
-import { slugsUnidades, unidades, type UnidadeSlug } from "../../data/unidades";
-import {
-  dias,
-  gradeVazia,
-  novaAula,
-  ordenarPorHora,
-  type Aula,
-  type Dia,
-  type GradeUnidade,
-  type Grades,
-} from "../../data/grade";
-import { buscarGrades, salvarGrade } from "../../lib/grade-store";
-import ImportarPlanilha from "./ImportarPlanilha";
-import VersoesUnidade from "./VersoesUnidade";
+import { useCallback, useState } from "react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { sair, SEM_API } from "../../lib/api";
+import PainelGrade from "./PainelGrade";
+import PainelLeads from "./PainelLeads";
 import "./DashboardPage.css";
+import { SEO } from "../../data/seo";
+import { useSeo } from "../../lib/useSeo";
 
-type Estado = "limpo" | "alterado" | "salvo";
+type Aba = "grade" | "leads";
 
-// Frase pra dona a partir do erro da API. Quando o servidor recusa um dado
-// ("Terça, aula 3: horário inválido"), mostro exatamente o que ele disse.
-function mensagemDeErro(err: unknown): string {
-  if (err instanceof ErroApi) {
-    if (err.detalhe) return err.detalhe;
-    if (err.codigo === "muitas_tentativas") return "Muitos salvamentos seguidos. Espere alguns minutos.";
-    if (err.codigo === "sem_conexao") return "Sem conexão com o servidor. Nada foi salvo; tente de novo.";
-  }
-  return "Não foi possível salvar. Nada foi alterado no site; tente de novo.";
-}
-
-type Carga =
-  | { status: "carregando" }
-  | { status: "erro" }
-  | { status: "pronto"; grades: Grades };
+const titulos: Record<Aba, string> = {
+  grade: "Grade de aulas",
+  leads: "Leads",
+};
 
 function DashboardPage({ email }: { email: string | null }) {
+  useSeo(SEO.admin);
   const navigate = useNavigate();
-  const [carga, setCarga] = useState<Carga>({ status: "carregando" });
-  const [unidade, setUnidade] = useState<UnidadeSlug>("alphaville");
-  const [dia, setDia] = useState<Dia>("seg");
-  const [grade, setGrade] = useState<GradeUnidade>(gradeVazia);
-  const [estado, setEstado] = useState<Estado>("limpo");
-  const [salvando, setSalvando] = useState(false);
-  const [erro, setErro] = useState("");
+  const [params, setParams] = useSearchParams();
+  const valor = params.get("aba");
+  const aba: Aba | null = valor === "grade" || valor === "leads" ? valor : null;
+
+  // O PainelGrade avisa quando tem alteracao nao salva.
+  const [gradeAlterada, setGradeAlterada] = useState(false);
   const [saindo, setSaindo] = useState(false);
-  // Muda sempre que a grade no banco muda -> o historico recarrega.
-  const [versaoChave, setVersaoChave] = useState(0);
-
-  // Grade atual do banco (sem cache do navegador: aqui quero a mais nova).
-  useEffect(() => {
-    let ativo = true;
-    buscarGrades(true)
-      .then(({ grades }) => {
-        if (!ativo) return;
-        setCarga({ status: "pronto", grades });
-        setGrade(grades.alphaville);
-      })
-      .catch(() => ativo && setCarga({ status: "erro" }));
-    return () => {
-      ativo = false;
-    };
-  }, []);
-
-  // Depois de importar a planilha: busca de novo e mostra a unidade aberta.
-  async function recarregar() {
-    try {
-      const { grades } = await buscarGrades(true);
-      setCarga({ status: "pronto", grades });
-      setGrade(grades[unidade]);
-      setEstado("limpo");
-      setErro("");
-      setVersaoChave((n) => n + 1);
-    } catch {
-      setCarga({ status: "erro" });
-    }
-  }
 
   // Sessao venceu (30 min parado / 8 h): volta pro login.
   const sessaoExpirou = useCallback(() => {
     navigate("/admin/login", { replace: true, state: { expirou: true } });
   }, [navigate]);
 
+  function podeSairDaGrade() {
+    return (
+      aba !== "grade" ||
+      !gradeAlterada ||
+      confirm("Você tem alterações não salvas na grade. Sair descarta essas alterações. Continuar?")
+    );
+  }
+
+  function ir(destino: Aba | null) {
+    if (destino === aba || !podeSairDaGrade()) return;
+    setParams(destino ? { aba: destino } : {});
+  }
+
   async function encerrar() {
-    if (estado === "alterado" && !confirm("Sair descarta as alterações não salvas. Continuar?")) return;
+    if (!podeSairDaGrade()) return;
     setSaindo(true);
     try {
       await sair();
@@ -99,81 +66,12 @@ function DashboardPage({ email }: { email: string | null }) {
     navigate("/admin/login", { replace: true });
   }
 
-  function trocarUnidade(slug: UnidadeSlug) {
-    if (carga.status !== "pronto") return;
-    if (estado === "alterado" && !confirm("Trocar de unidade descarta as alterações não salvas. Continuar?")) return;
-    setUnidade(slug);
-    setGrade(carga.grades[slug]);
-    setEstado("limpo");
-    setErro("");
-  }
-
-  function mexer(indice: number, campo: keyof Aula, valor: string) {
-    setGrade((g) => ({
-      ...g,
-      [dia]: g[dia].map((a, i) => (i === indice ? { ...a, [campo]: valor } : a)),
-    }));
-    setEstado("alterado");
-    setErro("");
-  }
-
-  function adicionar() {
-    setGrade((g) => ({ ...g, [dia]: [...g[dia], novaAula()] }));
-    setEstado("alterado");
-    setErro("");
-  }
-
-  function remover(indice: number) {
-    setGrade((g) => ({ ...g, [dia]: g[dia].filter((_, i) => i !== indice) }));
-    setEstado("alterado");
-    setErro("");
-  }
-
-  function ordenar() {
-    setGrade((g) => ({ ...g, [dia]: ordenarPorHora(g[dia]) }));
-    setEstado("alterado");
-    setErro("");
-  }
-
-  async function salvar() {
-    if (SEM_API || salvando || carga.status !== "pronto") return;
-    // Linha sem horario ou sem modalidade eu descarto na hora de salvar.
-    const limpa: GradeUnidade = { ...grade };
-    for (const d of dias) {
-      limpa[d.chave] = ordenarPorHora(
-        grade[d.chave]
-          .map((a) => ({ ...a, modalidade: a.modalidade.trim() }))
-          .filter((a) => a.modalidade && a.hora.trim()),
-      );
-    }
-    setSalvando(true);
-    setErro("");
-    try {
-      await salvarGrade(unidade, limpa);
-      setGrade(limpa);
-      setCarga({ status: "pronto", grades: { ...carga.grades, [unidade]: limpa } });
-      setEstado("salvo");
-      setVersaoChave((n) => n + 1);
-    } catch (err) {
-      if (err instanceof ErroApi && err.codigo === "nao_autenticado") return sessaoExpirou();
-      setErro(mensagemDeErro(err));
-    } finally {
-      setSalvando(false);
-    }
-  }
-
-  // Aulas do dia que esta aberto + quantas estao pela metade.
-  const aulas = grade[dia];
-  const incompletas = aulas.filter(
-    (a) => !a.modalidade.trim() || !a.hora.trim(),
-  ).length;
-
   return (
     <div className="admin">
       <header className="admin__topo">
         <div>
           <p className="admin__eyebrow">Área interna</p>
-          <h1 className="admin__titulo">Grade de aulas</h1>
+          <h1 className="admin__titulo">{aba ? titulos[aba] : "Painel"}</h1>
         </div>
         <div className="admin__conta">
           {email && <span className="admin__email">{email}</span>}
@@ -188,169 +86,45 @@ function DashboardPage({ email }: { email: string | null }) {
         </div>
       </header>
 
-      <p className="admin__aviso">
-        {SEM_API ? (
-          <>Prévia: aqui dá para mexer, mas <strong>não é possível salvar</strong>.</>
-        ) : (
-          <>Ao salvar, a grade da unidade <strong>vai para o site na hora</strong>.
-          A versão anterior fica guardada.</>
-        )}
-      </p>
-
-      {carga.status === "carregando" && <p className="admin__vazio">Carregando a grade…</p>}
-      {carga.status === "erro" && (
-        <p className="admin__vazio" role="alert">
-          Não foi possível carregar a grade. Recarregue a página.
-        </p>
-      )}
-      {carga.status === "pronto" && (<>
-      <ImportarPlanilha
-        desativado={SEM_API}
-        antesDePublicar={() =>
-          estado !== "alterado" ||
-          confirm("Você tem alterações não salvas no editor abaixo. Publicar a planilha descarta essas alterações. Continuar?")
-        }
-        aoPublicar={recarregar}
-        aoExpirar={sessaoExpirou}
-      />
-
-      <section className="admin__bloco">
-        <h2 className="admin__bloco-titulo">Unidade</h2>
-        <div className="admin__abas">
-          {slugsUnidades.map((slug) => (
-            <button
-              key={slug}
-              type="button"
-              className={
-                slug === unidade ? "admin__aba admin__aba--ativa" : "admin__aba"
-              }
-              onClick={() => trocarUnidade(slug)}
-            >
-              {unidades[slug].nome}
-            </button>
-          ))}
-        </div>
-        <VersoesUnidade
-          key={unidade}
-          unidade={unidade}
-          chave={versaoChave}
-          desativado={SEM_API}
-          temAlteracao={estado === "alterado"}
-          aoMudar={recarregar}
-          aoExpirar={sessaoExpirou}
-        />
-      </section>
-
-      <section className="admin__bloco">
-        <h2 className="admin__bloco-titulo">Dia da semana</h2>
-        <div className="admin__abas">
-          {dias.map((d) => (
-            <button
-              key={d.chave}
-              type="button"
-              className={
-                d.chave === dia ? "admin__aba admin__aba--ativa" : "admin__aba"
-              }
-              onClick={() => setDia(d.chave)}
-            >
-              <span className="admin__aba-dia">{d.longo}</span>
-              <span className="admin__aba-contador">
-                {grade[d.chave].length === 1
-                  ? '1 aula'
-                  : `${grade[d.chave].length} aulas`}
-              </span>
-            </button>
-          ))}
-        </div>
-      </section>
-
-      <section className="admin__bloco">
-        <div className="admin__bloco-head">
-          <h2 className="admin__bloco-titulo">
-            {dias.find((d) => d.chave === dia)!.longo} ·{" "}
-            {unidades[unidade].nome}
-          </h2>
-          <button type="button" className="admin__link" onClick={ordenar}>
-            Ordenar por horário
+      {aba === null ? (
+        <nav className="painel__inicio" aria-label="O que você quer fazer?">
+          <button type="button" className="painel__cartao" onClick={() => ir("grade")}>
+            <span className="painel__cartao-titulo">Grade de aulas</span>
+            <span className="painel__cartao-texto">
+              Editar as aulas de cada unidade, importar a planilha e voltar para a versão
+              anterior.
+            </span>
+            <span className="painel__cartao-ir">Abrir grade →</span>
           </button>
-        </div>
-
-        {aulas.length === 0 ? (
-          <p className="admin__vazio">
-            Nenhuma aula neste dia. Use o botão abaixo para adicionar.
-          </p>
-        ) : (
-          <ul className="admin__lista">
-            {aulas.map((aula, i) => (
-              <li className="admin__linha" key={aula.id}>
-                <input
-                  className="admin__hora"
-                  type="time"
-                  value={aula.hora}
-                  aria-label="Horário"
-                  onChange={(e) => mexer(i, "hora", e.target.value)}
-                />
-                <input
-                  className="admin__modalidade"
-                  type="text"
-                  placeholder="Modalidade (ex.: Spinning)"
-                  maxLength={60}
-                  value={aula.modalidade}
-                  aria-label="Modalidade"
-                  onChange={(e) => mexer(i, "modalidade", e.target.value)}
-                />
-                <button
-                  type="button"
-                  className="admin__remover"
-                  aria-label={`Remover ${aula.modalidade || "aula"}`}
-                  onClick={() => remover(i)}
-                >
-                  Remover
-                </button>
-              </li>
-            ))}
-          </ul>
-        )}
-
-        <button type="button" className="admin__adicionar" onClick={adicionar}>
-          + Adicionar aula
-        </button>
-      </section>
-
-      </>)}
-
-      <div className="admin__rodape">
-        <div className="admin__rodape-inner">
-        <div className="admin__estado">
-          {estado === "alterado" && !erro && (
-            <span className="admin__estado-alterado">
-              Alterações não salvas
-              {incompletas > 0 &&
-                ` · ${incompletas} linha(s) em branco serão descartadas`}
+          <button type="button" className="painel__cartao" onClick={() => ir("leads")}>
+            <span className="painel__cartao-titulo">Leads</span>
+            <span className="painel__cartao-texto">
+              Quem pediu aula experimental pelo site: contato, status e exclusão.
             </span>
-          )}
-          {estado === "salvo" && !erro && (
-            <span className="admin__estado-salvo">
-              Grade da unidade {unidades[unidade].nome} salva e publicada.
-            </span>
-          )}
-          {erro && (
-            <span className="admin__estado-erro" role="alert">
-              {erro}
-            </span>
-          )}
-        </div>
+            <span className="painel__cartao-ir">Abrir leads →</span>
+          </button>
+        </nav>
+      ) : (
+        <nav className="painel__troca" aria-label="Seções do painel">
+          <button type="button" className="admin__aba" onClick={() => ir(null)}>
+            ← Início
+          </button>
+          {(Object.keys(titulos) as Aba[]).map((a) => (
+            <button
+              key={a}
+              type="button"
+              className={a === aba ? "admin__aba admin__aba--ativa" : "admin__aba"}
+              aria-current={a === aba ? "page" : undefined}
+              onClick={() => ir(a)}
+            >
+              {titulos[a]}
+            </button>
+          ))}
+        </nav>
+      )}
 
-        <button
-          type="button"
-          className="admin__salvar"
-          disabled={estado !== "alterado" || salvando || SEM_API}
-          onClick={salvar}
-        >
-          {salvando ? "Salvando…" : "Salvar grade"}
-        </button>
-        </div>
-      </div>
+      {aba === "grade" && <PainelGrade aoAlterar={setGradeAlterada} aoExpirar={sessaoExpirou} />}
+      {aba === "leads" && <PainelLeads aoExpirar={sessaoExpirou} />}
     </div>
   );
 }

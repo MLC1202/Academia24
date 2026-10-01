@@ -18,6 +18,7 @@ if (PHP_SAPI !== 'cli') {
 require __DIR__ . '/../src/config.php';
 require __DIR__ . '/../src/db.php';
 require __DIR__ . '/../src/log.php';
+require __DIR__ . '/../src/aparelho.php';
 
 const SENHA_MIN = 12;
 const SENHA_MAX = 128;
@@ -104,5 +105,7 @@ if ($existente === false) {
     $pdo->prepare('UPDATE admins SET senha_hash = ?, ativo = 1 WHERE id = ?')
         ->execute([$hash, $existente]);
     registrar('info', 'admin_senha_trocada', ['admin_id' => (int) $existente]);
-    echo "Senha trocada.\n";
+    // Senha nova = todo aparelho "lembrado" volta a pedir o codigo.
+    $n = aparelho_esquecer_todos($pdo, (int) $existente);
+    echo "Senha trocada." . ($n ? " {$n} aparelho(s) lembrado(s) vao pedir o codigo de novo." : '') . "\n";
 }

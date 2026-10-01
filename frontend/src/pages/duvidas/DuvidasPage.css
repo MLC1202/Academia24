@@ -17,14 +17,14 @@
   padding: 72px 48px;
   overflow: hidden;
   background-color: var(--color-black);
-  /* Foto em public/imagens/duvidas.jpg. Pra trocar: mesmo nome, mesma pasta.
+  /* Foto em public/imagens/duvidas.webp. Pra trocar: mesmo nome, mesma pasta.
      O Vite poe o base na frente no build, entao funciona tanto na raiz do
      dominio quanto no GitHub Pages. */
   background-image: linear-gradient(
       rgba(10, 10, 10, 0.86),
       rgba(10, 10, 10, 0.72)
     ),
-    url("/imagens/duvidas.jpg");
+    url("/imagens/duvidas.webp");
   background-size: cover;
   background-position: center;
 }

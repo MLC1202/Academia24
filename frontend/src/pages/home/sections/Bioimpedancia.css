@@ -17,7 +17,7 @@
   padding: 56px 48px;
   overflow: hidden;
   background-color: var(--color-red);
-  /* A foto (public/imagens/bioimpedancia.jpg) entra pelo Bioimpedancia.tsx,
+  /* A foto (public/imagens/rede/bioimpedancia.webp) entra pelo Bioimpedancia.tsx,
      por causa do BASE_URL. Aqui fica so o vermelho, de reserva. */
   background-image: linear-gradient(
     rgba(237, 26, 61, 0.82),

@@ -4,8 +4,12 @@
 
 import Pagina from "../../components/Pagina/Pagina";
 import FormAgendamento from "./FormAgendamento";
+import { SEO } from "../../data/seo";
+import { useSeo } from "../../lib/useSeo";
 
 function AgendamentoPage() {
+  useSeo(SEO.agendamento);
+
   return (
     <Pagina>
       <FormAgendamento />

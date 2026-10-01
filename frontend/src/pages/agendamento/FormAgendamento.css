@@ -514,6 +514,28 @@
   cursor: not-allowed;
 }
 
+/* Honeypot: existe no HTML, mas fica fora da tela. (Nao uso display:none
+   porque alguns robos pulam campo com display:none.) */
+.agendar__isca {
+  position: absolute;
+  left: -10000px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+/* Erro do envio (servidor recusou ou sem conexao) */
+.agendar__erro-envio {
+  margin: 0 0 14px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: rgba(220, 38, 38, 0.08);
+  color: var(--color-red-escuro, #b91c1c);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
 /* ---------- Confirmacao ---------- */
 
 .agendar--fim {

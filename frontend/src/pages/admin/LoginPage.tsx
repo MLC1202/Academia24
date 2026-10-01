@@ -5,12 +5,20 @@
 //
 // Mensagens de erro de proposito vagas ("e-mail ou senha incorretos"):
 // a tela nao conta se o e-mail existe.
+//
+// "Mantenha-me conectado neste aparelho": se marcar, depois do codigo o
+// servidor lembra este navegador por 30 dias e nao pede mais o codigo aqui
+// (a senha continua sempre). Detalhes em backend/src/aparelho.php.
+// Olhinho: mostra/esconde a senha enquanto digita. Volta a esconder ao
+// enviar.
 
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { buscarSessao, confirmarCodigo, entrar, ErroApi, SEM_API } from '../../lib/api';
 import './DashboardPage.css'; // visual base do .admin
 import './LoginPage.css';
+import { SEO } from '../../data/seo';
+import { useSeo } from '../../lib/useSeo';
 
 type Etapa = 'verificando' | 'senha' | 'codigo';
 
@@ -34,6 +42,7 @@ function mensagemDeErro(erro: unknown): string {
 }
 
 function LoginPage() {
+  useSeo(SEO.admin);
   const navigate = useNavigate();
   // O dashboard manda { expirou: true } quando a sessao venceu no meio do uso.
   const expirou = (useLocation().state as { expirou?: boolean } | null)?.expirou === true;
@@ -43,6 +52,8 @@ function LoginPage() {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [codigo, setCodigo] = useState('');
+  const [lembrar, setLembrar] = useState(false);
+  const [verSenha, setVerSenha] = useState(false);
   const [erro, setErro] = useState(
     expirou ? 'Sua sessão expirou por segurança. Entre de novo; o que não foi salvo se perdeu.' : '',
   );
@@ -73,7 +84,8 @@ function LoginPage() {
     setEnviando(true);
     setErro('');
     try {
-      const resultado = await entrar(email.trim(), senha);
+      setVerSenha(false);
+      const resultado = await entrar(email.trim(), senha, lembrar);
       setSenha(''); // nao fica guardada na memoria da tela
       if (resultado === 'ok') navigate('/admin/dashboard', { replace: true });
       else setEtapa('codigo');
@@ -133,16 +145,60 @@ function LoginPage() {
                 onChange={(e) => setEmail(e.target.value)}
               />
             </label>
-            <label className="login__campo">
-              <span>Senha</span>
+            {/* div + label separado: o botao do olhinho nao pode ficar
+                dentro do <label> (dois controles no mesmo rotulo). */}
+            <div className="login__campo">
+              <label htmlFor="login-senha">Senha</label>
+              <div className="login__senha">
+                <input
+                  id="login-senha"
+                  type={verSenha ? 'text' : 'password'}
+                  autoComplete="current-password"
+                  autoCapitalize="off"
+                  autoCorrect="off"
+                  spellCheck={false}
+                  required
+                  maxLength={128}
+                  value={senha}
+                  onChange={(e) => setSenha(e.target.value)}
+                />
+                <button
+                  type="button"
+                  className="login__olho"
+                  aria-label={verSenha ? 'Esconder senha' : 'Mostrar senha'}
+                  aria-pressed={verSenha}
+                  aria-controls="login-senha"
+                  title={verSenha ? 'Esconder senha' : 'Mostrar senha'}
+                  onClick={() => setVerSenha((v) => !v)}
+                >
+                  {verSenha ? (
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M3 3l18 18" />
+                      <path d="M10.6 5.1A10.9 10.9 0 0 1 12 5c5 0 9 4.5 10 7a13 13 0 0 1-3.2 4.3M6.1 6.2A13 13 0 0 0 2 12c1 2.5 5 7 10 7a10 10 0 0 0 4.6-1.1" />
+                      <path d="M9.9 9.9a3 3 0 0 0 4.2 4.2" />
+                    </svg>
+                  ) : (
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M2 12c1-2.5 5-7 10-7s9 4.5 10 7c-1 2.5-5 7-10 7S3 14.5 2 12z" />
+                      <circle cx="12" cy="12" r="3" />
+                    </svg>
+                  )}
+                </button>
+              </div>
+            </div>
+            <label className="login__lembrar">
               <input
-                type="password"
-                autoComplete="current-password"
-                required
-                maxLength={128}
-                value={senha}
-                onChange={(e) => setSenha(e.target.value)}
+                type="checkbox"
+                checked={lembrar}
+                onChange={(e) => setLembrar(e.target.checked)}
               />
+              <span>
+                Mantenha-me conectado neste aparelho
+                <small>
+                  Por 30 dias, não pede o código do app aqui. Não marque em computador
+                  compartilhado.
+                </small>
+              </span>
             </label>
             {erro && <p className="login__erro" role="alert">{erro}</p>}
             <button className="admin__salvar login__botao" disabled={enviando || !email || !senha}>

@@ -16,6 +16,7 @@ require __DIR__ . '/../src/config.php';
 require __DIR__ . '/../src/db.php';
 require __DIR__ . '/../src/log.php';
 require __DIR__ . '/../src/mfa.php';
+require __DIR__ . '/../src/aparelho.php';
 
 function perguntar(string $texto): string
 {
@@ -48,6 +49,7 @@ if ($admin['mfa_segredo'] !== null) {
     db()->prepare('UPDATE admins SET mfa_segredo = NULL, mfa_ultimo_passo = NULL WHERE id = ?')
         ->execute([$id]);
     registrar('aviso', 'mfa_desligado', ['admin_id' => $id]);
+    aparelho_esquecer_todos(db(), $id); // celular perdido: nenhum aparelho segue lembrado
     echo "MFA desligado. Rode de novo para ligar no celular novo.\n";
     exit(0);
 }
@@ -82,6 +84,7 @@ for ($tentativa = 1; $tentativa <= 3; $tentativa++) {
         db()->prepare('UPDATE admins SET mfa_segredo = ?, mfa_ultimo_passo = ? WHERE id = ?')
             ->execute([mfa_cifrar($segredo), $passo, $id]);
         registrar('info', 'mfa_ligado', ['admin_id' => $id]);
+        aparelho_esquecer_todos(db(), $id);
         echo "MFA ligado. A partir de agora o login pede senha + codigo.\n";
         exit(0);
     }

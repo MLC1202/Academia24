@@ -1,12 +1,12 @@
 // Secao da avaliacao fisica: foto com filtro vermelho a esquerda,
-// texto e itens medidos a direita. Foto em public/imagens/bioimpedancia.jpg
+// texto e itens medidos a direita. Foto em public/imagens/rede/bioimpedancia.webp (a mesma do card da Rede)
 // (pra trocar: mesmo nome, mesma pasta). O BASE_URL garante o caminho
 // certo tanto na Hostinger quanto no GitHub Pages.
 
 import { Link } from "react-router-dom";
 import "./Bioimpedancia.css";
 
-const foto = `${import.meta.env.BASE_URL}imagens/bioimpedancia.jpg`;
+const foto = `${import.meta.env.BASE_URL}imagens/rede/bioimpedancia.webp`;
 
 const itens = [
   "Composição corporal",

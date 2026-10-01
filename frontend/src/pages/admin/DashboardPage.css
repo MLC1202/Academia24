@@ -191,7 +191,9 @@
 
 .admin__linha {
   display: grid;
-  grid-template-columns: 150px 1fr auto;
+  /* hora | modalidade | Detalhes | Remover ; o painel de detalhes ocupa a
+     linha inteira embaixo */
+  grid-template-columns: 150px minmax(0, 1fr) auto auto;
   gap: 10px;
   align-items: center;
   padding: 10px 0;
@@ -347,10 +349,22 @@
   }
 
   .admin__linha {
-    grid-template-columns: 140px 1fr;
+    grid-template-columns: 140px minmax(0, 1fr);
     grid-template-areas:
       "hora modalidade"
-      "remover remover";
+      "detalhes remover"
+      "painel painel";
+  }
+
+  .admin__detalhes {
+    grid-area: detalhes;
+    justify-self: start;
+    max-width: 100%;
+  }
+
+  .admin__linha .detalhes {
+    grid-area: painel;
+    grid-template-columns: 1fr 1fr;
   }
 
   .admin__hora {
@@ -363,7 +377,7 @@
 
   .admin__remover {
     grid-area: remover;
-    justify-self: start;
+    justify-self: end;
   }
 
   .admin__rodape {
@@ -431,3 +445,300 @@
 .versoes__item--ativa {
   color: var(--color-black);
 }
+
+/* ---------- Inicio do dashboard: os dois botoes grandes ---------- */
+
+.painel__inicio {
+  margin-top: 32px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.painel__cartao {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 28px 24px;
+  border: 1px solid rgba(10, 10, 10, 0.1);
+  background: var(--color-white);
+  font-family: inherit;
+  text-align: left;
+  color: var(--color-black);
+  cursor: pointer;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.painel__cartao:hover {
+  border-color: var(--color-black);
+  transform: translateY(-2px);
+}
+
+.painel__cartao:focus-visible {
+  outline: 2px solid var(--color-red);
+  outline-offset: 3px;
+}
+
+.painel__cartao-titulo {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.painel__cartao-texto {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--color-gray);
+}
+
+.painel__cartao-ir {
+  margin-top: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-red);
+}
+
+/* Troca rapida Grade | Leads, embaixo do titulo */
+.painel__troca {
+  margin-top: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+@media (max-width: 640px) {
+  .painel__inicio {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------- Cancelar aula (CancelarAulas.tsx, aba Grade) ---------- */
+
+.cancel__nota {
+  margin-top: 8px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--color-gray);
+}
+
+.cancel__outra {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 4px 0 12px;
+  border: 1px dashed rgba(10, 10, 10, 0.25);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.cancel__outra input {
+  padding: 8px;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  font-size: 14px;
+  color: var(--color-black);
+}
+
+.cancel__dia {
+  margin-top: 20px;
+  font-size: 18px;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+.cancel__msg {
+  margin-top: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #1c7a45;
+}
+
+.cancel__msg--erro {
+  color: var(--color-red-escuro);
+}
+
+.cancel__lista {
+  list-style: none;
+  margin-top: 12px;
+}
+
+.cancel__aula {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px 14px;
+  padding: 10px 0;
+  border-top: 1px solid rgba(10, 10, 10, 0.08);
+}
+
+.cancel__aula:first-child {
+  border-top: 0;
+}
+
+.cancel__aula > button:last-child {
+  margin-left: auto;
+}
+
+.cancel__hora {
+  min-width: 48px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.cancel__nome {
+  flex: 1;
+  min-width: 120px;
+  overflow-wrap: anywhere;
+}
+
+.cancel__aula--cancelada .cancel__hora,
+.cancel__aula--cancelada .cancel__nome {
+  text-decoration: line-through;
+  color: var(--color-gray);
+}
+
+.cancel__tag {
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: rgba(237, 26, 61, 0.1);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-red-escuro);
+}
+
+.cancel__dia-acoes {
+  margin-top: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.cancel__proximos {
+  margin-top: 22px;
+  padding-top: 14px;
+  border-top: 1px solid var(--color-offwhite);
+  font-size: 14px;
+}
+
+.cancel__proximos summary {
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.cancel__ir {
+  min-width: 86px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  font-weight: 600;
+  text-align: left;
+  text-transform: capitalize;
+  color: var(--color-red);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.admin__aba:disabled,
+.admin__remover:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+/* ---------- Detalhes da aula (DetalhesAula.tsx, editor da grade) ---------- */
+
+.admin__detalhes {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 260px;
+  padding: 11px 14px;
+  border: 1px solid rgba(10, 10, 10, 0.18);
+  background: transparent;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-black);
+  cursor: pointer;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.admin__detalhes:hover {
+  border-color: var(--color-black);
+}
+
+.admin__detalhes--aberto {
+  background: var(--color-offwhite);
+  border-color: var(--color-black);
+}
+
+.admin__detalhes--erro {
+  border-color: var(--color-red);
+  color: var(--color-red-escuro);
+}
+
+/* Resumo longo ("60 min · Carol · Studio 2 · Body Mind") corta com "…" */
+.admin__detalhes-texto {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.detalhes {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  padding: 14px;
+  background: var(--color-offwhite);
+}
+
+.detalhes__campo {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-gray);
+}
+
+.detalhes__campo input {
+  width: 100%;
+  min-width: 0;
+  padding: 10px 12px;
+  border: 1px solid rgba(10, 10, 10, 0.18);
+  background: var(--color-white);
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--color-black);
+}
+
+.detalhes__campo input:focus {
+  outline: none;
+  border-color: var(--color-black);
+}
+
+.detalhes__campo input[aria-invalid="true"] {
+  border-color: var(--color-red);
+}
+
+.detalhes__erro {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--color-red-escuro);
+}
+

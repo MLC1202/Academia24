@@ -14,6 +14,7 @@ require __DIR__ . '/../../src/bootstrap.php';
 require __DIR__ . '/../../src/sessao.php';
 require __DIR__ . '/../../src/limite.php';
 require __DIR__ . '/../../src/mfa.php';
+require __DIR__ . '/../../src/aparelho.php';
 
 exigir_metodo('POST');
 iniciar_sessao();
@@ -61,7 +62,13 @@ if ($passo === null) {
 db()->prepare('UPDATE admins SET mfa_ultimo_passo = ?, ultimo_login_em = UTC_TIMESTAMP() WHERE id = ?')
     ->execute([$passo, $id]);
 zerar_tentativas('login_mfa', $chaveLimite);
+$lembrar = ($pendente['lembrar'] ?? false) === true; // antes do entrar_como apagar
 entrar_como($id); // troca o ID da sessao e apaga o "pendente"
 registrar('info', 'login_ok', ['admin_id' => $id, 'mfa' => true]);
+
+// Marcou "mantenha-me conectado": este navegador vira aparelho confiavel.
+if ($lembrar) {
+    aparelho_lembrar(db(), $id);
+}
 
 responder(200, ['ok' => true, 'csrf' => csrf_token()]);

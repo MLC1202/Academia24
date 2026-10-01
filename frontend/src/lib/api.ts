@@ -1,5 +1,5 @@
-// Conversa com a area restrita da API (login, sessao, e depois o salvar da
-// grade). O site publico nao usa isto -- so o /admin.
+// Conversa com a API: area restrita (login, sessao, salvar a grade) e o
+// formulario publico de agendamento (enviarLead, no fim do arquivo).
 //
 // Seguranca, do lado do navegador:
 //  - O cookie de sessao e HttpOnly: este codigo NUNCA ve nem guarda ele.
@@ -23,15 +23,18 @@ export type Sessao = {
 // Erro com o codigo que a API mandou (ex.: "credenciais_invalidas").
 // "detalhe" e a frase que o servidor manda quando recusa um dado
 // (ex.: "Terça, aula 3: horário inválido.").
+// "campos" vem no 422 do lead: qual campo o servidor recusou.
 export class ErroApi extends Error {
   status: number;
   codigo: string;
   detalhe?: string;
-  constructor(status: number, codigo: string, detalhe?: string) {
+  campos?: Record<string, string>;
+  constructor(status: number, codigo: string, detalhe?: string, campos?: Record<string, string>) {
     super(codigo);
     this.status = status;
     this.codigo = codigo;
     this.detalhe = detalhe;
+    this.campos = campos;
   }
 }
 
@@ -62,6 +65,9 @@ async function chamar(caminho: string, init: RequestInit = {}) {
       resposta.status,
       typeof dados.erro === 'string' ? dados.erro : 'erro_interno',
       typeof dados.detalhe === 'string' ? dados.detalhe : undefined,
+      typeof dados.campos === 'object' && dados.campos !== null
+        ? (dados.campos as Record<string, string>)
+        : undefined,
     );
   }
   return dados;
@@ -99,9 +105,10 @@ export async function enviar(caminho: string, corpo: unknown = {}) {
 // --- Login em duas etapas ---------------------------------------------------
 
 // Devolve 'mfa' se a senha foi aceita e falta o codigo, ou 'ok' se ja entrou
-// (so acontece em dev, em conta sem MFA).
-export async function entrar(email: string, senha: string): Promise<'mfa' | 'ok'> {
-  const dados = await enviar('login.php', { email, senha });
+// (aparelho lembrado pelo "mantenha-me conectado", ou conta sem MFA em dev).
+// lembrar: so vale depois que o codigo for aceito (o servidor guarda).
+export async function entrar(email: string, senha: string, lembrar = false): Promise<'mfa' | 'ok'> {
+  const dados = await enviar('login.php', { email, senha, lembrar });
   return dados.mfa === true ? 'mfa' : 'ok';
 }
 
@@ -111,4 +118,33 @@ export async function confirmarCodigo(codigo: string): Promise<void> {
 
 export async function sair(): Promise<void> {
   await enviar('logout.php');
+}
+
+// --- Formulario de agendamento (publico) ------------------------------------
+
+export type Lead = {
+  unidade: string;
+  periodo: string;
+  objetivo: string;
+  nome: string;
+  telefone: string;
+  email: string;
+  consentimento: boolean;
+  consentimento_versao: string;
+  referencia: string; // honeypot: sempre vazio para uma pessoa
+};
+
+// Chamado quando o formulario abre: cria a sessao e marca a hora da visita
+// no servidor (envio rapido demais depois disso = robo). Erro aqui e
+// ignorado; se faltar, o proprio envio avisa.
+export async function abrirFormularioLead(): Promise<void> {
+  try {
+    await chamar('sessao.php');
+  } catch {
+    /* sem rede agora: o envio tenta de novo */
+  }
+}
+
+export async function enviarLead(lead: Lead): Promise<void> {
+  await enviar('lead.php', lead);
 }

@@ -13,6 +13,7 @@ import DuvidasPage from './pages/duvidas/DuvidasPage';
 import LoginPage from './pages/admin/LoginPage';
 import DashboardPage from './pages/admin/DashboardPage';
 import RotaAdmin from './lib/RotaAdmin';
+import NaoEncontradaPage from './pages/naoEncontrada/NaoEncontradaPage';
 
 function App() {
   return (
@@ -31,8 +32,9 @@ function App() {
           element={<RotaAdmin>{(email) => <DashboardPage email={email} />}</RotaAdmin>}
         />
         <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
-        {/* Qualquer rota que nao existe volta pra home. */}
-        <Route path="*" element={<Navigate to="/" replace />} />
+        {/* Qualquer rota que nao existe: pagina 404 (o servidor tambem
+            responde com status 404 -- ver public/.htaccess). */}
+        <Route path="*" element={<NaoEncontradaPage />} />
       </Routes>
     </BrowserRouter>
   );

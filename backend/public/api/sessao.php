@@ -11,6 +11,10 @@ require __DIR__ . '/../../src/sessao.php';
 exigir_metodo('GET');
 iniciar_sessao();
 
+// Quando o visitante chegou (so a primeira vez). O formulario de lead usa
+// isso: envio menos de 3 s depois de abrir a pagina e coisa de robo.
+$_SESSION['visita_desde'] ??= time();
+
 $id = admin_logado_id();
 $email = null;
 if ($id !== null) {

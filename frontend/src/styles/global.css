@@ -97,3 +97,25 @@ button {
     --header-height: 112px;
   }
 }
+
+/* Toque (celular/tablet): links de texto pequenos ganham uma area de toque
+   invisivel de ~44 px de altura em volta, sem mudar nada no visual.
+   (A camada ::after fica por cima do link e recebe o toque.) Achado na
+   verificacao de 01/10/2026: "Agendar aula" do rodape tinha 20 px. */
+@media (pointer: coarse) {
+  .footer__cta,
+  .header__trilha-item,
+  .unidade__link--grade,
+  .duvidas__cta {
+    position: relative;
+  }
+
+  .footer__cta::after,
+  .header__trilha-item::after,
+  .unidade__link--grade::after,
+  .duvidas__cta::after {
+    content: "";
+    position: absolute;
+    inset: -12px -6px;
+  }
+}

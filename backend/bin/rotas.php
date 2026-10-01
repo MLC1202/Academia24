@@ -18,7 +18,7 @@ if (PHP_SAPI !== 'cli') {
 }
 
 // Rotas que QUALQUER visitante pode chamar, de proposito.
-const PUBLICAS = ['saude', 'grades', 'sessao', 'login', 'login-mfa', 'logout'];
+const PUBLICAS = ['saude', 'grades', 'sessao', 'login', 'login-mfa', 'logout', 'lead'];
 
 $pasta = dirname(__DIR__) . '/public/api';
 $problemas = 0;

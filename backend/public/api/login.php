@@ -1,12 +1,14 @@
 <?php
 declare(strict_types=1);
 
-// POST /api/login.php   { "email": "...", "senha": "..." }
+// POST /api/login.php   { "email": "...", "senha": "...", "lembrar": true|false }
 // Header obrigatorio: X-CSRF-Token (vem do GET /api/sessao.php)
 //
 // Respostas:
 //   200 { mfa: true }                       -- senha certa, agora o codigo
 //                                              (POST /api/login-mfa.php)
+//   200 { ok: true }                        -- senha certa + aparelho
+//                                              confiavel (pulou o codigo)
 //   200 { ok: true }                        -- so em dev, conta sem MFA
 //   401 { erro: "credenciais_invalidas" }   -- mesma msg pra e-mail ou senha
 //   403 { erro: "mfa_obrigatorio" }         -- producao, conta sem MFA
@@ -16,6 +18,7 @@ require __DIR__ . '/../../src/bootstrap.php';
 require __DIR__ . '/../../src/sessao.php';
 require __DIR__ . '/../../src/limite.php';
 require __DIR__ . '/../../src/mfa.php';
+require __DIR__ . '/../../src/aparelho.php';
 
 exigir_metodo('POST');
 iniciar_sessao();
@@ -81,9 +84,23 @@ zerar_tentativas('login_email', $email);
 // Senha certa e so METADE do login. Com MFA ligado, a sessao fica
 // "esperando o codigo" por 5 min -- ainda nao e admin.
 if ($admin['mfa_segredo'] !== null) {
+    // Aparelho confiavel desta conta ("mantenha-me conectado", 30 dias):
+    // a senha ja foi conferida acima, entao pula so o codigo.
+    if (aparelho_confere(db(), $id)) {
+        db()->prepare('UPDATE admins SET ultimo_login_em = UTC_TIMESTAMP() WHERE id = ?')->execute([$id]);
+        entrar_como($id);
+        registrar('info', 'login_ok', ['admin_id' => $id, 'mfa' => 'aparelho_confiavel']);
+        responder(200, ['ok' => true, 'csrf' => csrf_token()]);
+    }
+
     session_regenerate_id(true);
     $_SESSION = [
-        'mfa_pendente' => ['admin_id' => $id, 'ate' => time() + MFA_PRAZO_SEG],
+        // "lembrar" so vale depois que o codigo for aceito (login-mfa.php).
+        'mfa_pendente' => [
+            'admin_id' => $id,
+            'ate' => time() + MFA_PRAZO_SEG,
+            'lembrar' => ($dados['lembrar'] ?? false) === true,
+        ],
         'csrf' => bin2hex(random_bytes(32)),
     ];
     registrar('info', 'login_senha_ok_aguardando_mfa', ['admin_id' => $id]);

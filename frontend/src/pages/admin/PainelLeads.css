@@ -1,0 +1,210 @@
+/* Aba "Leads" do dashboard (PainelLeads.tsx). Usa as classes .admin__* do
+   DashboardPage.css e so acrescenta o que e da lista de leads. */
+
+.leads__subtitulo {
+  margin-top: 22px;
+}
+
+.leads__lista {
+  list-style: none;
+  margin-top: 14px;
+}
+
+.leads__item {
+  padding: 16px 0;
+  border-top: 1px solid rgba(10, 10, 10, 0.08);
+}
+
+.leads__item:first-child {
+  border-top: 0;
+}
+
+.leads__topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.leads__nome {
+  font-size: 16px;
+  overflow-wrap: anywhere;
+}
+
+.leads__selo {
+  flex-shrink: 0;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: rgba(10, 10, 10, 0.06);
+  color: var(--color-gray);
+}
+
+.leads__selo--novo {
+  background: rgba(237, 26, 61, 0.1);
+  color: var(--color-red-escuro);
+}
+
+.leads__selo--contatado {
+  background: rgba(154, 100, 0, 0.12);
+  color: #8a5a00;
+}
+
+.leads__selo--matriculou {
+  background: rgba(28, 122, 69, 0.12);
+  color: #1c7a45;
+}
+
+.leads__info {
+  margin-top: 6px;
+  font-size: 13px;
+  color: var(--color-gray);
+}
+
+.leads__contato {
+  margin-top: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  font-size: 14px;
+}
+
+.leads__contato a {
+  color: var(--color-black);
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-color: rgba(10, 10, 10, 0.25);
+  text-underline-offset: 3px;
+  overflow-wrap: anywhere;
+}
+
+.leads__contato a:hover {
+  text-decoration-color: var(--color-red);
+}
+
+.leads__acoes {
+  margin-top: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.leads__status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-gray);
+}
+
+.leads__status select {
+  padding: 10px 12px;
+  border: 1px solid rgba(10, 10, 10, 0.18);
+  background: var(--color-offwhite);
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--color-black);
+}
+
+.leads__status select:focus {
+  outline: none;
+  border-color: var(--color-black);
+}
+
+.leads__msg {
+  margin-top: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #1c7a45;
+}
+
+.leads__msg--erro {
+  color: var(--color-red-escuro);
+}
+
+.leads__paginas {
+  margin-top: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  font-size: 13px;
+  color: var(--color-gray);
+}
+
+.leads__paginas .admin__aba:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+/* ---------- Resumo (ResumoLeads.tsx) ---------- */
+
+/* A tabela pode ser mais larga que o celular: rola so ela, nao a pagina. */
+.resumo__rolagem {
+  margin-top: 14px;
+  overflow-x: auto;
+}
+
+.resumo__tabela {
+  width: 100%;
+  min-width: 560px;
+  border-collapse: collapse;
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+}
+
+.resumo__tabela th,
+.resumo__tabela td {
+  padding: 10px 8px;
+  border-bottom: 1px solid rgba(10, 10, 10, 0.08);
+  text-align: right;
+  white-space: nowrap;
+}
+
+.resumo__tabela thead th {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-gray);
+}
+
+.resumo__tabela th:first-child {
+  text-align: left;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.resumo__tabela thead th:first-child {
+  text-transform: uppercase;
+}
+
+.resumo__tabela tfoot th,
+.resumo__tabela tfoot td {
+  border-bottom: 0;
+  border-top: 2px solid rgba(10, 10, 10, 0.18);
+  font-weight: 700;
+}
+
+.resumo__conversao {
+  font-weight: 700;
+}
+
+.resumo__andamento {
+  font-size: 12px;
+  font-weight: 400;
+  text-transform: none;
+  color: var(--color-gray);
+}
+
+.resumo__nota {
+  margin-top: 12px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--color-gray);
+}

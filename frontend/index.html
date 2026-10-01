@@ -1,10 +1,33 @@
 <!doctype html>
-<html lang="en">
+<html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>academia24</title>
+    <!-- Os marcadores SEO abaixo sao preenchidos no build pelo plugin "seo" do
+         vite.config.ts (textos em src/data/seo.ts, dominio em src/data/site.ts).
+         Cada pagina troca titulo e descricao ao abrir (src/lib/useSeo.ts). -->
+    <title>__SEO_TITULO__</title>
+    <meta name="description" content="__SEO_DESCRICAO__" />
+    <meta name="theme-color" content="#010101" />
+
+    <!-- Icones: SVG nos navegadores novos, .ico nos antigos, PNG no iPhone -->
+    <link rel="icon" href="/favicon.ico" sizes="48x48" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    <!-- Previa de link (WhatsApp, Instagram, Facebook, LinkedIn). Esses apps
+         nao rodam JavaScript: vale a mesma previa pro site todo. -->
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="pt_BR" />
+    <meta property="og:site_name" content="__SEO_NOME__" />
+    <meta property="og:title" content="__SEO_TITULO__" />
+    <meta property="og:description" content="__SEO_DESCRICAO__" />
+    <meta property="og:url" content="__SEO_SITE__" />
+    <meta property="og:image" content="__SEO_SITE__og.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Rede 24: 24 Wellness e Academia 24 Health Club" />
+    <meta name="twitter:card" content="summary_large_image" />
   </head>
   <body>
     <div id="root"></div>

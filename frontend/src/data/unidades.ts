@@ -2,7 +2,12 @@
 // muda nome, foto, texto ou link da LP: a pagina de unidades, a subpagina de
 // cada uma, a grade e o agendamento leem tudo daqui.
 
-export type UnidadeSlug = "alphaville" | "norte" | "cambui" | "lagoa";
+import { SLUGS } from "./slugs";
+
+// "alphaville" | "norte" | "cambui" | "lagoa" -- a lista fica em slugs.ts
+// (o sitemap.xml tambem usa). O Record<UnidadeSlug, ...> la embaixo obriga
+// os dois arquivos a baterem: faltou ou sobrou unidade = erro de TypeScript.
+export type UnidadeSlug = (typeof SLUGS)[number];
 
 export type UnidadeInfo = {
   nome: string;
@@ -11,9 +16,12 @@ export type UnidadeInfo = {
   // Arquivos em frontend/public/logos/ — vieram do manual e do PDF de logos.
   logo: string;
   // Caminho da foto que aparece no card da home.
-  // O arquivo fica em frontend/public/imagens/unidades/<slug>.jpg.
-  // Pra trocar a foto eu apago o arquivo e ponho o novo COM O MESMO NOME —
-  // aqui no codigo nao mexo em nada. As que estao la agora sao provisorias.
+  // O arquivo fica em frontend/public/imagens/unidades/<slug>.webp.
+  // Pra trocar a foto: abrir a nova no squoosh.app, formato WebP, qualidade
+  // 75, lado maior 1600 px, e salvar COM O MESMO NOME (<slug>.webp) por cima
+  // da antiga -- aqui no codigo nao mexo em nada. (WebP tem metade do peso
+  // do JPG; os originais em JPG ficam em frontend/originais/, fora do site.)
+  // As que estao la agora sao provisorias.
   foto: string;
   // Link da LP oficial da unidade (as que a dona mandou).
   // Pode colar sem o https:// que o urlAbsoluta la embaixo completa.
@@ -39,7 +47,7 @@ export type UnidadeInfo = {
 
 // Arquivo de public/: o caminho depende de onde o site esta hospedado.
 // Na raiz do dominio o BASE_URL e '/', no GitHub Pages e '/Academia24/'.
-// Sem isso a foto vira mlc1202.github.io/unidades/x.jpg e da 404.
+// Sem isso a foto vira mlc1202.github.io/unidades/x.webp e da 404.
 function caminhoPublico(valor: string) {
   return `${import.meta.env.BASE_URL}${valor.replace(/^\//, "")}`;
 }
@@ -57,7 +65,7 @@ const registro: Record<UnidadeSlug, UnidadeInfo> = {
     nome: "Alphaville",
     marca: "24 Wellness",
     logo: "/logos/24wellness-negativo.svg",
-    foto: "/imagens/unidades/alphaville.jpg",
+    foto: "/imagens/unidades/alphaville.webp",
     lp: "alphaville.24wellness.com.br",
     planos: "https://vendas.online.sistemapacto.com.br/loja?un=1&k=95115352dc19ba38fc6b7c1f4931700d",
     instagram: "24wellnessacademia",
@@ -79,7 +87,7 @@ const registro: Record<UnidadeSlug, UnidadeInfo> = {
     nome: "Norte",
     marca: "24 Health Club",
     logo: "/logos/24healthclub-branco.svg",
-    foto: "/imagens/unidades/norte.jpg",
+    foto: "/imagens/unidades/norte.webp",
     lp: "unidadenorte.academia24hclub.com",
     planos: "https://vendas.online.sistemapacto.com.br/loja?un=4&k=95115352dc19ba38fc6b7c1f4931700d", 
     instagram: "academia24healthclub",
@@ -101,7 +109,7 @@ const registro: Record<UnidadeSlug, UnidadeInfo> = {
     nome: "Cambuí",
     marca: "24 Health Club",
     logo: "/logos/24healthclub-branco.svg",
-    foto: "/imagens/unidades/cambui.jpg",
+    foto: "/imagens/unidades/cambui.webp",
     lp: "unidadecambui.academia24hclub.com",
     planos: "https://vendas.online.sistemapacto.com.br/loja?un=2&k=95115352dc19ba38fc6b7c1f4931700d",
     instagram: "academia24healthclubcampinas", 
@@ -123,7 +131,7 @@ const registro: Record<UnidadeSlug, UnidadeInfo> = {
     nome: "Lagoa",
     marca: "24 Health Club",
     logo: "/logos/24healthclub-branco.svg",
-    foto: "/imagens/unidades/lagoa.jpg",
+    foto: "/imagens/unidades/lagoa.webp",
     lp: "unidadelagoa.academia24hclub.com",
     planos: "https://vendas.online.sistemapacto.com.br/loja?un=3&k=95115352dc19ba38fc6b7c1f4931700d",
     instagram: "academia24healthclubcampinas",
