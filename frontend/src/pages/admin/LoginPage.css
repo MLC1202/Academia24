@@ -1,0 +1,89 @@
+/* Tela de login da area interna. Reaproveita o visual do .admin
+   (DashboardPage.css): fundo off-white, vermelho so no destaque. */
+
+.admin--centro {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-bottom: 40px;
+  font-size: 15px;
+  color: var(--color-gray);
+}
+
+.login {
+  width: 100%;
+  max-width: 380px;
+  padding: 36px 32px;
+  background: var(--color-white);
+  border-radius: 18px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.06);
+  color: var(--color-black);
+}
+
+.login__titulo {
+  margin: 6px 0 22px;
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.login__texto {
+  margin: 0 0 18px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--color-gray);
+}
+
+.login__form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.login__campo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-gray);
+}
+
+.login__campo input {
+  padding: 12px 14px;
+  border: 1px solid var(--color-gray-claro);
+  border-radius: 10px;
+  font: inherit;
+  font-size: 16px; /* 16px evita o zoom automatico do iPhone */
+  font-weight: 400;
+  color: var(--color-black);
+  background: var(--color-white);
+}
+
+.login__campo input:focus {
+  outline: none;
+  border-color: var(--color-black);
+}
+
+.login__codigo {
+  letter-spacing: 0.4em;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  font-size: 22px !important;
+}
+
+.login__erro {
+  margin: 0;
+  padding: 10px 12px;
+  border-left: 3px solid var(--color-red);
+  background: rgba(237, 26, 61, 0.06);
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--color-red-escuro);
+}
+
+.login__botao {
+  width: 100%;
+  margin-top: 4px;
+}

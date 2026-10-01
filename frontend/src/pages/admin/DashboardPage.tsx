@@ -1,9 +1,11 @@
 // Editor da grade de aulas (/admin/dashboard).
-// Escolho unidade + dia, mexo nas aulas e salvo. Enquanto nao tiver backend,
-// o salvar so grava no localStorage deste navegador.
+// Escolho unidade + dia, mexo nas aulas e salvo. So abre logado (o App
+// envolve esta pagina no RotaAdmin). O salvar ainda grava so no
+// localStorage deste navegador -- vira gravacao no banco no proximo passo.
 
 import { useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { sair, SEM_API } from "../../lib/api";
 import { slugsUnidades, unidades, type UnidadeSlug } from "../../data/unidades";
 import {
   dias,
@@ -18,8 +20,21 @@ import "./DashboardPage.css";
 
 type Estado = "limpo" | "alterado" | "salvo";
 
-function DashboardPage() {
+function DashboardPage({ email }: { email: string | null }) {
+  const navigate = useNavigate();
   const iniciais = useMemo(() => carregarGrades(), []);
+  const [saindo, setSaindo] = useState(false);
+
+  async function encerrar() {
+    if (estado === "alterado" && !confirm("Sair descarta as alterações não salvas. Continuar?")) return;
+    setSaindo(true);
+    try {
+      await sair();
+    } catch {
+      // Mesmo se a API falhar, a sessao expira sozinha em 30 min.
+    }
+    navigate("/admin/login", { replace: true });
+  }
 
   const [unidade, setUnidade] = useState<UnidadeSlug>("alphaville");
   const [dia, setDia] = useState<Dia>("seg");
@@ -82,15 +97,23 @@ function DashboardPage() {
           <p className="admin__eyebrow">Área interna</p>
           <h1 className="admin__titulo">Grade de aulas</h1>
         </div>
-        <Link to="/" className="admin__voltar">
-          ← Ver o site
-        </Link>
+        <div className="admin__conta">
+          {email && <span className="admin__email">{email}</span>}
+          <Link to="/" className="admin__voltar">
+            ← Ver o site
+          </Link>
+          {!SEM_API && (
+            <button type="button" className="admin__sair" onClick={encerrar} disabled={saindo}>
+              {saindo ? "Saindo…" : "Sair"}
+            </button>
+          )}
+        </div>
       </header>
 
       <p className="admin__aviso">
-        Enquanto o backend não existir, o que você salvar fica guardado
-        <strong> apenas neste navegador</strong> — serve para testar, mas não
-        aparece para os visitantes.
+        Por enquanto, o que você salvar aqui fica guardado
+        <strong> apenas neste navegador</strong> e não aparece para os
+        visitantes. A gravação no site de verdade entra na próxima etapa.
       </p>
 
       <section className="admin__bloco">

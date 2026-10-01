@@ -12,6 +12,7 @@ import AgendamentoPage from './pages/agendamento/AgendamentoPage';
 import DuvidasPage from './pages/duvidas/DuvidasPage';
 import LoginPage from './pages/admin/LoginPage';
 import DashboardPage from './pages/admin/DashboardPage';
+import RotaAdmin from './lib/RotaAdmin';
 
 function App() {
   return (
@@ -23,9 +24,13 @@ function App() {
         <Route path="/unidades/:slug" element={<UnidadePage />} />
         <Route path="/agendamento" element={<AgendamentoPage />} />
         <Route path="/duvidas" element={<DuvidasPage />} />
-        {/* Area interna, ainda sem login de verdade. */}
+        {/* Area interna: login em duas etapas; o painel so abre logado. */}
         <Route path="/admin/login" element={<LoginPage />} />
-        <Route path="/admin/dashboard" element={<DashboardPage />} />
+        <Route
+          path="/admin/dashboard"
+          element={<RotaAdmin>{(email) => <DashboardPage email={email} />}</RotaAdmin>}
+        />
+        <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
         {/* Qualquer rota que nao existe volta pra home. */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

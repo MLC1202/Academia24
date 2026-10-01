@@ -5,6 +5,9 @@ import {
   type Grades,
 } from '../data/grade';
 import { slugsUnidades, type UnidadeSlug } from '../data/unidades';
+// No GitHub Pages (previa pra dona) nao existe PHP: SEM_API liga a grade
+// de exemplo em vez de dar erro.
+import { SEM_API } from './api';
 
 // Onde a grade e lida/salva. O resto do site so fala com este arquivo.
 //
@@ -35,9 +38,6 @@ export type EstadoGrade =
   | { status: 'erro' }
   | { status: 'pronto'; dados: DadosGrade };
 
-// No GitHub Pages (previa pra dona) nao existe PHP. La o build liga
-// VITE_SEM_API=1 e o site mostra a grade de exemplo em vez de dar erro.
-const SEM_API = import.meta.env.VITE_SEM_API === '1';
 
 // Se o servidor nao responder em 10 s, desiste e mostra o aviso.
 const TEMPO_LIMITE_MS = 10_000;
