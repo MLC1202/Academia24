@@ -27,4 +27,29 @@ set_exception_handler(function (Throwable $e): void {
     echo '{"erro":"erro_interno"}';
 });
 
+// Aviso (nao derruba nada): em producao o .env tem que ser 600 (ou 640).
+// Se "todo mundo" pode ler, anota no log -- no maximo 1 vez por dia, pra
+// nao encher o log a cada visita.
+function avisar_env_aberto(): void
+{
+    if (PHP_SAPI === 'cli' || !em_producao()) {
+        return;
+    }
+    $permissao = @fileperms(dirname(__DIR__) . '/.env');
+    if ($permissao === false || ($permissao & 0004) === 0) {
+        return; // "outros" nao leem: ok
+    }
+    $marca = pasta_logs() . '/.aviso-env-aberto';
+    if (is_file($marca) && filemtime($marca) > time() - 86400) {
+        return; // ja avisou nas ultimas 24 h
+    }
+    touch($marca);
+    registrar('aviso', 'env_legivel_por_todos', [
+        'permissao' => substr(sprintf('%o', $permissao), -3),
+        'corrigir' => 'Gerenciador de Arquivos > .env > Permissoes = 600',
+    ]);
+}
+
+exigir_dev_so_local();
+avisar_env_aberto();
 headers_seguranca();

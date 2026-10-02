@@ -20,7 +20,7 @@ require __DIR__ . '/../src/log.php';
 require __DIR__ . '/../src/grade.php';
 
 if (em_producao()) {
-    fwrite(STDERR, "Seed e so pra desenvolvimento (APP_ENV=prod).\n");
+    fwrite(STDERR, "Seed e so pra desenvolvimento (precisa APP_ENV=dev).\n");
     exit(1);
 }
 

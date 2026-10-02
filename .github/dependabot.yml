@@ -1,0 +1,31 @@
+# Dependabot: robo do GitHub que confere as bibliotecas toda semana e, quando
+# sai uma versao nova ou uma correcao de seguranca, abre um Pull Request com a
+# troca pronta. Ele nunca muda nada sozinho: o PR so entra se for aceito.
+# Ligar no GitHub: Settings > Code security > Dependabot alerts e
+# Dependabot security updates.
+version: 2
+updates:
+  # Bibliotecas do site (React, Vite, ESLint...).
+  - package-ecosystem: "npm"
+    directory: "/frontend"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "America/Sao_Paulo"
+    # Atualizacoes pequenas (minor/patch) chegam juntas num PR so, pra nao
+    # virar um PR por biblioteca. Versao "grande" (major) vem separada,
+    # porque pode exigir mudanca no codigo.
+    groups:
+      bibliotecas:
+        update-types: ["minor", "patch"]
+    open-pull-requests-limit: 5
+
+  # Pecas que o GitHub usa pra publicar a previa (.github/workflows/pages.yml).
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "America/Sao_Paulo"

@@ -29,6 +29,10 @@ function iniciar_sessao(): void
     ]);
     ini_set('session.use_strict_mode', '1'); // nao aceita ID inventado
     ini_set('session.use_only_cookies', '1');
+    // A "faxina" do PHP apaga sessao parada ha mais de 24 min (padrao). Aqui
+    // ela passa a esperar os mesmos 30 min da regra abaixo -- vale no Docker
+    // e na Hostinger sem depender do painel.
+    ini_set('session.gc_maxlifetime', (string) SESSAO_OCIOSA_SEG);
     session_start();
 
     // Expiracao: confere a cada requisicao.

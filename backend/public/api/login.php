@@ -19,6 +19,7 @@ require __DIR__ . '/../../src/sessao.php';
 require __DIR__ . '/../../src/limite.php';
 require __DIR__ . '/../../src/mfa.php';
 require __DIR__ . '/../../src/aparelho.php';
+require __DIR__ . '/../../src/senha.php';
 
 exigir_metodo('POST');
 iniciar_sessao();
@@ -53,12 +54,9 @@ if ($formatoOk) {
     $admin = $st->fetch();
 }
 
-// Mesmo quando o e-mail nao existe, rodo um password_verify "de mentira".
-// Sem isso, a resposta viria mais rapido e daria pra descobrir quais
-// e-mails tem conta so cronometrando. (Hash de uma senha aleatoria
-// descartada: nenhuma senha bate com ele.)
-const HASH_FALSO = '$argon2id$v=19$m=65536,t=4,p=1$WURjS1RnTllyT0wuZzZ5Vw$yJtlzpchM3rG925XO+wjFStcMMGj1xwWREs4f/svSOk';
-$senhaOk = password_verify($senha, $admin ? $admin['senha_hash'] : HASH_FALSO) && $admin;
+// E-mail que nao existe tambem passa por um password_verify (contra a senha
+// falsa de src/senha.php): as duas respostas levam o mesmo tempo.
+$senhaOk = password_verify($senha, $admin ? $admin['senha_hash'] : senha_hash_falso()) && $admin;
 
 if (!$senhaOk) {
     registrar_tentativa('login_ip', $ip);
@@ -71,12 +69,10 @@ if (!$senhaOk) {
 
 $id = (int) $admin['id'];
 
-// Se o algoritmo/custo recomendado mudou, atualiza o hash agora que temos
-// a senha em maos.
-$algoritmo = defined('PASSWORD_ARGON2ID') ? PASSWORD_ARGON2ID : PASSWORD_BCRYPT;
-if (password_needs_rehash($admin['senha_hash'], $algoritmo)) {
+// Hash feito com outro algoritmo/parametro: refaz agora que temos a senha.
+if (senha_precisa_refazer($admin['senha_hash'])) {
     db()->prepare('UPDATE admins SET senha_hash = ? WHERE id = ?')
-        ->execute([password_hash($senha, $algoritmo), $id]);
+        ->execute([senha_hash($senha), $id]);
 }
 
 zerar_tentativas('login_email', $email);

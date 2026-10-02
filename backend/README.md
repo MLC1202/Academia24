@@ -164,8 +164,25 @@ na API. O `public/api/.htaccess` so deixa responder `nome.php` (arquivo com
 
 - Migrations: pelo SSH (se o plano tiver) ou colando o `.up.sql` no phpMyAdmin.
 - O `.env` do servidor tem so o `DB_USER`; o usuario de migration nao fica la.
-- `APP_ENV=prod`.
-- HTTPS: ligar o SSL e o "Forcar HTTPS" no hPanel.
+- `.env` do servidor: criar a partir do `.env.example` com `APP_ENV=prod` e
+  senhas novas. NUNCA copiar o `.env` do Mac (com `APP_ENV=dev` o site da
+  erro 500 de proposito -- trava em `src/config.php`).
+- HTTPS: ligar o SSL e o "Forcar HTTPS" no hPanel. O `.htaccess` do build
+  tambem redireciona http -> https. Depois do deploy, abrir o site com
+  `http://`: se aparecer "redirecionamentos em excesso", tirar a linha
+  `RewriteCond %{HTTPS} off [OR]` (gerada em `frontend/vite.config.ts`).
+- Permissao do `.env` no servidor: **600** (so o dono le). No Gerenciador de
+  Arquivos do hPanel: botao direito no `.env` > Permissoes > marcar so
+  Leitura/Escrita do Proprietario. Se ficar legivel por todos, o backend
+  anota `env_legivel_por_todos` no log (1 vez por dia). No Mac o `.env`
+  continua legivel (o `chmod -R a+rX .` e pro Docker conseguir ler).
+- Conta da dona: criar DIRETO no servidor (`php bin/admin.php` pelo SSH),
+  nunca copiar a linha do banco do Mac. Conferir se o PHP de la tem Argon2:
+  `php -r 'var_dump(defined("PASSWORD_ARGON2ID"));'`. Sem Argon2 o codigo usa
+  bcrypt sozinho (`src/senha.php`), mas um hash Argon2 feito no Mac nao abre la.
+- Rate limit por IP: depois do primeiro dia, conferir nos logs/no banco se os
+  acessos chegam com IPs diferentes. Se a Hostinger tiver CDN/proxy na frente,
+  todo mundo aparece com o mesmo IP e o limite por IP vira limite do site.
 - Banco fechado: NAO liberar "MySQL remoto" no hPanel (o banco so aceita
   conexao do proprio servidor). phpMyAdmin so pelo login do hPanel.
 - Senhas do banco de producao novas e longas (nunca as do `.env` local).

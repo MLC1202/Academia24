@@ -5,6 +5,12 @@
 
 Options -Indexes
 
+# Erro aqui dentro (404 nao existe, 403 proibido) = resposta curta do proprio
+# Apache. Sem isto vale o ErrorDocument do .htaccess do site, e a API
+# devolveria o index.html inteiro junto com o 404.
+ErrorDocument 404 default
+ErrorDocument 403 default
+
 Require all denied
 <FilesMatch "^[a-z0-9-]+\.php$">
   Require all granted

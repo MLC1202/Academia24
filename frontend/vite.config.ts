@@ -15,8 +15,11 @@ import { NOME_SITE, SEO } from './src/data/seo.ts'
 // (As paginas /unidades/<slug> sairam em 01/10/2026: tudo fica em /unidades.)
 const ROTAS_PUBLICAS = ['', 'unidades', 'agendamento', 'duvidas']
 
-// Regra do .htaccess que manda os outros dominios (e o principal com/sem
-// www) pro dominio principal. Entra no lugar do marcador do public/.htaccess.
+// Regra do .htaccess que manda pro endereco oficial (https + dominio principal):
+//  - qualquer acesso por http (sem cadeado) -> https;
+//  - os outros dominios (e o principal com/sem www) -> dominio principal.
+// Um pulo so, sempre pro SITE_URL (nunca pro Host que o visitante mandou).
+// Entra no lugar do marcador do public/.htaccess.
 // /.well-known/ fica de fora: a Hostinger usa pra emitir o SSL de cada dominio.
 function regraDeDominios(origem: string): string {
   const principal = new URL(origem).host
@@ -34,6 +37,7 @@ function regraDeDominios(origem: string): string {
     // THE_REQUEST = o pedido ORIGINAL (o REQUEST_URI vira /index.html quando
     // o arquivo nao existe e a pagina 404 entra, e ai escaparia do filtro).
     '  RewriteCond %{THE_REQUEST} !\\s/\\.well-known/',
+    '  RewriteCond %{HTTPS} off [OR]',
     conds,
     `  RewriteRule ^ ${origem}%{REQUEST_URI} [R=301,L]`,
     '</IfModule>',

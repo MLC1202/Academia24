@@ -23,7 +23,9 @@ const LEAD_CAMPOS = [
 ];
 
 // Anti-spam (decidido com o Matheus em 01/10/2026).
-const LEAD_MAX_POR_IP = 5;          // por hora
+// 20/h por IP: operadora de celular (CGNAT) e Wi-Fi da academia colocam
+// muita gente atras de um IP so. Quem segura repeticao e o limite por e-mail.
+const LEAD_MAX_POR_IP = 20;         // por hora
 const LEAD_JANELA_IP_SEG = 3600;
 const LEAD_MAX_POR_EMAIL = 3;       // por dia
 const LEAD_JANELA_EMAIL_SEG = 86400;

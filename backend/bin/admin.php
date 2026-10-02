@@ -19,6 +19,7 @@ require __DIR__ . '/../src/config.php';
 require __DIR__ . '/../src/db.php';
 require __DIR__ . '/../src/log.php';
 require __DIR__ . '/../src/aparelho.php';
+require __DIR__ . '/../src/senha.php';
 
 const SENHA_MIN = 12;
 const SENHA_MAX = 128;
@@ -90,10 +91,10 @@ if (count(array_unique(mb_str_split($senha))) < 5) {
     sair('A senha e repetitiva demais.');
 }
 
-// Argon2id: o algoritmo recomendado hoje. O hash ja inclui o "sal", entao
-// duas pessoas com a mesma senha ficam com hashes diferentes.
-$algoritmo = defined('PASSWORD_ARGON2ID') ? PASSWORD_ARGON2ID : PASSWORD_BCRYPT;
-$hash = password_hash($senha, $algoritmo);
+// Argon2id (ou bcrypt, se o PHP nao tiver), parametros em src/senha.php.
+// O hash ja inclui o "sal": duas pessoas com a mesma senha ficam com hashes
+// diferentes.
+$hash = senha_hash($senha);
 
 if ($existente === false) {
     $pdo->prepare('INSERT INTO admins (email, senha_hash) VALUES (?, ?)')

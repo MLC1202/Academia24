@@ -32,7 +32,27 @@ function config(string $chave): string
     return $valores[$chave];
 }
 
+// Fail-closed: SO o valor exato "dev" relaxa as protecoes (MFA opcional,
+// cookie sem Secure, sem HSTS, Origin localhost aceita). Qualquer outro
+// valor ("prod", "production", erro de digitacao) conta como producao.
 function em_producao(): bool
 {
-    return config('APP_ENV') === 'prod';
+    return config('APP_ENV') !== 'dev';
+}
+
+// Trava: "dev" so vale na maquina local. Se um .env de desenvolvimento for
+// parar no servidor, o site da erro 500 em vez de abrir sem MFA.
+// Olha o IP da CONEXAO (REMOTE_ADDR), que o visitante nao consegue
+// falsificar: no Docker e um IP de rede interna; na Hostinger e o IP
+// publico de quem acessa.
+function exigir_dev_so_local(): void
+{
+    if (PHP_SAPI === 'cli' || em_producao()) {
+        return;
+    }
+    $ip = (string) ($_SERVER['REMOTE_ADDR'] ?? '');
+    $publico = filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) !== false;
+    if ($publico) {
+        throw new RuntimeException('APP_ENV=dev recebendo acesso de fora da maquina local');
+    }
 }

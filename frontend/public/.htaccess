@@ -34,9 +34,10 @@ RedirectMatch 404 "/\.(?!well-known/)"
   Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
 </IfModule>
 
-# --- Um dominio so ------------------------------------------------------------
-# Os outros dominios da rede (24wellness.com.br, academia24hclub.com sem www)
-# redirecionam (301) pro principal, mantendo o caminho. A regra de verdade e
+# --- Um dominio so, sempre com HTTPS -----------------------------------------
+# Acesso por http e os outros dominios da rede (24wellness.com.br,
+# academia24hclub.com sem www) redirecionam (301) pro https do principal,
+# mantendo o caminho. A regra de verdade e
 # escrita aqui no "npm run build", a partir de src/data/site.ts (SITE_URL e
 # DOMINIOS_QUE_REDIRECIONAM). Nao apague a linha abaixo:
 # @@REDIRECIONAMENTO_DE_DOMINIOS@@
