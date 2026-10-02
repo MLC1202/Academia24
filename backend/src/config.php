@@ -35,6 +35,20 @@ function config(string $chave): string
 // Fail-closed: SO o valor exato "dev" relaxa as protecoes (MFA opcional,
 // cookie sem Secure, sem HSTS, Origin localhost aceita). Qualquer outro
 // valor ("prod", "production", erro de digitacao) conta como producao.
+// Igual a config(), mas devolve '' em vez de erro quando a chave nao existe
+// ou esta vazia (campo que pode ficar em branco, ex.: ALERTA_EMAIL_PARA).
+function config_opcional(string $chave): string
+{
+    try {
+        return config($chave);
+    } catch (RuntimeException $e) {
+        if (str_starts_with($e->getMessage(), 'config ausente')) {
+            return '';
+        }
+        throw $e;
+    }
+}
+
 function em_producao(): bool
 {
     return config('APP_ENV') !== 'dev';

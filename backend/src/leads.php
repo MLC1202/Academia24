@@ -89,6 +89,11 @@ function limpar_email(mixed $v): ?string
     if (strlen($v) > 254 || filter_var($v, FILTER_VALIDATE_EMAIL) === false) {
         return null;
     }
+    // Comecando com = + - @ o Excel trataria como formula na exportacao.
+    // E-mail de verdade nao comeca assim.
+    if (preg_match('/^[=+\-@]/', $v) === 1) {
+        return null;
+    }
     $dominio = substr($v, strrpos($v, '@') + 1);
     return str_contains($dominio, '.') ? $v : null;
 }
@@ -219,6 +224,38 @@ function listar_leads(PDO $pdo, ?string $unidade, ?string $status, int $pagina):
     }, $st->fetchAll());
 
     return [$linhas, $total, $contagem];
+}
+
+// Exportacao (botao "Exportar Excel"): TODOS os leads do filtro, sem paginar,
+// mais novos primeiro. O .xlsx e montado no navegador.
+const LEAD_EXPORTAR_MAX = 10000;
+
+function exportar_leads(PDO $pdo, ?string $unidade, ?string $status): array
+{
+    $onde = [];
+    $args = [];
+    if ($unidade !== null) {
+        $onde[] = 'unidade = ?';
+        $args[] = $unidade;
+    }
+    if ($status !== null) {
+        $onde[] = 'status = ?';
+        $args[] = $status;
+    }
+    $where = $onde ? 'WHERE ' . implode(' AND ', $onde) : '';
+    $st = $pdo->prepare(
+        "SELECT id, unidade, periodo, objetivo, nome, telefone, email, status,
+                DATE_FORMAT(criado_em, '%Y-%m-%dT%H:%i:%sZ') AS criado_em,
+                DATE_FORMAT(status_em, '%Y-%m-%dT%H:%i:%sZ') AS status_em
+           FROM leads $where
+          ORDER BY criado_em DESC, id DESC
+          LIMIT " . LEAD_EXPORTAR_MAX
+    );
+    $st->execute($args);
+    return array_map(function (array $l): array {
+        $l['id'] = (int) $l['id'];
+        return $l;
+    }, $st->fetchAll());
 }
 
 // id do JSON: so inteiro positivo de verdade (nada de "3 OR 1=1").

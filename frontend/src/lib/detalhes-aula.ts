@@ -32,6 +32,7 @@ export function problemaCampo(campo: CampoDetalhe, aula: Aula): string {
   if (!v) return '';
   if (v.length > camposTexto[campo].max) return `No máximo ${camposTexto[campo].max} caracteres.`;
   if (!NOME_VALIDO.test(v)) return "Use só letras, números e / - & + . , ( ) '";
+  if (/^[+-]/.test(v)) return 'Não pode começar com + ou -.';
   return '';
 }
 

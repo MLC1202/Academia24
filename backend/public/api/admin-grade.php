@@ -60,11 +60,11 @@ foreach (array_keys($grade) as $chaveDia) {
 $motivos = [
     'dia' => 'dia inválido',
     'hora' => 'horário inválido',
-    'modalidade' => 'nome da aula inválido (use só letras, números e / - & + . , ( ) \')',
+    'modalidade' => 'nome da aula inválido (use só letras, números e / - & + . , ( ) \'; não pode começar com + ou -)',
     'duracao' => 'duração inválida (de ' . DURACAO_MIN . ' a ' . DURACAO_MAX . ' minutos)',
-    'professor' => 'nome do professor inválido',
-    'categoria' => 'categoria inválida',
-    'estudio' => 'estúdio inválido',
+    'professor' => 'nome do professor inválido (não pode começar com + ou -)',
+    'categoria' => 'categoria inválida (não pode começar com + ou -)',
+    'estudio' => 'estúdio inválido (não pode começar com + ou -)',
 ];
 $aulas = [];
 foreach ($diasNomes as $dia => $nomeDia) {

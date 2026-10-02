@@ -208,3 +208,15 @@
   line-height: 1.5;
   color: var(--color-gray);
 }
+
+/* "Exportar Excel" + "Atualizar" no topo da lista */
+.leads__head-acoes {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+}
+
+.leads__head-acoes .admin__link:disabled {
+  opacity: 0.4;
+  cursor: default;
+}

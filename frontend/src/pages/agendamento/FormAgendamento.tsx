@@ -120,6 +120,8 @@ function validar(campo: Campo, valor: string) {
 
   if (campo === "email") {
     if (!/^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(v)) return "E-mail inválido.";
+    // Mesma regra do servidor: comecando com = + - o Excel acharia formula.
+    if (/^[=+-]/.test(v)) return "E-mail inválido.";
     return "";
   }
 

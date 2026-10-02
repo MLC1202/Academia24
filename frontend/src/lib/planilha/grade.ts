@@ -34,6 +34,8 @@ export type Leitura = {
 
 const MODALIDADE_MAX = 60;
 const NOME_VALIDO = /^[\p{L}\p{N} /\-&+.,()']+$/u;
+// Comecando com + ou - o Excel acharia formula (= e @ ja nao passam acima).
+const COMECA_COMO_FORMULA = /^[+-]/;
 
 // Mesmos limites do servidor (src/grade.php).
 const DETALHES = {
@@ -85,6 +87,7 @@ function lerModalidade(valor: Celula): { nome: string } | { erro: string } | nul
   if (!nome) return null;
   if (nome.length > MODALIDADE_MAX) return { erro: `nome da aula com mais de ${MODALIDADE_MAX} letras` };
   if (!NOME_VALIDO.test(nome)) return { erro: `nome da aula com caractere não permitido ("${nome.slice(0, 30)}")` };
+  if (COMECA_COMO_FORMULA.test(nome)) return { erro: `nome da aula não pode começar com + ou - ("${nome.slice(0, 30)}")` };
   return { nome };
 }
 
@@ -94,7 +97,9 @@ function lerDetalhe(valor: Celula, campo: CampoDetalhe): string | undefined | { 
   const texto = String(valor).replace(/\s+/g, ' ').trim();
   if (!texto) return undefined;
   const { max, regra, nome } = DETALHES[campo];
-  if (texto.length > max || !regra.test(texto)) return { erro: `${nome} ignorado (texto inválido ou longo demais)` };
+  if (texto.length > max || !regra.test(texto) || COMECA_COMO_FORMULA.test(texto)) {
+    return { erro: `${nome} ignorado (texto inválido, longo demais ou começando com + ou -)` };
+  }
   return texto;
 }
 

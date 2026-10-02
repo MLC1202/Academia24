@@ -23,6 +23,13 @@ const DETALHES = [
 const DURACAO_MIN = 5;
 const DURACAO_MAX = 300;
 
+// Texto que comeca com + ou - o Excel trata como formula ("+SUM(1)").
+// (= e @ ja estao fora da lista branca.)
+function comeca_como_formula(string $texto): bool
+{
+    return preg_match('/^[+\-]/', $texto) === 1;
+}
+
 // Texto opcional: devolve null se vazio, o texto limpo se valido, ou lanca.
 function validar_detalhe(mixed $valor, string $campo, int $linha): ?string
 {
@@ -37,7 +44,11 @@ function validar_detalhe(mixed $valor, string $campo, int $linha): ?string
     if ($valor === '') {
         return null;
     }
-    if (mb_strlen($valor) > $max || !preg_match("/^[\\p{L}\\p{N} \\/\\-&+.,()']+$/u", $valor)) {
+    if (
+        mb_strlen($valor) > $max
+        || !preg_match("/^[\\p{L}\\p{N} \\/\\-&+.,()']+$/u", $valor)
+        || comeca_como_formula($valor)
+    ) {
         throw new InvalidArgumentException("aula {$linha}: {$campo} invalido");
     }
     return $valor;
@@ -75,6 +86,7 @@ function validar_aula(mixed $aula, int $linha): array
         // Nome de aula nunca precisa de < > ; " etc. Barrar aqui e uma camada
         // a mais -- o React tambem escapa na hora de mostrar.
         || !preg_match("/^[\\p{L}\\p{N} \\/\\-&+.,()']+$/u", $modalidade)
+        || comeca_como_formula($modalidade)
     ) {
         throw new InvalidArgumentException("aula {$linha}: modalidade invalida");
     }

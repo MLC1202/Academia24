@@ -24,6 +24,7 @@ backend/
 │   ├── admin-descancelar.php POST (mesmo formato) -- desfaz (so admin, CSRF)
 │   ├── admin-leads.php GET ?unidade=&status=&pagina= -- lista de leads (so admin)
 │   ├── admin-leads-resumo.php GET ?unidade= -- numeros por mes, sem dado pessoal (so admin)
+│   ├── admin-leads-exportar.php GET ?unidade=&status= -- todos os leads do filtro, pro "Exportar Excel" (so admin, vai pro log)
 │   ├── admin-lead-status.php POST {id, status} (so admin, CSRF)
 │   └── admin-lead-excluir.php POST {id} -- apaga de vez, LGPD (so admin, CSRF)
 ├── src/               fora da raiz web: config, banco, respostas, log
@@ -129,6 +130,41 @@ qualquer status. Na Hostinger roda sozinho por Cron Job (hPanel > Avancado >
 Cron Jobs), 1x por dia de madrugada:
 `/usr/bin/php /home/<usuario>/domains/<dominio>/bin/limpar-leads.php`.
 O log guarda so quantos foram apagados.
+
+## Backup do banco (cadeado e chave, 30 dias)
+
+```bash
+docker compose exec php php bin/gerar-chaves-backup.php   # UMA vez: cadeado + chave
+docker compose exec php php bin/backup.php                # faz o backup agora
+docker compose exec php php bin/restaurar-backup.php backups/AAAA-MM-DD_HHMM.a24bak
+docker compose exec php php bin/abrir-backup.php backups/AAAA-MM-DD_HHMM.a24bak   # gera .sql legivel
+```
+
+- O backup vai pra `backups/` (fora do `public_html`, no `.gitignore`),
+  trancado com o **cadeado** (`APP_BACKUP_CADEADO` no `.env`). So a **chave**
+  abre, e ela fica SO no gerenciador de senhas. Perdeu a chave = perdeu os backups.
+- Guarda 30 dias; os mais antigos sao apagados sozinhos.
+- So os dados vao no arquivo (as tabelas vem das migrations). Restaurar num
+  banco novo: `bin/migrate.php up` antes.
+- Restaurar pede a chave e a palavra RESTAURAR, e antes faz um backup do
+  estado atual (`...-antes-de-restaurar.a24bak`).
+- Na Hostinger: Cron diario depois do `limpar-leads.php`. Copia fora da
+  Hostinger: baixar o mais recente manualmente (ver checklist de deploy).
+
+## Alertas por e-mail (vigia)
+
+```bash
+docker compose exec php php bin/vigia.php --simular   # mostra o que mandaria
+docker compose exec php php bin/vigia.php --teste     # manda um e-mail de teste
+```
+
+De hora em hora (Cron), le o log desde a ultima rodada e, se aparecer algo
+preocupante (erro interno, backup falhou, muitas senhas erradas, codigo do
+MFA bloqueado, aparelho suspeito, `.env` aberto, spam no formulario...),
+manda UM e-mail pra `ALERTA_EMAIL_PARA` (a dona) pela caixa da Hostinger
+(`SMTP_*` no `.env`). So contagens e o que fazer, nenhum dado de cliente.
+As 9h confere tambem se o backup e a limpeza de leads rodaram nas ultimas 30 h.
+As regras (evento, minimo, texto) ficam no topo de `bin/vigia.php`.
 
 ## Rotas da API (nada exposto sem querer)
 

@@ -1,7 +1,7 @@
 // Aba "Leads" do dashboard: quem pediu aula experimental pelo site.
 //
-// Filtra por unidade e status, muda o status (novo -> contatado -> ...) e
-// exclui. Excluir apaga DE VERDADE (LGPD: e assim que se atende um pedido
+// Filtra por unidade e status, muda o status (novo -> contatado -> ...),
+// exporta pra Excel (o que estiver filtrado) e exclui. Excluir apaga DE VERDADE (LGPD: e assim que se atende um pedido
 // de exclusao). O que sobra no log e so o numero do lead.
 //
 // Os dados pessoais so ficam na memoria desta tela.
@@ -11,6 +11,7 @@ import { ErroApi, SEM_API } from '../../lib/api';
 import { slugsUnidades, unidades } from '../../data/unidades';
 import {
   excluirLead,
+  exportarLeads,
   formatarTelefone,
   linkWhatsapp,
   listarLeads,
@@ -50,6 +51,7 @@ function PainelLeads({ aoExpirar }: Props) {
     erro: false,
   });
   const [ocupado, setOcupado] = useState<number | null>(null); // id em acao
+  const [exportando, setExportando] = useState(false);
   const [msg, setMsg] = useState<{ tipo: 'ok' | 'erro'; texto: string } | null>(null);
   const ref = `${filtro.unidade}|${filtro.status}|${filtro.pagina}#${chave}`;
 
@@ -100,6 +102,40 @@ function PainelLeads({ aoExpirar }: Props) {
       falhou(err, 'Não foi possível mudar o status. Tente de novo.');
     } finally {
       setOcupado(null);
+    }
+  }
+
+  async function exportar() {
+    if (!dados || dados.total === 0 || exportando) return;
+    const ok = confirm(
+      `Exportar ${dados.total} ${dados.total === 1 ? 'lead' : 'leads'} para Excel?\n\n` +
+        'O arquivo terá dados pessoais (nome, telefone, e-mail). Guarde com cuidado, ' +
+        'não compartilhe e apague quando não precisar mais. A exportação fica registrada.',
+    );
+    if (!ok) return;
+    setExportando(true);
+    setMsg(null);
+    try {
+      const r = await exportarLeads({ unidade: filtro.unidade, status: filtro.status });
+      setMsg({
+        tipo: 'ok',
+        texto: r.noLimite
+          ? `Planilha baixada com os ${r.quantidade} leads mais recentes (limite por arquivo). Use os filtros para o resto.`
+          : `Planilha baixada com ${r.quantidade} ${r.quantidade === 1 ? 'lead' : 'leads'}.`,
+      });
+    } catch (err) {
+      if (err instanceof ErroApi && err.codigo === 'nao_autenticado') return aoExpirar();
+      setMsg({
+        tipo: 'erro',
+        texto:
+          err instanceof ErroApi && err.codigo === 'muitas_tentativas'
+            ? 'Muitas exportações seguidas. Espere 15 minutos e tente de novo.'
+            : err instanceof ErroApi && err.codigo === 'sem_conexao'
+              ? 'Sem conexão com o servidor. Tente de novo.'
+              : 'Não foi possível exportar. Tente de novo.',
+      });
+    } finally {
+      setExportando(false);
     }
   }
 
@@ -198,9 +234,19 @@ function PainelLeads({ aoExpirar }: Props) {
           <h2 className="admin__bloco-titulo">
             {dados ? `${dados.total} ${dados.total === 1 ? 'lead' : 'leads'}` : 'Leads'}
           </h2>
-          <button type="button" className="admin__link" onClick={() => setChave((n) => n + 1)}>
-            Atualizar
-          </button>
+          <div className="leads__head-acoes">
+            <button
+              type="button"
+              className="admin__link"
+              onClick={exportar}
+              disabled={!dados || dados.total === 0 || exportando}
+            >
+              {exportando ? 'Exportando…' : 'Exportar Excel'}
+            </button>
+            <button type="button" className="admin__link" onClick={() => setChave((n) => n + 1)}>
+              Atualizar
+            </button>
+          </div>
         </div>
 
         {msg && (
