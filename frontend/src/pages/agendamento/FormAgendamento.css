@@ -441,6 +441,14 @@
   cursor: pointer;
 }
 
+/* Clicar no link abre a politica sem marcar a caixinha: o navegador nao
+   repassa o clique de um link pro checkbox do <label> */
+.agendar__consent a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
 .agendar__consent-caixa {
   position: relative;
   flex-shrink: 0;

@@ -63,21 +63,8 @@ export async function desfazerCancelamento(unidade: UnidadeSlug, data: string, a
 }
 
 // --- datas no horario de Brasilia (o site e o servidor usam o mesmo) ------
-
-// 'AAAA-MM-DD' de hoje em Sao Paulo, seja qual for o fuso do computador.
-export function hojeNoSite(): string {
-  return new Intl.DateTimeFormat('en-CA', {
-    timeZone: 'America/Sao_Paulo',
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-  }).format(new Date());
-}
-
-export function somarDias(iso: string, dias: number): string {
-  const [a, m, d] = iso.split('-').map(Number);
-  return new Date(Date.UTC(a, m - 1, d + dias)).toISOString().slice(0, 10);
-}
+// As contas ficam em lib/horario-site.ts (a grade publica usa as mesmas).
+export { hojeNoSite, somarDias } from './horario-site';
 
 // "qui, 01/10"
 export function nomeData(iso: string): string {

@@ -32,6 +32,7 @@ import {
   ehSlugUnidade,
   type UnidadeSlug,
 } from "../../data/unidades";
+import { POLITICA_PRIVACIDADE } from "../../data/site";
 import "./FormAgendamento.css";
 
 const inicial = {
@@ -63,7 +64,7 @@ const ordemCampos: Campo[] = ["unidade", "periodo", "objetivo", "nome", "whatsap
 
 // Versao do texto da caixinha de consentimento (LGPD). Mudou o texto?
 // Mude a data aqui E em backend/src/leads.php (LEAD_CONSENTIMENTO_VERSAO).
-const CONSENTIMENTO_VERSAO = "2026-10-01";
+const CONSENTIMENTO_VERSAO = "2026-10-06";
 
 // Codigo de erro da API -> frase pra pessoa.
 const mensagensErro: Record<string, string> = {
@@ -88,8 +89,12 @@ const campoDaApi: Record<string, Campo> = {
 };
 
 // Vai formatando o telefone enquanto a pessoa digita: (11) 90000-0000.
+// Numero colado com +55 perde o 55 antes de cortar em 11 digitos (senao o
+// "55" virava DDD). Mesma regra do limpar_telefone() do servidor.
 function mascararWhatsapp(valor: string) {
-  const d = valor.replace(/\D/g, "").slice(0, 11);
+  let d = valor.replace(/\D/g, "");
+  if ((d.length === 12 || d.length === 13) && d.startsWith("55")) d = d.slice(2);
+  d = d.slice(0, 11);
   if (d.length <= 2) return d;
   if (d.length <= 6) return `(${d.slice(0, 2)}) ${d.slice(2)}`;
   if (d.length <= 10)
@@ -119,7 +124,10 @@ function validar(campo: Campo, valor: string) {
   }
 
   if (campo === "email") {
-    if (!/^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(v)) return "E-mail inválido.";
+    // So ASCII, como o FILTER_VALIDATE_EMAIL do servidor (que recusa acento).
+    if (!/^[\x21-\x7e]+@[\x21-\x7e]+\.[a-z]{2,}$/i.test(v) || /@.*@/.test(v)) {
+      return "E-mail inválido (sem acento ou espaço).";
+    }
     // Mesma regra do servidor: comecando com = + - o Excel acharia formula.
     if (/^[=+-]/.test(v)) return "E-mail inválido.";
     return "";
@@ -347,7 +355,7 @@ function FormAgendamento() {
           <fieldset className="agendar__passo">
             <legend className="agendar__pergunta">
               <span className="agendar__numero">2</span>
-              Qual horario prefere treinar?
+              Qual horário prefere treinar?
             </legend>
 
             <div
@@ -477,7 +485,15 @@ function FormAgendamento() {
               <span className="agendar__consent-caixa" aria-hidden="true" />
               <span>
                 Autorizo o contato da equipe da Rede 24 sobre minha aula
-                experimental e condições de matrícula.
+                experimental e condições de matrícula, conforme a{" "}
+                <a
+                  href={`${import.meta.env.BASE_URL}${POLITICA_PRIVACIDADE}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Política de privacidade
+                </a>
+                .
               </span>
             </label>
           </fieldset>

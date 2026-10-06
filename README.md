@@ -61,26 +61,37 @@ está. Para trocar, basta substituir o arquivo mantendo o mesmo nome.
 frontend/public/
 ├── .htaccess          rotas do site na Hostinger (não mover)
 ├── imagens/
-│   ├── hero-poster.jpg
-│   ├── duvidas.jpg
-│   ├── rede/          estrutura.jpg, equipamentos.jpg
-│   └── unidades/      alphaville.jpg, norte.jpg, cambui.jpg, lagoa.jpg
-└── videos/
-    └── hero.mp4
+│   ├── hero-poster.webp
+│   ├── duvidas.webp
+│   ├── rede/          atendimento, bioimpedancia, equipamentos, estrutura (.webp)
+│   └── unidades/      alphaville, norte, cambui, lagoa (.webp)
+├── logos/             24wellness-negativo.svg, 24healthclub-branco.svg
+├── videos/
+│   └── hero.mp4
+└── politica-de-privacidade.pdf   (colocar o arquivo; rodapé e agendamento já apontam pra ele)
 ```
+
+Os originais (antes de otimizar) não ficam no repositório, só no backup.
+
+**Trocar uma foto:** abrir a nova no [squoosh.app](https://squoosh.app),
+formato WebP, qualidade 75, lado maior 1600 px, e salvar com o **mesmo nome**
+por cima da antiga em `frontend/public/imagens/`. Não precisa mexer no código.
+
+**Trocar o vídeo do hero:** 1280 px de largura, sem trilha de áudio, H.264,
+salvo como `frontend/public/videos/hero.mp4` (spec completa no topo do `Hero.tsx`).
 
 ## Onde mexer no conteúdo
 
 | Preciso mudar | Arquivo |
 |---|---|
 | **Link da LP** ou **textos** de uma unidade | `frontend/src/data/unidades.ts` |
-| **Foto** de uma unidade | trocar o arquivo `frontend/public/imagens/unidades/<slug>.jpg` (mesmo nome) |
-| **Vídeo do hero** | trocar `frontend/public/videos/hero.mp4` e `frontend/public/imagens/hero-poster.jpg` (mesmos nomes) — spec no topo do `Hero.tsx` |
-| Fotos da seção A Rede e da página Dúvidas | `frontend/public/imagens/rede/` e `frontend/public/imagens/duvidas.jpg` (mesmos nomes) |
+| **Foto** de uma unidade | trocar o arquivo `frontend/public/imagens/unidades/<slug>.webp` (mesmo nome) |
+| **Vídeo do hero** | trocar `frontend/public/videos/hero.mp4` e `frontend/public/imagens/hero-poster.webp` (mesmos nomes) — spec no topo do `Hero.tsx` |
+| Fotos da seção A Rede e da página Dúvidas | `frontend/public/imagens/rede/` e `frontend/public/imagens/duvidas.webp` (mesmos nomes) |
 | Seções da home | `frontend/src/pages/home/sections/` |
 | Menu e trilha de volta | `frontend/src/components/Header/Header.tsx` |
 | Perguntas frequentes | `frontend/src/pages/duvidas/DuvidasPage.tsx` |
-| Grade de aulas padrão | `frontend/src/data/grade.ts` |
+| Grade de aulas de exemplo (dev e prévia do Pages) | `backend/sql/seeds/grade-exemplo.json` (o front lê o mesmo arquivo) |
 | Formulário de agendamento | `frontend/src/pages/agendamento/FormAgendamento.tsx` |
 
 Os links de LP em `unidades.ts` estão vazios. Enquanto estiverem, os

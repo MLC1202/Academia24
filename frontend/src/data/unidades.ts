@@ -20,7 +20,7 @@ export type UnidadeInfo = {
   // Pra trocar a foto: abrir a nova no squoosh.app, formato WebP, qualidade
   // 75, lado maior 1600 px, e salvar COM O MESMO NOME (<slug>.webp) por cima
   // da antiga -- aqui no codigo nao mexo em nada. (WebP tem metade do peso
-  // do JPG; os originais em JPG ficam em frontend/originais/, fora do site.)
+  // do JPG; os originais em JPG ficam so no backup, fora do repositorio.)
   // As que estao la agora sao provisorias.
   foto: string;
   // Link da LP oficial da unidade (as que a dona mandou).

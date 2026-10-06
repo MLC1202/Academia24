@@ -7,7 +7,7 @@ name: Deploy no GitHub Pages
 
 on:
   push:
-    branches: [main, redesign]
+    branches: [main]
   workflow_dispatch:
 
 permissions:

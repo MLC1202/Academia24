@@ -32,6 +32,10 @@ backend/vendor
 *.sw?
 
 Claude outputs/
+# configuracao local do Claude Code (permissoes e preview); o resto da
+# .claude/ (ex.: agents/verificador-seguranca.md) vai pro repo
+.claude/settings.local.json
+.claude/launch.json
 
 # segredos: nenhum .env (so os .example), chave ou dump de banco vai pro git
 .env

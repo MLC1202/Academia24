@@ -4,8 +4,7 @@
 // cancelada naquela data aparece riscada com a etiqueta "Cancelada".
 //
 // Na pagina /unidades aparece um seletor de unidade logo abaixo dos dias
-// (Alphaville vem marcada) e a grade mostra so a unidade escolhida. Na
-// subpagina de uma unidade eu passo so o slug dela e o seletor some.
+// (Alphaville vem marcada) e a grade mostra so a unidade escolhida.
 //
 // Visual no estilo Apple (skill apple-design): fundo claro, uma cor de
 // destaque so (o vermelho), hierarquia feita com tamanho de letra e espaco,
@@ -25,30 +24,20 @@ import type { CSSProperties, KeyboardEvent } from "react";
 import { Link } from "react-router-dom";
 import { slugsUnidades, unidades, type UnidadeSlug } from "../../../data/unidades";
 import {
-  diaDeHoje,
   ordenarPorHora,
   proximosDias,
   type Aula,
   type Dia,
 } from "../../../data/grade";
 import { useGrades, type Cancelamento } from "../../../lib/grade-store";
+import { agoraNoSite, type Agora } from "../../../lib/horario-site";
 import "./GradeAulas.css";
-
-type Props = {
-  slugs?: UnidadeSlug[];
-};
 
 // Unidade que ja vem marcada no seletor.
 const PADRAO: UnidadeSlug = "alphaville";
 
 // Altura de cada linha da roleta de unidades (tem que bater com o CSS).
 const LINHA = 44;
-
-// Hora atual no mesmo formato da grade ('HH:MM'), pra comparar como texto.
-function horaAgora() {
-  const d = new Date();
-  return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
-}
 
 // Setas esquerda/direita (e Home/End) andam pelas opcoes, como nas abas
 // nativas. Devolve o novo indice, ou null se a tecla nao e de navegacao.
@@ -58,11 +47,6 @@ function proximoIndice(e: KeyboardEvent, indice: number, total: number) {
   if (e.key === "Home") return 0;
   if (e.key === "End") return total - 1;
   return null;
-}
-
-// Data no formato do backend ('AAAA-MM-DD'), no fuso do navegador.
-function dataISO(d: Date) {
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
 
 // Linha pequena embaixo do nome: "60 min · Carol · Studio 2 · Body Mind".
@@ -149,17 +133,33 @@ function ListaAulas({ aulas, ehHoje, agora, proximaId, canceladas }: ListaProps)
   );
 }
 
-function GradeAulas({ slugs = slugsUnidades }: Props) {
-  const unica = slugs.length === 1;
+function GradeAulas() {
+  // "Agora" no horario de Brasilia, conferido a cada 30 s: com a pagina
+  // aberta, a etiqueta "Proxima" anda sozinha e a meia-noite a aba "hoje"
+  // vira. So recalcula aqui no navegador; a grade vem do backend uma vez.
+  const [agoraSite, setAgoraSite] = useState<Agora>(() => agoraNoSite());
+  useEffect(() => {
+    const id = window.setInterval(() => {
+      setAgoraSite((antes) => {
+        const novo = agoraNoSite();
+        return novo.data === antes.data && novo.hora === antes.hora ? antes : novo;
+      });
+    }, 30_000);
+    return () => window.clearInterval(id);
+  }, []);
 
-  // Os 7 dias a partir de hoje (hoje e sempre a primeira aba), calculados
-  // uma vez so por visita. A grade vem do backend (uma busca so tambem).
-  const semana = useMemo(() => proximosDias(), []);
+  // Os 7 dias a partir de hoje (hoje e sempre a primeira aba).
+  const semana = useMemo(() => proximosDias(agoraSite.data), [agoraSite.data]);
   const estado = useGrades();
-  const [dia, setDia] = useState<Dia>(() => diaDeHoje());
-  const [unidade, setUnidade] = useState<UnidadeSlug>(() =>
-    slugs.includes(PADRAO) ? PADRAO : slugs[0],
-  );
+  const [dia, setDia] = useState<Dia>(() => semana[0].chave);
+  // Virou o dia com a aba "hoje" aberta: ela acompanha o novo hoje (senao
+  // ficaria mostrando o mesmo dia da semana que vem).
+  const [hojeVisto, setHojeVisto] = useState<Dia>(semana[0].chave);
+  if (semana[0].chave !== hojeVisto) {
+    if (dia === hojeVisto) setDia(semana[0].chave);
+    setHojeVisto(semana[0].chave);
+  }
+  const [unidade, setUnidade] = useState<UnidadeSlug>(PADRAO);
   const abasRef = useRef<(HTMLButtonElement | null)[]>([]);
 
   // Roleta: "centro" e a linha que esta no meio agora (muda enquanto rola,
@@ -167,12 +167,12 @@ function GradeAulas({ slugs = slugsUnidades }: Props) {
   // nao ficar piscando a cada linha que passa.
   const rodaRef = useRef<HTMLDivElement>(null);
   const paradaRef = useRef<number | undefined>(undefined);
-  const [centro, setCentro] = useState(() => slugs.indexOf(unidade));
+  const [centro, setCentro] = useState(() => slugsUnidades.indexOf(unidade));
 
   // Ao abrir, a roleta ja comeca parada na unidade padrao.
   useEffect(() => {
     const roda = rodaRef.current;
-    if (roda) roda.scrollTop = slugs.indexOf(unidade) * LINHA;
+    if (roda) roda.scrollTop = slugsUnidades.indexOf(unidade) * LINHA;
     return () => window.clearTimeout(paradaRef.current);
     // so na montagem
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -186,16 +186,16 @@ function GradeAulas({ slugs = slugsUnidades }: Props) {
   const onRolarRoda = () => {
     const roda = rodaRef.current;
     if (!roda) return;
-    const i = Math.min(slugs.length - 1, Math.max(0, Math.round(roda.scrollTop / LINHA)));
+    const i = Math.min(slugsUnidades.length - 1, Math.max(0, Math.round(roda.scrollTop / LINHA)));
     setCentro(i);
     window.clearTimeout(paradaRef.current);
-    paradaRef.current = window.setTimeout(() => setUnidade(slugs[i]), 120);
+    paradaRef.current = window.setTimeout(() => setUnidade(slugsUnidades[i]), 120);
   };
 
   const indice = semana.findIndex((d) => d.chave === dia);
   const diaAtual = semana[indice];
   const ehHoje = diaAtual.hoje;
-  const agora = ehHoje ? horaAgora() : "";
+  const agora = ehHoje ? agoraSite.hora : "";
 
   const onTecladoDias = (e: KeyboardEvent<HTMLDivElement>) => {
     const novo = proximoIndice(e, indice, semana.length);
@@ -209,9 +209,9 @@ function GradeAulas({ slugs = slugsUnidades }: Props) {
   const onTecladoRoda = (e: KeyboardEvent<HTMLDivElement>) => {
     const passos: Record<string, number> = { ArrowDown: 1, ArrowUp: -1 };
     let novo: number;
-    if (e.key in passos) novo = Math.min(slugs.length - 1, Math.max(0, centro + passos[e.key]));
+    if (e.key in passos) novo = Math.min(slugsUnidades.length - 1, Math.max(0, centro + passos[e.key]));
     else if (e.key === "Home") novo = 0;
-    else if (e.key === "End") novo = slugs.length - 1;
+    else if (e.key === "End") novo = slugsUnidades.length - 1;
     else return;
     e.preventDefault();
     girarPara(novo);
@@ -221,7 +221,7 @@ function GradeAulas({ slugs = slugsUnidades }: Props) {
   const pronto = estado.status === "pronto";
   const aulas = pronto ? ordenarPorHora(estado.dados.grades[unidade][dia]) : [];
   const canceladas = pronto
-    ? canceladasDo(estado.dados.cancelamentos, unidade, dataISO(diaAtual.data))
+    ? canceladasDo(estado.dados.cancelamentos, unidade, diaAtual.iso)
     : new Set<string>();
   // "Proxima" pula aula cancelada: nao faz sentido apontar pra ela.
   const proximaId = ehHoje
@@ -240,14 +240,13 @@ function GradeAulas({ slugs = slugsUnidades }: Props) {
 
       <div className="grade__text">
         <p>
-          {unica
-            ? `Escolha o dia para ver as aulas coletivas da unidade ${info.nome}.`
-            : "As modalidades e os horários variam por unidade. Escolha o dia e a unidade para ver a grade."}
+          As modalidades e os horários variam por unidade. Escolha o dia e a
+          unidade para ver a grade.
         </p>
       </div>
 
       <div
-        className={unica ? "grade__dias" : "grade__dias grade__dias--com-roleta"}
+        className="grade__dias grade__dias--com-roleta"
         role="tablist"
         aria-label="Dia da semana"
         onKeyDown={onTecladoDias}
@@ -285,40 +284,38 @@ function GradeAulas({ slugs = slugsUnidades }: Props) {
       </div>
 
       {/* Seletor de unidade: roleta vertical estilo iPhone, ao lado dos dias */}
-      {!unica && (
-        <div className="grade__roleta">
-          {/* Faixa cinza do meio: marca a linha escolhida */}
-          <span className="grade__roleta-faixa" aria-hidden="true" />
-          <div
-            ref={rodaRef}
-            className="grade__roleta-roda"
-            role="listbox"
-            aria-label="Unidade"
-            aria-activedescendant={`grade-unidade-${slugs[centro]}`}
-            tabIndex={0}
-            onScroll={onRolarRoda}
-            onKeyDown={onTecladoRoda}
-          >
-            {slugs.map((slug, i) => (
-              <div
-                key={slug}
-                id={`grade-unidade-${slug}`}
-                role="option"
-                aria-selected={i === centro}
-                className={
-                  i === centro
-                    ? "grade__roleta-item grade__roleta-item--ativo"
-                    : "grade__roleta-item"
-                }
-                onClick={() => girarPara(i)}
-              >
-                <span className="grade__roleta-marca">{unidades[slug].marca}</span>
-                <span className="grade__roleta-nome">{unidades[slug].nome}</span>
-              </div>
-            ))}
-          </div>
+      <div className="grade__roleta">
+        {/* Faixa cinza do meio: marca a linha escolhida */}
+        <span className="grade__roleta-faixa" aria-hidden="true" />
+        <div
+          ref={rodaRef}
+          className="grade__roleta-roda"
+          role="listbox"
+          aria-label="Unidade"
+          aria-activedescendant={`grade-unidade-${slugsUnidades[centro]}`}
+          tabIndex={0}
+          onScroll={onRolarRoda}
+          onKeyDown={onTecladoRoda}
+        >
+          {slugsUnidades.map((slug, i) => (
+            <div
+              key={slug}
+              id={`grade-unidade-${slug}`}
+              role="option"
+              aria-selected={i === centro}
+              className={
+                i === centro
+                  ? "grade__roleta-item grade__roleta-item--ativo"
+                  : "grade__roleta-item"
+              }
+              onClick={() => girarPara(i)}
+            >
+              <span className="grade__roleta-marca">{unidades[slug].marca}</span>
+              <span className="grade__roleta-nome">{unidades[slug].nome}</span>
+            </div>
+          ))}
         </div>
-      )}
+      </div>
 
       <div
         id="grade-cards"
@@ -368,15 +365,13 @@ function GradeAulas({ slugs = slugsUnidades }: Props) {
             >
               Agendar aula experimental
             </Link>
-            {!unica && (
-              // Sobe ate o card da unidade nesta mesma pagina (/unidades).
-              <a href={`#${unidade}`} className="grade__card-btn">
-                Ver unidade
-                <span aria-hidden="true" className="grade__card-seta">
-                  ›
-                </span>
-              </a>
-            )}
+            {/* Sobe ate o card da unidade nesta mesma pagina (/unidades) */}
+            <a href={`#${unidade}`} className="grade__card-btn">
+              Ver unidade
+              <span aria-hidden="true" className="grade__card-seta">
+                ›
+              </span>
+            </a>
           </div>
         </article>
       </div>

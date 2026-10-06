@@ -431,7 +431,7 @@
   text-underline-offset: 3px;
 }
 
-/* Botao cheio (card unico da subpagina): a unica acao principal da tela */
+/* Botao cheio ("Agendar aula experimental"): a acao principal do card */
 .grade__card-btn--cheio {
   justify-content: center;
   min-height: 50px;

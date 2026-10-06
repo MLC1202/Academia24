@@ -1,7 +1,7 @@
 import react from '@vitejs/plugin-react'
 import { readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
-import { defineConfig, type Plugin } from 'vite'
+import { defineConfig, searchForWorkspaceRoot, type Plugin } from 'vite'
 import { DOMINIOS_QUE_REDIRECIONAM, SITE_URL } from './src/data/site.ts'
 import { NOME_SITE, SEO } from './src/data/seo.ts'
 
@@ -133,5 +133,11 @@ export default defineConfig({
   // Em producao nao precisa: front e API ficam no mesmo dominio.
   server: {
     proxy: { '/api': 'http://localhost:8080' },
+    // O dev server so entrega arquivos de dentro do frontend/. Libera UM
+    // arquivo do backend (a grade de exemplo, importada no data/grade.ts),
+    // e nao a pasta toda: o backend/.env fica fora do alcance.
+    fs: {
+      allow: [searchForWorkspaceRoot(process.cwd()), '../backend/sql/seeds/grade-exemplo.json'],
+    },
   },
 })

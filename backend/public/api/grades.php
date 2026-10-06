@@ -28,11 +28,13 @@ const CACHE_SEGUNDOS = 60;
 
 $json = cache_ler('grades', CACHE_SEGUNDOS);
 if ($json === null) {
+    // Anotada ANTES de ler o banco (ver cache_gravar em src/cache.php).
+    $geracao = cache_geracao('grades');
     $json = json_encode(
         carregar_grades_publicas(db()),
         JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR,
     );
-    cache_gravar('grades', $json);
+    cache_gravar('grades', $json, $geracao);
 }
 
 // Conteudo publico, mas SEMPRE confere com o servidor antes de usar a copia.

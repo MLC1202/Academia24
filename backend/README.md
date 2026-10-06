@@ -18,7 +18,7 @@ backend/
 │   ├── lead.php       POST formulario de agendamento (publico: CSRF, honeypot, rate limit)
 │   ├── admin-grade.php POST {unidade, grade, origem} -- so admin (CSRF)
 │   ├── admin-versoes.php GET ?unidade= -- historico (so admin)
-│   ├── admin-desfazer.php POST {unidade} -- volta pra versao anterior (so admin, CSRF)
+│   ├── admin-desfazer.php POST {unidade} -- volta pra versao que estava no ar antes (so admin, CSRF)
 │   ├── admin-cancelamentos.php GET ?unidade=&data= -- aulas do dia + proximos cancelamentos (so admin)
 │   ├── admin-cancelar.php POST {unidade, data, hora, modalidade} ou {unidade, data, dia_inteiro} (so admin, CSRF)
 │   ├── admin-descancelar.php POST (mesmo formato) -- desfaz (so admin, CSRF)
@@ -183,7 +183,7 @@ na API. O `public/api/.htaccess` so deixa responder `nome.php` (arquivo com
 | Tabela | Para que |
 |---|---|
 | `unidades` | as 4 unidades + qual versao da grade esta no ar (`grade_ativa_id`) |
-| `grade_versoes` | cada upload/edicao vira uma versao; a anterior fica guardada (rollback) |
+| `grade_versoes` | cada upload/edicao vira uma versao; a anterior fica guardada (rollback). `anterior_id` = a que estava no ar (o "Desfazer" volta pra ela). Guarda as 20 mais novas por unidade (+ a do ar e a do Desfazer) |
 | `aulas` | aulas de uma versao: dia, hora, modalidade |
 | `cancelamentos` | aula cancelada numa DATA real (vale so aquela semana) |
 | `admins` | login do dashboard (senha em hash, segredo do MFA criptografado) |

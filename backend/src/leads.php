@@ -9,7 +9,7 @@ declare(strict_types=1);
 // Versao do texto da caixinha de consentimento. Se o texto mudar no
 // FormAgendamento.tsx, mude a data LA e AQUI (o lead grava qual texto a
 // pessoa aceitou -- e a prova da LGPD).
-const LEAD_CONSENTIMENTO_VERSAO = '2026-10-01';
+const LEAD_CONSENTIMENTO_VERSAO = '2026-10-06';
 
 const LEAD_PERIODOS = ['manha', 'tarde', 'noite'];
 const LEAD_OBJETIVOS = ['saude', 'emagrecimento', 'massamuscular', 'condicionamento', 'retomar'];
@@ -268,32 +268,35 @@ function id_valido(mixed $v): ?int
 // e em que status estao hoje. Os meses vao ate o limite da retencao (o que
 // e mais velho ja foi apagado).
 //
-// Brasilia e UTC-3 o ano todo (sem horario de verao desde 2019), entao
-// "criado_em - 3 h" da o mes certo sem depender da tabela de fusos do
-// MySQL (que a Hostinger pode nao ter).
+// O mes e calculado no PHP, com o fuso America/Sao_Paulo: o PHP traz a
+// propria tabela de fusos (a do MySQL a Hostinger pode nao ter), e se o
+// horario de verao voltar, a conta continua certa. Antes era "-3 h" fixo
+// no SQL. Volume pequeno: no maximo LEAD_RETENCAO_MESES de leads.
 function resumo_leads(PDO $pdo, ?string $unidade): array
 {
     $where = $unidade !== null ? 'WHERE unidade = ?' : '';
     $st = $pdo->prepare(
-        "SELECT DATE_FORMAT(criado_em - INTERVAL 3 HOUR, '%Y-%m') AS mes,
-                COUNT(*) AS recebidos,
-                SUM(status = 'novo') AS novos,
-                SUM(status = 'contatado') AS contatados,
-                SUM(status = 'matriculou') AS matricularam,
-                SUM(status = 'descartado') AS descartados
-           FROM leads $where
-          GROUP BY mes
-          ORDER BY mes DESC"
+        "SELECT DATE_FORMAT(criado_em, '%Y-%m-%d %H:%i:%s') AS criado_em, status
+           FROM leads $where"
     );
     $st->execute($unidade !== null ? [$unidade] : []);
-    return array_map(fn(array $l): array => [
-        'mes' => $l['mes'],
-        'recebidos' => (int) $l['recebidos'],
-        'novos' => (int) $l['novos'],
-        'contatados' => (int) $l['contatados'],
-        'matricularam' => (int) $l['matricularam'],
-        'descartados' => (int) $l['descartados'],
-    ], $st->fetchAll());
+
+    $utc = new DateTimeZone('UTC');
+    $brasilia = new DateTimeZone('America/Sao_Paulo');
+    $vazio = ['recebidos' => 0, 'novos' => 0, 'contatados' => 0, 'matricularam' => 0, 'descartados' => 0];
+    $coluna = ['novo' => 'novos', 'contatado' => 'contatados', 'matriculou' => 'matricularam', 'descartado' => 'descartados'];
+    $meses = [];
+    foreach ($st->fetchAll() as $l) {
+        // A conexao usa time_zone +00:00 (db.php): criado_em vem em UTC.
+        $mes = (new DateTimeImmutable($l['criado_em'], $utc))->setTimezone($brasilia)->format('Y-m');
+        $meses[$mes] ??= ['mes' => $mes] + $vazio;
+        $meses[$mes]['recebidos']++;
+        if (isset($coluna[$l['status']])) {
+            $meses[$mes][$coluna[$l['status']]]++;
+        }
+    }
+    krsort($meses);
+    return array_values($meses);
 }
 
 // Apaga os leads mais velhos que a retencao, em lotes (nao trava a tabela

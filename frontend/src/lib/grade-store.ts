@@ -29,6 +29,9 @@ export type Cancelamento = {
 export type DadosGrade = {
   grades: Grades;
   cancelamentos: Cancelamento[];
+  // Versao no ar de cada unidade (null = nenhuma). So o dashboard usa: manda
+  // de volta ao salvar pra saber se outra aba mudou a grade no meio.
+  versoes?: Partial<Record<UnidadeSlug, number | null>>;
 };
 
 export type EstadoGrade =
@@ -99,11 +102,16 @@ export function useGrades(): EstadoGrade {
 // Manda a grade de UMA unidade. O servidor valida tudo de novo, grava como
 // versao nova (a anterior fica guardada) e limpa o cache do site.
 // origem: 'upload' quando vem da planilha (aparece assim no historico).
+// versaoBase: a versao que o editor carregou (null = nenhuma no ar). Se a do
+// ar for outra, o servidor recusa com 409 "grade_mudou". undefined = nao
+// confere (planilha: substituir e a intencao).
+// Devolve o id da versao nova.
 export async function salvarGrade(
   unidade: UnidadeSlug,
   grade: GradeUnidade,
   origem: 'edicao' | 'upload' = 'edicao',
-) {
+  versaoBase?: number | null,
+): Promise<number> {
   const corpo = Object.fromEntries(
     Object.entries(grade).map(([dia, aulas]) => [
       dia,
@@ -118,7 +126,9 @@ export async function salvarGrade(
       })),
     ]),
   );
-  return enviar('admin-grade.php', { unidade, grade: corpo, origem });
+  const base = versaoBase === undefined ? {} : { versao_base: versaoBase ?? 0 };
+  const dados = await enviar('admin-grade.php', { unidade, grade: corpo, origem, ...base });
+  return Number(dados.versao);
 }
 
 // ---------------------------------------------------------------------------
@@ -131,6 +141,7 @@ export type Versao = {
   criadaEm: Date;
   aulas: number;
   ativa: boolean;
+  desfazer: boolean; // e pra esta que o "Voltar para a versao anterior" volta
 };
 
 export async function listarVersoes(unidade: UnidadeSlug): Promise<Versao[]> {
@@ -142,6 +153,7 @@ export async function listarVersoes(unidade: UnidadeSlug): Promise<Versao[]> {
     criadaEm: new Date(String(v.criada_em)),
     aulas: Number(v.aulas),
     ativa: v.ativa === true,
+    desfazer: v.desfazer === true,
   }));
 }
 

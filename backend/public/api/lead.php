@@ -6,7 +6,7 @@ declare(strict_types=1);
 //
 // Corpo:
 //   { unidade, periodo, objetivo, nome, telefone, email,
-//     consentimento: true, consentimento_versao: "2026-10-01",
+//     consentimento: true, consentimento_versao: "2026-10-06",
 //     referencia: "" }   <- honeypot, sempre vazio
 //
 // Respostas:

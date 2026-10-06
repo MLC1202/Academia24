@@ -10,11 +10,14 @@ declare(strict_types=1);
 //                               "estudio":"Studio 2"} ], ... } }
 // (duracao/professor/categoria/estudio sao opcionais; campo desconhecido e ignorado)
 // "origem": "upload" (veio da planilha) ou "edicao" (padrao, editor manual).
+// "versao_base": versao que o editor carregou (opcional). Se a do ar for
+// outra (outra aba salvou/desfez no meio), nada e gravado e volta 409.
 //
 //   200 { ok: true, versao: 12 }
 //   400 { erro: "dados_invalidos", detalhe: "Terça, aula 3: horário inválido" }
 //   401 { erro: "nao_autenticado" }      -- sessao expirou: logar de novo
 //   403 { erro: "csrf_invalido" }
+//   409 { erro: "grade_mudou" }          -- recarregar e refazer a edicao
 //   429 { erro: "muitas_tentativas" }
 //
 // A grade anterior continua guardada em grade_versoes (da pra voltar).
@@ -97,7 +100,23 @@ if (count($aulas) > AULAS_MAX_POR_GRADE) {
 // So estas duas: 'seed' e coisa do terminal, nunca da web.
 $origem = ($dados['origem'] ?? null) === 'upload' ? 'upload' : 'edicao';
 
-$versao = salvar_nova_versao(db(), $unidade, $aulas, $origem, $adminId);
+// 0 = a unidade nao tinha grade no ar quando o editor abriu. Sem o campo
+// (planilha), nao confere.
+$base = $dados['versao_base'] ?? null;
+if ($base !== null && !(is_int($base) && $base >= 0)) {
+    responder(400, ['erro' => 'dados_invalidos', 'detalhe' => 'Versão base inválida.']);
+}
+
+try {
+    $versao = salvar_nova_versao(db(), $unidade, $aulas, $origem, $adminId, $base);
+} catch (GradeMudouException) {
+    registrar('aviso', 'grade_mudou', ['admin_id' => $adminId, 'unidade' => $unidade, 'base' => $base]);
+    responder(409, [
+        'erro' => 'grade_mudou',
+        'detalhe' => 'A grade desta unidade mudou desde que você abriu (outra aba ou o "Voltar"). '
+            . 'Recarregue a página para ver a versão atual. Suas alterações não foram salvas.',
+    ]);
+}
 registrar('info', 'grade_salva', ['admin_id' => $adminId, 'unidade' => $unidade, 'versao' => $versao, 'aulas' => count($aulas), 'origem' => $origem]);
 
 responder(200, ['ok' => true, 'versao' => $versao]);

@@ -65,10 +65,10 @@ function VersoesUnidade({ unidade, chave, desativado, temAlteracao, aoMudar, aoE
   if (atual.erro || !atual.versoes) return <p className="versoes">Não foi possível carregar o histórico.</p>;
 
   const lista = atual.versoes;
-  const iAtiva = lista.findIndex((v) => v.ativa);
-  const ativa = iAtiva >= 0 ? lista[iAtiva] : null;
-  // A anterior e a primeira mais antiga que a ativa (lista vem da mais nova).
-  const anterior = iAtiva >= 0 ? lista.slice(iAtiva + 1)[0] : undefined;
+  const ativa = lista.find((v) => v.ativa) ?? null;
+  // A que estava no ar antes da atual (o servidor marca): voltar no tempo,
+  // nao "a de numero menor".
+  const anterior = lista.find((v) => v.desfazer);
 
   async function voltar() {
     if (!anterior || voltando) return;

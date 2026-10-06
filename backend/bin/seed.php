@@ -7,7 +7,8 @@ declare(strict_types=1);
 //
 // Cada vez que roda cria uma versao nova da grade de cada unidade (as
 // antigas ficam guardadas, igual vai ser com o upload de verdade).
-// Os dados vem de sql/seeds/grade-exemplo.json (copia do grade.ts do front).
+// Os dados vem de sql/seeds/grade-exemplo.json. O front tambem le este
+// arquivo (gradesPadrao em frontend/src/data/grade.ts) pra previa do Pages.
 
 if (PHP_SAPI !== 'cli') {
     http_response_code(404);

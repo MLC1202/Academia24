@@ -73,24 +73,6 @@
     color: var(--color-white);
   }
   
-  .unidades__regioes {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    margin-top: 28px !important;
-    font-size: 10.5px;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: #8b8781;
-  }
-  
-  .unidades__regioes::before {
-    content: "";
-    width: 34px;
-    height: 1px;
-    background: var(--color-red);
-  }
-  
   /* O zigue-zague: --invertida troca a foto de lado */
   
   .unidades__lista {
@@ -400,12 +382,6 @@
       line-height: 1.6;
     }
   
-    .unidades__regioes {
-      margin-top: 20px !important;
-      font-size: 9.5px;
-      letter-spacing: 0.12em;
-    }
-  
     .unidade {
       grid-template-columns: 1fr;
     }
@@ -444,41 +420,6 @@
   cursor: default;
 }
 
-/* Foto e nome do card levam pra subpagina da unidade (/unidades/<slug>). */
-.unidade__foto--link {
-  transition: filter 0.3s ease;
-}
-
-.unidade__foto--link:hover {
-  filter: brightness(1.12);
-}
-
-.unidade__nome a {
-  transition: color 0.2s ease;
-}
-
-.unidade__nome a:hover {
-  color: var(--color-red);
-}
-
-/* Subpagina da unidade: um card so, com a foto maior. */
-.unidades--detalhe .unidade__foto {
-  min-height: 420px;
-}
-
-@media (max-width: 780px) {
-  .unidades--detalhe .unidade__foto {
-    min-height: 260px;
-  }
-}
-
-/* Sem os textos de cima, o card da subpagina centraliza o conteudo. */
-.unidades--detalhe .unidade__conteudo {
-  justify-content: center;
-  padding-top: 40px;
-  padding-bottom: 40px;
-}
-
 /* Nome da unidade + icone do Instagram na mesma linha */
 .unidade__nome-linha {
   display: flex;
@@ -489,12 +430,6 @@
 
 .unidade__nome-linha .unidade__nome {
   margin: 0;
-}
-
-/* Subpagina: icone no fim da linha "24 Health Club · Unidade 03" */
-.unidades__insta {
-  margin-left: auto;
-  color: var(--color-cream);
 }
 
 /* /unidades#norte rola ate o card: sobra espaco pro cabecalho fixo nao

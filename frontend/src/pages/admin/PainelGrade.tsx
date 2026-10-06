@@ -51,7 +51,11 @@ function mensagemDeErro(err: unknown): string {
 type Carga =
   | { status: "carregando" }
   | { status: "erro" }
-  | { status: "pronto"; grades: Grades };
+  // versoes: qual versao estava no ar quando a grade foi carregada (vai
+  // junto no salvar: se outra aba mudou no meio, o servidor recusa).
+  | { status: "pronto"; grades: Grades; versoes: Versoes };
+
+type Versoes = Partial<Record<UnidadeSlug, number | null>>;
 
 type Props = {
   aoAlterar: (alterado: boolean) => void;
@@ -75,9 +79,9 @@ function PainelGrade({ aoAlterar, aoExpirar }: Props) {
   useEffect(() => {
     let ativo = true;
     buscarGrades(true)
-      .then(({ grades }) => {
+      .then(({ grades, versoes = {} }) => {
         if (!ativo) return;
-        setCarga({ status: "pronto", grades });
+        setCarga({ status: "pronto", grades, versoes });
         setGrade(grades.alphaville);
       })
       .catch(() => ativo && setCarga({ status: "erro" }));
@@ -89,8 +93,8 @@ function PainelGrade({ aoAlterar, aoExpirar }: Props) {
   // Depois de importar a planilha: busca de novo e mostra a unidade aberta.
   async function recarregar() {
     try {
-      const { grades } = await buscarGrades(true);
-      setCarga({ status: "pronto", grades });
+      const { grades, versoes = {} } = await buscarGrades(true);
+      setCarga({ status: "pronto", grades, versoes });
       setGrade(grades[unidade]);
       setEstado("limpo");
       setErro("");
@@ -106,6 +110,16 @@ function PainelGrade({ aoAlterar, aoExpirar }: Props) {
     aoAlterar(estado === "alterado");
   }, [estado, aoAlterar]);
   useEffect(() => () => aoAlterar(false), [aoAlterar]);
+
+  // F5, fechar a aba ou digitar outro endereco com edicao nao salva: o
+  // navegador pergunta antes de sair (o texto do aviso e dele, nao da pra
+  // trocar).
+  useEffect(() => {
+    if (estado !== "alterado") return;
+    const avisar = (e: BeforeUnloadEvent) => e.preventDefault();
+    window.addEventListener("beforeunload", avisar);
+    return () => window.removeEventListener("beforeunload", avisar);
+  }, [estado]);
 
   // Sessao venceu (30 min parado / 8 h): o DashboardPage manda pro login.
   const sessaoExpirou = aoExpirar;
@@ -207,9 +221,16 @@ function PainelGrade({ aoAlterar, aoExpirar }: Props) {
     setSalvando(true);
     setErro("");
     try {
-      await salvarGrade(unidade, limpa);
+      // Sem a versao (resposta antiga, de antes desta conferencia existir):
+      // salva sem conferir em vez de travar com um 409 falso.
+      const base = unidade in carga.versoes ? carga.versoes[unidade] : undefined;
+      const versao = await salvarGrade(unidade, limpa, "edicao", base);
       setGrade(limpa);
-      setCarga({ status: "pronto", grades: { ...carga.grades, [unidade]: limpa } });
+      setCarga({
+        status: "pronto",
+        grades: { ...carga.grades, [unidade]: limpa },
+        versoes: { ...carga.versoes, [unidade]: versao },
+      });
       setEstado("salvo");
       setVersaoChave((n) => n + 1);
     } catch (err) {

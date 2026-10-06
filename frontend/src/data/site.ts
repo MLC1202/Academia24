@@ -15,3 +15,9 @@ export const SITE_URL = 'https://www.academia24hclub.com';
 // O principal sem/com "www" (o contrario do SITE_URL) tambem redireciona.
 // Subdominios (ex.: alphaville.24wellness.com.br, das LPs) NAO sao afetados.
 export const DOMINIOS_QUE_REDIRECIONAM = ['24wellness.com.br'];
+
+// Arquivo da politica de privacidade, em public/. Basta colocar o PDF com
+// este nome la: o rodape e o formulario de agendamento ja apontam pra ele.
+// (So o nome: quem usa junta com o import.meta.env.BASE_URL, porque este
+// arquivo tambem e lido pelo vite.config.ts, onde o BASE_URL nao existe.)
+export const POLITICA_PRIVACIDADE = 'politica-de-privacidade.pdf';

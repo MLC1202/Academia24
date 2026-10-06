@@ -159,12 +159,21 @@ export async function lerXlsx(arquivo: File): Promise<Aba[]> {
     if (!conteudo) continue;
 
     const linhas: Celula[][] = [];
+    // O atributo r (endereco: linha "5", celula "B5") e opcional no formato:
+    // alguns geradores omitem. Sem ele, vale a posicao (logo depois da
+    // anterior), como o Excel faz.
+    let proximaLinha = 0;
     for (const row of filhos(xml(conteudo), 'row')) {
-      const r = Number(row.getAttribute('r')) - 1;
+      const attrLinha = row.getAttribute('r');
+      const r = attrLinha ? Number(attrLinha) - 1 : proximaLinha;
+      proximaLinha = r + 1;
       if (!(r >= 0 && r < MAX_LINHAS)) continue;
       const linha: Celula[] = [];
+      let proximaCol = 0;
       for (const c of filhos(row, 'c')) {
-        const col = coluna(c.getAttribute('r') ?? '');
+        const attrCol = c.getAttribute('r');
+        const col = attrCol ? coluna(attrCol) : proximaCol;
+        proximaCol = col + 1;
         if (col < 0 || col >= MAX_COLUNAS) continue;
         const tipo = c.getAttribute('t');
         const v = filhos(c, 'v')[0]?.textContent ?? null;
