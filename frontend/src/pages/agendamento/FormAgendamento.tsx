@@ -362,7 +362,7 @@ function FormAgendamento() {
                   onChange={() => escolherQuem("eu")}
                 />
                 <span className="agendar__quem-bolinha" aria-hidden="true" />
-                <span>Eu (tenho 18 anos ou mais)</span>
+                <span>Eu mesmo(a), tenho 18 ou mais</span>
               </label>
               <label className="agendar__quem-opcao">
                 <input
@@ -373,7 +373,7 @@ function FormAgendamento() {
                   onChange={() => escolherQuem("dependente")}
                 />
                 <span className="agendar__quem-bolinha" aria-hidden="true" />
-                <span>Meu filho(a) ou dependente, menor de 18 anos</span>
+                <span>Meu filho/minha filha ou dependente, menor de 18 anos.</span>
               </label>
             </div>
             {quem === "" && (
@@ -506,7 +506,7 @@ function FormAgendamento() {
 
                 {ehDependente && (
                   <div className={erros.menor ? "agendar__campo agendar__campo--erro" : "agendar__campo"}>
-                    <label htmlFor="menor">Nome (filho ou dependente)</label>
+                    <label htmlFor="menor">Primeiro nome da criança ou adolescente.</label>
                     <input
                       id="menor"
                       type="text"
