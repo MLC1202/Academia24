@@ -9,7 +9,7 @@ declare(strict_types=1);
 // Versao do texto da caixinha de consentimento. Se o texto mudar no
 // FormAgendamento.tsx, mude a data LA e AQUI (o lead grava qual texto a
 // pessoa aceitou -- e a prova da LGPD).
-const LEAD_CONSENTIMENTO_VERSAO = '2026-10-06';
+const LEAD_CONSENTIMENTO_VERSAO = '2026-10-07';
 
 const LEAD_PERIODOS = ['manha', 'tarde', 'noite'];
 const LEAD_OBJETIVOS = ['saude', 'emagrecimento', 'massamuscular', 'condicionamento', 'retomar'];
@@ -18,6 +18,7 @@ const LEAD_OBJETIVOS = ['saude', 'emagrecimento', 'massamuscular', 'condicioname
 // status ou um id pelo formulario).
 const LEAD_CAMPOS = [
     'unidade', 'periodo', 'objetivo', 'nome', 'telefone', 'email',
+    'menor', // opcional: primeiro nome do menor; ausente ou null = adulto
     'consentimento', 'consentimento_versao',
     'referencia', // honeypot: campo escondido, pessoa nunca preenche
 ];
@@ -31,9 +32,9 @@ const LEAD_MAX_POR_EMAIL = 3;       // por dia
 const LEAD_JANELA_EMAIL_SEG = 86400;
 const LEAD_TEMPO_MINIMO_SEG = 3;    // abrir a pagina e enviar em menos que isso = robo
 
-// Nome: letras (com acento), espaco, apostrofo, hifen e ponto ("Jr.").
-// Precisa de nome e sobrenome. Devolve o nome limpo ou null.
-function limpar_nome(mixed $v): ?string
+// Base de nome de pessoa: letras (com acento), espaco, apostrofo, hifen e
+// ponto ("Jr."), entre $min e $max caracteres. Devolve limpo ou null.
+function limpar_nome_pessoa(mixed $v, int $min, int $max): ?string
 {
     if (!is_string($v)) {
         return null;
@@ -44,17 +45,30 @@ function limpar_nome(mixed $v): ?string
         $v = (string) Normalizer::normalize($v, Normalizer::FORM_C);
     }
     $tam = mb_strlen($v);
-    if ($tam < 3 || $tam > 100) {
+    if ($tam < $min || $tam > $max) {
         return null;
     }
     // Comeca com letra: "-", "'" ou "." no inicio nunca entram (tambem
     // evita formula de Excel na exportacao).
-    if (preg_match("/^\\p{L}[\\p{L}\\p{M}' .-]*$/u", $v) !== 1) {
+    return preg_match("/^\\p{L}[\\p{L}\\p{M}' .-]*$/u", $v) === 1 ? $v : null;
+}
+
+// Nome de quem preenche: precisa de nome e sobrenome.
+function limpar_nome(mixed $v): ?string
+{
+    $v = limpar_nome_pessoa($v, 3, 100);
+    if ($v === null) {
         return null;
     }
     // Pelo menos 2 palavras com letra de verdade.
     $palavras = array_filter(explode(' ', $v), fn($p) => preg_match('/\p{L}/u', $p) === 1);
     return count($palavras) >= 2 ? $v : null;
+}
+
+// Menor de 18: so o primeiro nome (pode ser composto, ex.: "Ana Clara").
+function limpar_menor(mixed $v): ?string
+{
+    return limpar_nome_pessoa($v, 2, 50);
 }
 
 // Telefone BR: aceita "(11) 98765-4321", "11987654321", "+55 11 ...".
@@ -134,6 +148,17 @@ function validar_lead(array $j, array $unidadesValidas): array
         }
     }
 
+    // Menor: ausente ou null = adulto. Se veio, tem que ser um nome valido
+    // (string vazia nao vira "adulto" escondido: e erro).
+    $menor = $j['menor'] ?? null;
+    if ($menor === null) {
+        $ok['menor'] = null;
+    } elseif (($limpo = limpar_menor($menor)) !== null) {
+        $ok['menor'] = $limpo;
+    } else {
+        $erros['menor'] = 'invalido';
+    }
+
     // Tem que ser o booleano true. "true", 1 ou "sim" nao valem.
     if (($j['consentimento'] ?? null) !== true) {
         $erros['consentimento'] = 'obrigatorio';
@@ -210,7 +235,7 @@ function listar_leads(PDO $pdo, ?string $unidade, ?string $status, int $pagina):
 
     // LIMIT/OFFSET tambem vao como parametro (inteiros), nunca colados.
     $st = $pdo->prepare(
-        "SELECT id, unidade, periodo, objetivo, nome, telefone, email, status,
+        "SELECT id, unidade, periodo, objetivo, nome, menor, telefone, email, status,
                 DATE_FORMAT(criado_em, '%Y-%m-%dT%H:%i:%sZ') AS criado_em,
                 DATE_FORMAT(status_em, '%Y-%m-%dT%H:%i:%sZ') AS status_em
            FROM leads $where
@@ -244,7 +269,7 @@ function exportar_leads(PDO $pdo, ?string $unidade, ?string $status): array
     }
     $where = $onde ? 'WHERE ' . implode(' AND ', $onde) : '';
     $st = $pdo->prepare(
-        "SELECT id, unidade, periodo, objetivo, nome, telefone, email, status,
+        "SELECT id, unidade, periodo, objetivo, nome, menor, telefone, email, status,
                 DATE_FORMAT(criado_em, '%Y-%m-%dT%H:%i:%sZ') AS criado_em,
                 DATE_FORMAT(status_em, '%Y-%m-%dT%H:%i:%sZ') AS status_em
            FROM leads $where

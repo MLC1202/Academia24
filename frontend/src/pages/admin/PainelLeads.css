@@ -58,6 +58,12 @@
   color: #1c7a45;
 }
 
+.leads__menor {
+  margin-top: 6px;
+  font-size: 13px;
+  color: #8a5a00;
+}
+
 .leads__info {
   margin-top: 6px;
   font-size: 13px;

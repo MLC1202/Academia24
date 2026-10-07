@@ -6,7 +6,9 @@ declare(strict_types=1);
 //
 // Corpo:
 //   { unidade, periodo, objetivo, nome, telefone, email,
-//     consentimento: true, consentimento_versao: "2026-10-06",
+//     menor: "Ana" | null,   <- opcional; preenchido = nome/telefone/e-mail
+//                               sao do responsavel legal
+//     consentimento: true, consentimento_versao: "2026-10-07",
 //     referencia: "" }   <- honeypot, sempre vazio
 //
 // Respostas:
@@ -81,12 +83,12 @@ if (tentativas_recentes('lead_email', $lead['email'], LEAD_JANELA_EMAIL_SEG) >= 
 // 8. Grava. So prepared statement; a data do consentimento e a do servidor.
 db()->prepare(
     'INSERT INTO leads
-        (unidade, periodo, objetivo, nome, telefone, email,
+        (unidade, periodo, objetivo, nome, menor, telefone, email,
          consentimento_em, consentimento_versao)
-     VALUES (?, ?, ?, ?, ?, ?, UTC_TIMESTAMP(), ?)'
+     VALUES (?, ?, ?, ?, ?, ?, ?, UTC_TIMESTAMP(), ?)'
 )->execute([
     $lead['unidade'], $lead['periodo'], $lead['objetivo'],
-    $lead['nome'], $lead['telefone'], $lead['email'],
+    $lead['nome'], $lead['menor'], $lead['telefone'], $lead['email'],
     LEAD_CONSENTIMENTO_VERSAO,
 ]);
 $id = (int) db()->lastInsertId();

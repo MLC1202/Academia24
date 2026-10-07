@@ -127,6 +127,7 @@ export type Lead = {
   periodo: string;
   objetivo: string;
   nome: string;
+  menor: string | null; // preenchido = nome, telefone e e-mail sao do responsavel
   telefone: string;
   email: string;
   consentimento: boolean;

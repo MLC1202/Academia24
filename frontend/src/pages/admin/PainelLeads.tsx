@@ -280,6 +280,11 @@ function PainelLeads({ aoExpirar }: Props) {
                       {nomeStatus[lead.status]}
                     </span>
                   </div>
+                  {lead.menor && (
+                    <p className="leads__menor">
+                      Aula para menor: <strong>{lead.menor}</strong> · contato do responsável
+                    </p>
+                  )}
                   <p className="leads__info">
                     {quando(lead.criadoEm)} · {unidades[lead.unidade]?.nome ?? lead.unidade} ·{' '}
                     {nomePeriodo[lead.periodo] ?? lead.periodo} ·{' '}

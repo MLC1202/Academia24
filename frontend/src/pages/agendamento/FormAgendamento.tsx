@@ -6,7 +6,10 @@
 // Visual no estilo Apple (skill apple-design), igual a grade de aulas:
 // fundo claro, uma cor de destaque (o vermelho), letra grande e espaco.
 // Em vez de um monte de selects, o formulario vira perguntas em sequencia,
-// como na loja da Apple:
+// como na loja da Apple. Antes de tudo vem "Quem vai fazer a aula?": o resto
+// fica travado ate a pessoa escolher. Se for menor de 18, quem preenche e o
+// responsavel legal (nome, telefone e e-mail sao dele) e entra o primeiro
+// nome do menor.
 //   1. Qual unidade?          -> 4 cards com foto (escolhe clicando)
 //   2. Quando prefere treinar? -> segmented control Manha/Tarde/Noite
 //   3. O que voce busca?       -> pilulas
@@ -37,6 +40,7 @@ import "./FormAgendamento.css";
 
 const inicial = {
   nome: "",
+  menor: "",
   whatsapp: "",
   email: "",
   unidade: "",
@@ -45,6 +49,7 @@ const inicial = {
 };
 
 type Campo = keyof typeof inicial;
+type Quem = "" | "eu" | "dependente";
 
 const objetivos = [
   { valor: "saude", texto: "Saúde e qualidade de vida" },
@@ -61,10 +66,12 @@ const periodos = [
 ];
 
 const ordemCampos: Campo[] = ["unidade", "periodo", "objetivo", "nome", "whatsapp", "email"];
+const ordemCamposDependente: Campo[] = [...ordemCampos, "menor"];
 
-// Versao do texto da caixinha de consentimento (LGPD). Mudou o texto?
-// Mude a data aqui E em backend/src/leads.php (LEAD_CONSENTIMENTO_VERSAO).
-const CONSENTIMENTO_VERSAO = "2026-10-06";
+// Versao dos textos da caixinha de consentimento (LGPD), o de adulto e o de
+// responsavel juntos. Mudou algum? Mude a data aqui E em
+// backend/src/leads.php (LEAD_CONSENTIMENTO_VERSAO).
+const CONSENTIMENTO_VERSAO = "2026-10-07";
 
 // Codigo de erro da API -> frase pra pessoa.
 const mensagensErro: Record<string, string> = {
@@ -84,6 +91,7 @@ const campoDaApi: Record<string, Campo> = {
   periodo: "periodo",
   objetivo: "objetivo",
   nome: "nome",
+  menor: "menor",
   telefone: "whatsapp",
   email: "email",
 };
@@ -111,6 +119,12 @@ function validar(campo: Campo, valor: string) {
     // Mesma regra do servidor (backend/src/leads.php).
     if (!/^\p{L}[\p{L}\p{M}'’ .-]*$/u.test(v)) return "Use só letras no nome.";
     if (v.split(/\s+/).length < 2) return "Digite nome e sobrenome.";
+    return "";
+  }
+
+  if (campo === "menor") {
+    if (v.length < 2) return "Digite o primeiro nome.";
+    if (!/^\p{L}[\p{L}\p{M}'’ .-]*$/u.test(v)) return "Use só letras no nome.";
     return "";
   }
 
@@ -145,6 +159,7 @@ function FormAgendamento() {
     return ehSlugUnidade(unidade) ? { ...inicial, unidade } : inicial;
   });
   const [erros, setErros] = useState<Partial<Record<Campo, string>>>({});
+  const [quem, setQuem] = useState<Quem>("");
   const [consentimento, setConsentimento] = useState(false);
   const [estado, setEstado] = useState<Estado>("parado");
   const [erroEnvio, setErroEnvio] = useState("");
@@ -166,13 +181,22 @@ function FormAgendamento() {
       campo === "whatsapp" ? mascararWhatsapp(e.target.value) : e.target.value,
     );
 
+  // O texto da autorizacao muda conforme a escolha: trocou, aceita de novo.
+  const escolherQuem = (valor: Quem) => {
+    setQuem(valor);
+    setConsentimento(false);
+    setErros((x) => ({ ...x, menor: "" }));
+  };
+
   const conferir = (campo: Campo) => () => {
     if (dados[campo] === "") return; // campo vazio nao ganha erro so por sair
     setErros((x) => ({ ...x, [campo]: validar(campo, dados[campo]) }));
   };
 
-  const faltando = ordemCampos.filter((c) => validar(c, dados[c]) !== "");
-  const completo = consentimento && faltando.length === 0;
+  const ehDependente = quem === "dependente";
+  const campos = ehDependente ? ordemCamposDependente : ordemCampos;
+  const faltando = campos.filter((c) => validar(c, dados[c]) !== "");
+  const completo = quem !== "" && consentimento && faltando.length === 0;
 
   async function submeter(e: FormEvent) {
     e.preventDefault();
@@ -193,6 +217,7 @@ function FormAgendamento() {
         periodo: dados.periodo,
         objetivo: dados.objetivo,
         nome: dados.nome.trim(),
+        menor: ehDependente ? dados.menor.trim() : null,
         telefone: dados.whatsapp,
         email: dados.email.trim(),
         consentimento: true,
@@ -235,10 +260,19 @@ function FormAgendamento() {
           </h1>
           <p className="agendar__fim-texto">
             A equipe da unidade {info.nome} vai entrar em contato pelo telefone{" "}
-            {dados.whatsapp} para combinar o dia da sua aula.
+            {dados.whatsapp} para combinar o dia da{" "}
+            {ehDependente ? `aula de ${dados.menor.trim()}` : "sua aula"}.
+            {ehDependente &&
+              " Lembre-se: você precisa estar presente na aula para assinar a autorização."}
           </p>
 
           <dl className="agendar__resumo">
+            {ehDependente && (
+              <div>
+                <dt>Aula para</dt>
+                <dd>{dados.menor.trim()}</dd>
+              </div>
+            )}
             <div>
               <dt>Unidade</dt>
               <dd>
@@ -315,187 +349,257 @@ function FormAgendamento() {
         </div>
 
         <form className="agendar__form" onSubmit={submeter} noValidate>
-          {/* 1. Unidade */}
           <fieldset className="agendar__passo">
-            <legend className="agendar__pergunta">
-              <span className="agendar__numero">1</span>
-              Qual unidade?
-            </legend>
+            <legend className="agendar__pergunta agendar__pergunta--quem">Quem vai fazer a aula?</legend>
 
-            <div className="agendar__unidades">
-              {slugsUnidades.map((slug) => {
-                const info = unidades[slug];
-                return (
-                  <label className="agendar__unidade" key={slug}>
+            <div className="agendar__quem">
+              <label className="agendar__quem-opcao">
+                <input
+                  type="radio"
+                  name="quem"
+                  value="eu"
+                  checked={quem === "eu"}
+                  onChange={() => escolherQuem("eu")}
+                />
+                <span className="agendar__quem-bolinha" aria-hidden="true" />
+                <span>Eu (tenho 18 anos ou mais)</span>
+              </label>
+              <label className="agendar__quem-opcao">
+                <input
+                  type="radio"
+                  name="quem"
+                  value="dependente"
+                  checked={ehDependente}
+                  onChange={() => escolherQuem("dependente")}
+                />
+                <span className="agendar__quem-bolinha" aria-hidden="true" />
+                <span>Meu filho(a) ou dependente, menor de 18 anos</span>
+              </label>
+            </div>
+            {quem === "" && (
+              <p className="agendar__quem-dica">Escolha uma opção para continuar.</p>
+            )}
+          </fieldset>
+
+          {/* fieldset disabled trava tudo de uma vez: clique, Tab e envio. */}
+          <fieldset className="agendar__etapas" disabled={quem === ""}>
+            {/* 1. Unidade */}
+            <fieldset className="agendar__passo">
+              <legend className="agendar__pergunta">
+                <span className="agendar__numero">1</span>
+                Qual unidade?
+              </legend>
+
+              <div className="agendar__unidades">
+                {slugsUnidades.map((slug) => {
+                  const info = unidades[slug];
+                  return (
+                    <label className="agendar__unidade" key={slug}>
+                      <input
+                        type="radio"
+                        name="unidade"
+                        value={slug}
+                        checked={dados.unidade === slug}
+                        onChange={() => escolher("unidade", slug)}
+                      />
+                      <span
+                        className="agendar__unidade-foto"
+                        style={{ backgroundImage: `url(${info.foto})` }}
+                        aria-hidden="true"
+                      />
+                      <span className="agendar__unidade-texto">
+                        <span className="agendar__unidade-marca">{info.marca}</span>
+                        <span className="agendar__unidade-nome">{info.nome}</span>
+                        <span className="agendar__unidade-local">{info.local}</span>
+                      </span>
+                      <span className="agendar__marca-check" aria-hidden="true" />
+                    </label>
+                  );
+                })}
+              </div>
+            </fieldset>
+
+            {/* 2. Periodo */}
+            <fieldset className="agendar__passo">
+              <legend className="agendar__pergunta">
+                <span className="agendar__numero">2</span>
+                Qual horário prefere treinar?
+              </legend>
+
+              <div
+                className={
+                  idxPeriodo >= 0
+                    ? "agendar__periodos agendar__periodos--escolhido"
+                    : "agendar__periodos"
+                }
+                style={{ "--idx": Math.max(idxPeriodo, 0) } as CSSProperties}
+              >
+                <span className="agendar__periodos-pilula" aria-hidden="true" />
+                {periodos.map((p) => (
+                  <label className="agendar__periodo" key={p.valor}>
                     <input
                       type="radio"
-                      name="unidade"
-                      value={slug}
-                      checked={dados.unidade === slug}
-                      onChange={() => escolher("unidade", slug)}
+                      name="periodo"
+                      value={p.valor}
+                      checked={dados.periodo === p.valor}
+                      onChange={() => escolher("periodo", p.valor)}
                     />
-                    <span
-                      className="agendar__unidade-foto"
-                      style={{ backgroundImage: `url(${info.foto})` }}
-                      aria-hidden="true"
-                    />
-                    <span className="agendar__unidade-texto">
-                      <span className="agendar__unidade-marca">{info.marca}</span>
-                      <span className="agendar__unidade-nome">{info.nome}</span>
-                      <span className="agendar__unidade-local">{info.local}</span>
-                    </span>
-                    <span className="agendar__marca-check" aria-hidden="true" />
+                    <span className="agendar__periodo-nome">{p.texto}</span>
+                    <span className="agendar__periodo-horas">{p.horas}</span>
                   </label>
-                );
-              })}
-            </div>
-          </fieldset>
+                ))}
+              </div>
+            </fieldset>
 
-          {/* 2. Periodo */}
-          <fieldset className="agendar__passo">
-            <legend className="agendar__pergunta">
-              <span className="agendar__numero">2</span>
-              Qual horário prefere treinar?
-            </legend>
+            {/* 3. Objetivo */}
+            <fieldset className="agendar__passo">
+              <legend className="agendar__pergunta">
+                <span className="agendar__numero">3</span>
+                O que você busca?
+              </legend>
 
-            <div
-              className={
-                idxPeriodo >= 0
-                  ? "agendar__periodos agendar__periodos--escolhido"
-                  : "agendar__periodos"
-              }
-              style={{ "--idx": Math.max(idxPeriodo, 0) } as CSSProperties}
-            >
-              <span className="agendar__periodos-pilula" aria-hidden="true" />
-              {periodos.map((p) => (
-                <label className="agendar__periodo" key={p.valor}>
+              <div className="agendar__objetivos">
+                {objetivos.map((o) => (
+                  <label className="agendar__objetivo" key={o.valor}>
+                    <input
+                      type="radio"
+                      name="objetivo"
+                      value={o.valor}
+                      checked={dados.objetivo === o.valor}
+                      onChange={() => escolher("objetivo", o.valor)}
+                    />
+                    <span>{o.texto}</span>
+                  </label>
+                ))}
+              </div>
+            </fieldset>
+
+            {/* 4. Dados */}
+            <fieldset className="agendar__passo">
+              <legend className="agendar__pergunta">
+                <span className="agendar__numero">4</span>
+                {ehDependente ? "Dados do responsável" : "Seus dados"}
+              </legend>
+
+              <div className="agendar__grupo">
+                <div className={erros.nome ? "agendar__campo agendar__campo--erro" : "agendar__campo"}>
+                  <label htmlFor="nome">
+                    {ehDependente ? "Nome do responsável" : "Nome completo"}
+                  </label>
                   <input
-                    type="radio"
-                    name="periodo"
-                    value={p.valor}
-                    checked={dados.periodo === p.valor}
-                    onChange={() => escolher("periodo", p.valor)}
+                    id="nome"
+                    type="text"
+                    autoComplete="name"
+                    placeholder="Como podemos chamar você?"
+                    value={dados.nome}
+                    onChange={preencher("nome")}
+                    onBlur={conferir("nome")}
+                    aria-invalid={!!erros.nome}
+                    aria-describedby={erros.nome ? "erro-nome" : undefined}
                   />
-                  <span className="agendar__periodo-nome">{p.texto}</span>
-                  <span className="agendar__periodo-horas">{p.horas}</span>
-                </label>
-              ))}
-            </div>
-          </fieldset>
+                  {erros.nome && (
+                    <span className="agendar__erro" id="erro-nome">
+                      {erros.nome}
+                    </span>
+                  )}
+                </div>
 
-          {/* 3. Objetivo */}
-          <fieldset className="agendar__passo">
-            <legend className="agendar__pergunta">
-              <span className="agendar__numero">3</span>
-              O que você busca?
-            </legend>
+                {ehDependente && (
+                  <div className={erros.menor ? "agendar__campo agendar__campo--erro" : "agendar__campo"}>
+                    <label htmlFor="menor">Nome (filho ou dependente)</label>
+                    <input
+                      id="menor"
+                      type="text"
+                      autoComplete="off"
+                      placeholder="Só o primeiro nome"
+                      value={dados.menor}
+                      onChange={preencher("menor")}
+                      onBlur={conferir("menor")}
+                      aria-invalid={!!erros.menor}
+                      aria-describedby={erros.menor ? "erro-menor" : undefined}
+                    />
+                    {erros.menor && (
+                      <span className="agendar__erro" id="erro-menor">
+                        {erros.menor}
+                      </span>
+                    )}
+                  </div>
+                )}
 
-            <div className="agendar__objetivos">
-              {objetivos.map((o) => (
-                <label className="agendar__objetivo" key={o.valor}>
+                <div className={erros.whatsapp ? "agendar__campo agendar__campo--erro" : "agendar__campo"}>
+                  <label htmlFor="whatsapp">
+                    {ehDependente ? "Telefone do responsável" : "Telefone"}
+                  </label>
                   <input
-                    type="radio"
-                    name="objetivo"
-                    value={o.valor}
-                    checked={dados.objetivo === o.valor}
-                    onChange={() => escolher("objetivo", o.valor)}
+                    id="whatsapp"
+                    type="tel"
+                    inputMode="numeric"
+                    autoComplete="tel-national"
+                    placeholder="(11) 90000-0000"
+                    value={dados.whatsapp}
+                    onChange={preencher("whatsapp")}
+                    onBlur={conferir("whatsapp")}
+                    aria-invalid={!!erros.whatsapp}
+                    aria-describedby={erros.whatsapp ? "erro-whatsapp" : undefined}
                   />
-                  <span>{o.texto}</span>
-                </label>
-              ))}
-            </div>
-          </fieldset>
+                  {erros.whatsapp && (
+                    <span className="agendar__erro" id="erro-whatsapp">
+                      {erros.whatsapp}
+                    </span>
+                  )}
+                </div>
 
-          {/* 4. Dados */}
-          <fieldset className="agendar__passo">
-            <legend className="agendar__pergunta">
-              <span className="agendar__numero">4</span>
-              Seus dados
-            </legend>
-
-            <div className="agendar__grupo">
-              <div className={erros.nome ? "agendar__campo agendar__campo--erro" : "agendar__campo"}>
-                <label htmlFor="nome">Nome completo</label>
-                <input
-                  id="nome"
-                  type="text"
-                  autoComplete="name"
-                  placeholder="Como podemos chamar você?"
-                  value={dados.nome}
-                  onChange={preencher("nome")}
-                  onBlur={conferir("nome")}
-                  aria-invalid={!!erros.nome}
-                  aria-describedby={erros.nome ? "erro-nome" : undefined}
-                />
-                {erros.nome && (
-                  <span className="agendar__erro" id="erro-nome">
-                    {erros.nome}
-                  </span>
-                )}
+                <div className={erros.email ? "agendar__campo agendar__campo--erro" : "agendar__campo"}>
+                  <label htmlFor="email">
+                    {ehDependente ? "E-mail do responsável" : "E-mail"}
+                  </label>
+                  <input
+                    id="email"
+                    type="email"
+                    autoComplete="email"
+                    placeholder="voce@email.com"
+                    value={dados.email}
+                    onChange={preencher("email")}
+                    onBlur={conferir("email")}
+                    aria-invalid={!!erros.email}
+                    aria-describedby={erros.email ? "erro-email" : undefined}
+                  />
+                  {erros.email && (
+                    <span className="agendar__erro" id="erro-email">
+                      {erros.email}
+                    </span>
+                  )}
+                </div>
               </div>
 
-              <div className={erros.whatsapp ? "agendar__campo agendar__campo--erro" : "agendar__campo"}>
-                <label htmlFor="whatsapp">Telefone</label>
+              <label className="agendar__consent">
                 <input
-                  id="whatsapp"
-                  type="tel"
-                  inputMode="numeric"
-                  autoComplete="tel-national"
-                  placeholder="(11) 90000-0000"
-                  value={dados.whatsapp}
-                  onChange={preencher("whatsapp")}
-                  onBlur={conferir("whatsapp")}
-                  aria-invalid={!!erros.whatsapp}
-                  aria-describedby={erros.whatsapp ? "erro-whatsapp" : undefined}
+                  type="checkbox"
+                  checked={consentimento}
+                  onChange={(e) => setConsentimento(e.target.checked)}
                 />
-                {erros.whatsapp && (
-                  <span className="agendar__erro" id="erro-whatsapp">
-                    {erros.whatsapp}
-                  </span>
-                )}
-              </div>
-
-              <div className={erros.email ? "agendar__campo agendar__campo--erro" : "agendar__campo"}>
-                <label htmlFor="email">E-mail</label>
-                <input
-                  id="email"
-                  type="email"
-                  autoComplete="email"
-                  placeholder="voce@email.com"
-                  value={dados.email}
-                  onChange={preencher("email")}
-                  onBlur={conferir("email")}
-                  aria-invalid={!!erros.email}
-                  aria-describedby={erros.email ? "erro-email" : undefined}
-                />
-                {erros.email && (
-                  <span className="agendar__erro" id="erro-email">
-                    {erros.email}
-                  </span>
-                )}
-              </div>
-            </div>
-
-            <label className="agendar__consent">
-              <input
-                type="checkbox"
-                checked={consentimento}
-                onChange={(e) => setConsentimento(e.target.checked)}
-              />
-              <span className="agendar__consent-caixa" aria-hidden="true" />
-              <span>
-                Autorizo o contato da equipe da Rede 24 sobre minha aula
-                experimental e condições de matrícula, conforme a{" "}
-                <a
-                  href={`${import.meta.env.BASE_URL}${POLITICA_PRIVACIDADE}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Política de privacidade
-                </a>
-                .
-              </span>
-            </label>
+                <span className="agendar__consent-caixa" aria-hidden="true" />
+                <span>
+                  {ehDependente
+                    ? "Sou o responsável legal e autorizo o contato da Rede 24 sobre a aula experimental, conforme a "
+                    : "Autorizo o contato da equipe da Rede 24 sobre minha aula experimental e condições de matrícula, conforme a "}
+                  <a
+                    href={`${import.meta.env.BASE_URL}${POLITICA_PRIVACIDADE}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Política de privacidade
+                  </a>
+                  .
+                </span>
+              </label>
+              {ehDependente && (
+                <p className="agendar__nota">
+                  O responsável (o mesmo deste formulário) precisa estar presente na
+                  aula agendada para assinar a autorização.
+                </p>
+              )}
+            </fieldset>
           </fieldset>
 
           {/* Honeypot: fora da tela, fora do Tab e escondido do leitor de

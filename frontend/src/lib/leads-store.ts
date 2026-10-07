@@ -43,6 +43,7 @@ export type Lead = {
   periodo: string;
   objetivo: string;
   nome: string;
+  menor: string | null; // primeiro nome do menor; null = a propria pessoa
   telefone: string; // so digitos
   email: string;
   status: StatusLead;
@@ -88,6 +89,7 @@ function lerLead(x: unknown): Lead {
     periodo: String(l.periodo ?? ''),
     objetivo: String(l.objetivo ?? ''),
     nome: l.nome,
+    menor: typeof l.menor === 'string' ? l.menor : null,
     telefone: l.telefone,
     email: l.email,
     status: l.status,
@@ -194,6 +196,7 @@ function diasEntre(inicio: Date, fim: Date): number {
 const colunasExportacao = [
   { titulo: 'Recebido em', largura: 17 },
   { titulo: 'Nome', largura: 28 },
+  { titulo: 'Menor', largura: 16 },
   { titulo: 'Telefone', largura: 17 },
   { titulo: 'E-mail', largura: 30 },
   { titulo: 'Unidade', largura: 13 },
@@ -225,6 +228,7 @@ export async function exportarLeads(
       return [
         l.criadoEm,
         l.nome,
+        l.menor,
         formatarTelefone(l.telefone),
         l.email,
         unidades[l.unidade]?.nome ?? l.unidade,

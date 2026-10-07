@@ -150,6 +150,7 @@
 .agendar__unidade input,
 .agendar__periodo input,
 .agendar__objetivo input,
+.agendar__quem-opcao input,
 .agendar__consent input {
   position: absolute;
   opacity: 0;
@@ -195,6 +196,7 @@
 .agendar__unidade:has(input:focus-visible),
 .agendar__objetivo:has(input:focus-visible),
 .agendar__periodo:has(input:focus-visible),
+.agendar__quem-opcao:has(input:focus-visible),
 .agendar__consent:has(input:focus-visible) {
   outline: 2px solid var(--color-red);
   outline-offset: 2px;
@@ -358,6 +360,88 @@
   border-radius: 999px;
 }
 
+/* 0. Quem vai fazer a aula: radio redondo classico, uma opcao por linha.
+   Pergunta menor que as numeradas: e uma triagem, nao um passo. */
+
+.agendar__pergunta--quem {
+  margin-bottom: 12px;
+  font-size: 20px;
+}
+
+.agendar__quem {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.agendar__quem-opcao {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 0;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.agendar__quem-bolinha {
+  position: relative;
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--color-white);
+  box-shadow: inset 0 0 0 1.5px rgba(10, 10, 10, 0.35);
+  transition: box-shadow 0.2s ease;
+}
+
+.agendar__quem-bolinha::after {
+  content: "";
+  position: absolute;
+  inset: 5px;
+  border-radius: 50%;
+  background: var(--color-red);
+  transform: scale(0);
+  transition: transform 0.25s var(--ag-mola);
+}
+
+.agendar__quem-opcao:hover .agendar__quem-bolinha {
+  box-shadow: inset 0 0 0 1.5px rgba(10, 10, 10, 0.6);
+}
+
+.agendar__quem-opcao:has(input:checked) .agendar__quem-bolinha {
+  box-shadow: inset 0 0 0 2px var(--color-red);
+}
+
+.agendar__quem-opcao:has(input:checked) .agendar__quem-bolinha::after {
+  transform: scale(1);
+}
+
+.agendar__quem-dica {
+  margin-top: 12px;
+  font-size: 14px;
+  color: var(--ag-texto-2);
+}
+
+/* Passos 1 a 4 travados ate escolher "quem" (o fieldset fica disabled). */
+.agendar__etapas {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  transition: opacity 0.3s ease;
+}
+
+.agendar__etapas:disabled {
+  opacity: 0.35;
+}
+
+.agendar__etapas:disabled * {
+  cursor: not-allowed;
+}
+
 .agendar__objetivo:hover span {
   box-shadow: inset 0 0 0 1px rgba(10, 10, 10, 0.2);
 }
@@ -481,6 +565,15 @@
 
 .agendar__consent:has(input:checked) .agendar__consent-caixa::after {
   transform: rotate(45deg) scale(1);
+}
+
+/* Aviso pro responsavel, logo abaixo da autorizacao */
+.agendar__nota {
+  margin-top: 10px;
+  padding-left: 34px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--ag-texto-2);
 }
 
 /* Botao final: a unica acao cheia da pagina */
@@ -736,7 +829,10 @@
   .agendar__campo,
   .agendar__consent-caixa,
   .agendar__consent-caixa::after,
-  .agendar__submit {
+  .agendar__submit,
+  .agendar__etapas,
+  .agendar__quem-bolinha,
+  .agendar__quem-bolinha::after {
     transition: none;
   }
 
