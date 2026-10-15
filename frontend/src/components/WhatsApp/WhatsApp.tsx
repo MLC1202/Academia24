@@ -11,6 +11,8 @@
 //   do link, e so trocar o que acontece no abrirChat().
 // Enquanto o numero estiver vazio, o botao aparece mas nao faz nada.
 
+import { useLocation } from "react-router-dom";
+import { registrarEvento } from "../../lib/analytics";
 import "./WhatsApp.css";
 
 const WHATSAPP_NUMERO = "11 99499-2924";
@@ -25,13 +27,16 @@ function paraNumeroWa(numero: string) {
 }
 
 function WhatsApp() {
+  const { pathname } = useLocation();
   const numero = paraNumeroWa(WHATSAPP_NUMERO);
   const link = numero
     ? `https://wa.me/${numero}?text=${encodeURIComponent(MENSAGEM)}`
     : undefined;
 
   function abrirChat() {
-    if (link) window.open(link, "_blank", "noopener,noreferrer");
+    if (!link) return;
+    registrarEvento("clique_whatsapp", { origem: pathname });
+    window.open(link, "_blank", "noopener,noreferrer");
   }
 
   return (

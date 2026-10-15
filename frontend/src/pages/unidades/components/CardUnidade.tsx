@@ -5,6 +5,7 @@
 
 import { unidades, type UnidadeSlug } from "../../../data/unidades";
 import InstagramLink from "../../../components/InstagramLink/InstagramLink";
+import { registrarEvento } from "../../../lib/analytics";
 import "./Unidades.css";
 
 type CardProps = {
@@ -44,7 +45,11 @@ function CardUnidade({ slug, invertida }: CardProps) {
 
             <div className="unidade__nome-linha">
               <h3 className="unidade__nome">{u.nome}</h3>
-              <InstagramLink usuario={u.instagram} unidade={u.nome} />
+              <InstagramLink
+                usuario={u.instagram}
+                unidade={u.nome}
+                onClick={() => registrarEvento("clique_instagram", { unidade: slug })}
+              />
             </div>
 
             <p className="unidade__frase">{u.frase}</p>
@@ -76,6 +81,7 @@ function CardUnidade({ slug, invertida }: CardProps) {
                   href={u.lp}
                   target="_blank"
                   rel="noreferrer"
+                  onClick={() => registrarEvento("clique_lp_unidade", { unidade: slug })}
                 >
                   <span>Conhecer unidade</span>
                   <span className="unidade__link-seta" aria-hidden="true">
@@ -110,6 +116,9 @@ function CardUnidade({ slug, invertida }: CardProps) {
                   href={u.planos}
                   target="_blank"
                   rel="noreferrer"
+                  onClick={() =>
+                    registrarEvento("clique_planos", { unidade: slug, origem: "card" })
+                  }
                 >
                   <span>Ver planos</span>
                   <span className="unidade__link-seta" aria-hidden="true">

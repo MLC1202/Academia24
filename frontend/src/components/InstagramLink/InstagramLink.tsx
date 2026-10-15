@@ -9,9 +9,10 @@ type Props = {
   usuario: string;
   unidade: string; // so pro texto do leitor de tela
   className?: string;
+  onClick?: () => void; // quem usa decide o que registrar (ex.: evento do GA)
 };
 
-function InstagramLink({ usuario, unidade, className }: Props) {
+function InstagramLink({ usuario, unidade, className, onClick }: Props) {
   const limpo = usuario.trim().replace(/^@/, "");
   if (!limpo) return null;
 
@@ -23,6 +24,7 @@ function InstagramLink({ usuario, unidade, className }: Props) {
       rel="noopener noreferrer"
       aria-label={`Instagram da unidade ${unidade} (@${limpo})`}
       title={`@${limpo}`}
+      onClick={onClick}
     >
       <svg viewBox="0 0 24 24" aria-hidden="true">
         <rect x="3" y="3" width="18" height="18" rx="5" />

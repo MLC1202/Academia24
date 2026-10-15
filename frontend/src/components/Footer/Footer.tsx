@@ -2,6 +2,7 @@
 
 import { Link } from 'react-router-dom';
 import { POLITICA_PRIVACIDADE } from '../../data/site';
+import { abrirPreferenciasCookies } from '../../lib/consentimento';
 import './Footer.css';
 
 const base = import.meta.env.BASE_URL;
@@ -41,6 +42,13 @@ function Footer() {
         >
           Política de privacidade
         </a>
+        <button
+          type="button"
+          className="footer__privacidade footer__privacidade--botao"
+          onClick={abrirPreferenciasCookies}
+        >
+          Preferências de cookies
+        </button>
       </div>
     </footer>
   );

@@ -14,6 +14,8 @@ import LoginPage from './pages/admin/LoginPage';
 import DashboardPage from './pages/admin/DashboardPage';
 import RotaAdmin from './lib/RotaAdmin';
 import NaoEncontradaPage from './pages/naoEncontrada/NaoEncontradaPage';
+import AvisoCookies from './components/AvisoCookies/AvisoCookies';
+import RastreioPaginas from './components/RastreioPaginas';
 
 function App() {
   return (
@@ -36,6 +38,9 @@ function App() {
             responde com status 404 -- ver public/.htaccess). */}
         <Route path="*" element={<NaoEncontradaPage />} />
       </Routes>
+      {/* Depois das Routes: o page_view sai com o titulo da pagina nova. */}
+      <AvisoCookies />
+      <RastreioPaginas />
     </BrowserRouter>
   );
 }

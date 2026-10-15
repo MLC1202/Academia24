@@ -1,0 +1,79 @@
+/* Cartao fixo no canto de baixo, a esquerda. A margem da direita deixa livre
+   o botao do WhatsApp (60px + 28px do canto, ver WhatsApp.css). z 95: acima
+   do WhatsApp (90), abaixo do cabecalho e do modal de planos (100). */
+
+.aviso-cookies {
+  position: fixed;
+  left: 28px;
+  bottom: 28px;
+  z-index: 95;
+  box-sizing: border-box;
+  width: min(440px, calc(100% - 28px - 28px - 60px - 16px));
+  padding: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  background: var(--color-black);
+  color: var(--color-offwhite);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+  font-family: var(--font-body);
+}
+
+.aviso-cookies__texto {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* gray-claro: mesmo motivo do rodape (contraste no fundo preto) */
+.aviso-cookies__link {
+  color: var(--color-gray-claro);
+  text-decoration: underline;
+}
+
+.aviso-cookies__link:hover {
+  color: var(--color-white);
+}
+
+.aviso-cookies__botoes {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+/* Os dois botoes iguais: nenhum "destaque" empurrando o Aceitar. */
+.aviso-cookies__botao {
+  flex: 1;
+  padding: 10px 16px;
+  border: 1px solid var(--color-offwhite);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--color-offwhite);
+  font-family: inherit;
+  font-size: 13px;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.aviso-cookies__botao:hover {
+  background: var(--color-offwhite);
+  color: var(--color-black);
+}
+
+.aviso-cookies__botao:focus-visible {
+  outline: 2px solid var(--color-red);
+  outline-offset: 3px;
+}
+
+@media (max-width: 600px) {
+  .aviso-cookies {
+    left: 16px;
+    bottom: 16px;
+    width: calc(100% - 16px - 28px - 60px - 12px);
+    padding: 16px;
+  }
+
+  .aviso-cookies__botoes {
+    flex-direction: column;
+  }
+}

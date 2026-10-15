@@ -61,6 +61,9 @@
 
 /* Faixa de baixo: links legais, separada do resto por uma linha fina */
 .footer__base {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 24px;
   margin-top: 24px;
   padding-top: 16px;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
@@ -77,6 +80,14 @@
 .footer__privacidade:hover {
   color: var(--color-white);
   text-decoration: underline;
+}
+
+/* "Preferencias de cookies" e botao (abre o aviso), mas com cara de link */
+.footer__privacidade--botao {
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
 }
 
 @media (max-width: 860px) {

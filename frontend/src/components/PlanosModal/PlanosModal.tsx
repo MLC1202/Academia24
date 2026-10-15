@@ -7,6 +7,7 @@
 
 import { useEffect, useRef } from "react";
 import { slugsUnidades, unidades } from "../../data/unidades";
+import { registrarEvento } from "../../lib/analytics";
 import "./PlanosModal.css";
 
 type Props = {
@@ -84,7 +85,10 @@ function PlanosModal({ aberto, onFechar }: Props) {
                   href={u.planos}
                   target="_blank"
                   rel="noopener noreferrer"
-                  onClick={onFechar}
+                  onClick={() => {
+                    registrarEvento("clique_planos", { unidade: slug, origem: "modal" });
+                    onFechar();
+                  }}
                 >
                   <img
                     className="planos__foto"

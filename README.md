@@ -18,6 +18,14 @@ npm install
 npm run dev
 ```
 
+Testes da lógica pura (consentimento de cookies, quando o GA liga e passos do
+funil do agendamento), com o `node:test` do próprio Node 24, sem dependência:
+
+```bash
+cd frontend
+npm test
+```
+
 ## Rotas
 
 | Rota | O que é |
@@ -97,6 +105,28 @@ salvo como `frontend/public/videos/hero.mp4` (spec completa no topo do `Hero.tsx
 Os links de LP em `unidades.ts` estão vazios. Enquanto estiverem, os
 botões "Conhecer unidade" e "Consultar esta unidade" ficam desativados;
 ao preencher, passam a abrir a LP da unidade em uma nova aba.
+
+## Google Analytics
+
+- **ID:** `GA_ID` em `frontend/src/data/site.ts` (`G-...`). Vazio = GA
+  desligado. O ID não é segredo.
+- **Quando liga:** só no build de produção, no domínio do `SITE_URL`, depois
+  do "Aceitar" no aviso de cookies, e nunca em `/admin`. Regras em
+  `frontend/src/lib/analytics-regras.ts`; o resto do GA passa todo por
+  `frontend/src/lib/analytics.ts`.
+- **Eventos:** `clique_whatsapp`, `clique_lp_unidade`, `clique_planos`,
+  `clique_instagram`, `agendamento_passo` (funil, `passo` 0–4) e
+  `agendamento_enviado`. Nenhum leva nome, telefone ou e-mail.
+- **Testar antes do deploy:** um build com `VITE_GA_DEBUG=1 npm run build` e
+  depois `npm run preview` liga o GA fora do domínio, com `debug_mode`; os
+  eventos aparecem em Admin → DebugView no GA. **Não suba esse build**: na
+  Hostinger vai sempre o `npm run build` normal.
+- **CSP:** as origens do Google estão liberadas no `frontend/public/.htaccess`.
+  Tag nova de terceiro = origem nova lá (e no `backend/SEGURANCA.md`).
+- **No painel do GA:** em Fluxos de dados → Web → Medição otimizada, desligar
+  "Mudanças de página com base em eventos do histórico do navegador" (o site
+  já manda o page_view de cada rota; ligado, conta em dobro). Não ligar o
+  Google Signals (é publicidade e a CSP bloqueia).
 
 ## Publicar na Hostinger
 

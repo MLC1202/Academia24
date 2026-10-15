@@ -25,7 +25,7 @@
 //    recusado ("muito_rapido") e a pessoa so precisa clicar de novo;
 //  - nada de dado pessoal no console, localStorage ou URL.
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { ChangeEvent, CSSProperties, FormEvent } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { ErroApi, SEM_API, abrirFormularioLead, enviarLead } from "../../lib/api";
@@ -36,6 +36,8 @@ import {
   type UnidadeSlug,
 } from "../../data/unidades";
 import { POLITICA_PRIVACIDADE } from "../../data/site";
+import { registrarEvento } from "../../lib/analytics";
+import { NOMES_PASSOS, passosConcluidos } from "./funil";
 import "./FormAgendamento.css";
 
 const inicial = {
@@ -198,6 +200,24 @@ function FormAgendamento() {
   const faltando = campos.filter((c) => validar(c, dados[c]) !== "");
   const completo = quem !== "" && consentimento && faltando.length === 0;
 
+  // Funil do GA: cada passo e enviado uma vez so, pra quem volta e troca a
+  // unidade nao contar de novo. Nenhum dado pessoal vai junto.
+  const passosEnviados = useRef(new Set<number>());
+  useEffect(() => {
+    const estadoFunil = {
+      quem,
+      unidade: dados.unidade,
+      periodo: dados.periodo,
+      objetivo: dados.objetivo,
+      completo,
+    };
+    for (const passo of passosConcluidos(estadoFunil)) {
+      if (passosEnviados.current.has(passo)) continue;
+      passosEnviados.current.add(passo);
+      registrarEvento("agendamento_passo", { passo, passo_nome: NOMES_PASSOS[passo] });
+    }
+  }, [quem, dados.unidade, dados.periodo, dados.objetivo, completo]);
+
   async function submeter(e: FormEvent) {
     e.preventDefault();
     if (!completo || estado === "enviando") return;
@@ -223,6 +243,10 @@ function FormAgendamento() {
         consentimento: true,
         consentimento_versao: CONSENTIMENTO_VERSAO,
         referencia: isca,
+      });
+      registrarEvento("agendamento_enviado", {
+        unidade: dados.unidade,
+        tipo: ehDependente ? "menor" : "adulto",
       });
       setEstado("enviado");
     } catch (erro) {

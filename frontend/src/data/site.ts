@@ -9,6 +9,12 @@
 // (A previa do GitHub Pages nao usa isto e fica fora do Google.)
 export const SITE_URL = 'https://www.academia24hclub.com';
 
+// ID de medicao do Google Analytics 4 ("G-..."), do fluxo de dados Web da
+// propriedade da dona. Nao e segredo: aparece no HTML de qualquer site com GA.
+// Vazio = GA desligado (o aviso de cookies continua aparecendo).
+// Quando ele liga: src/lib/analytics-regras.ts.
+export const GA_ID = '';
+
 // Outros dominios da rede que devem cair no site acima (redirecionamento
 // 301, mantendo o caminho: 24wellness.com.br/agendamento ->
 // www.academia24hclub.com/agendamento). Vale com e sem "www".

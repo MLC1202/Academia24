@@ -25,7 +25,21 @@ RedirectMatch 404 "/\.(?!well-known/)"
   #   connect-src 'self'         -> fetch so pra nossa API
   #   frame-ancestors 'none'     -> ninguem coloca o site dentro de um iframe
   #   style-src 'unsafe-inline'  -> estilos inline (CSS nao executa codigo)
-  Header always set Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; media-src 'self'; font-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"
+  # Google Analytics 4 (so carrega depois do "Aceitar" no aviso de cookies,
+  # ver src/lib/analytics.ts). Origens da documentacao do Google pra GA4:
+  #   script-src  www.googletagmanager.com           -> o gtag.js
+  #   connect-src *.google-analytics.com,
+  #               *.analytics.google.com,
+  #               www.googletagmanager.com           -> envio dos eventos
+  #   img-src     *.google-analytics.com,
+  #               www.googletagmanager.com           -> envio por pixel (fallback)
+  # Trade-off: o site passa a confiar em JS vindo do Google. O curinga e
+  # necessario porque o GA4 usa subdominios regionais (region1. etc.).
+  # 'unsafe-inline' e 'unsafe-eval' continuam FORA do script-src: por isso o
+  # GA entra por arquivo nosso e nao pelo snippet inline nem pelo GTM.
+  # NAO ligar o "Google Signals" no painel do GA: ele chama doubleclick.net e
+  # google.com (publicidade), que ficam bloqueados aqui de proposito.
+  Header always set Content-Security-Policy "default-src 'self'; script-src 'self' https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*.google-analytics.com https://www.googletagmanager.com; media-src 'self'; font-src 'self' data:; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"
   Header always set X-Content-Type-Options "nosniff"
   Header always set X-Frame-Options "DENY"
   Header always set Referrer-Policy "strict-origin-when-cross-origin"

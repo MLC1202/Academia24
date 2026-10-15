@@ -77,8 +77,9 @@ for chave in $(grep -oE '^[A-Z_]+=' .env.example | tr -d '='); do
     esac
 done
 [ "$falhas" -eq "$antes" ] && ok ".env.example sem segredo real"
-vite=$(grep -rnoE "VITE_[A-Z_]+" "$RAIZ/frontend/src" "$RAIZ/frontend/vite.config.ts" 2>/dev/null | grep -v "VITE_SEM_API" )
-[ -z "$vite" ] && ok "nenhuma variavel VITE_* alem de VITE_SEM_API (nada secreto no front)" || { aviso "variavel VITE_* nova (vai pro JavaScript PUBLICO):"; echo "$vite" | sed 's/^/           /'; }
+# Ja revisadas, so flags de build (nada secreto): VITE_SEM_API e VITE_GA_DEBUG.
+vite=$(grep -rnoE "VITE_[A-Z_]+" "$RAIZ/frontend/src" "$RAIZ/frontend/vite.config.ts" 2>/dev/null | grep -vE "VITE_(SEM_API|GA_DEBUG)$" )
+[ -z "$vite" ] && ok "nenhuma variavel VITE_* alem de VITE_SEM_API/VITE_GA_DEBUG (nada secreto no front)" || { aviso "variavel VITE_* nova (vai pro JavaScript PUBLICO):"; echo "$vite" | sed 's/^/           /'; }
 
 # ---------------------------------------------------------------------------
 echo "== Sessao, senhas, MFA"
