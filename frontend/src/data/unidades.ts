@@ -43,6 +43,8 @@ export type UnidadeInfo = {
   endereco: string;
   horarios: string;
   local: string;
+  // Aparece no rodape, embaixo do nome da unidade.
+  cnpj: string;
 };
 
 // Arquivo de public/: o caminho depende de onde o site esta hospedado.
@@ -82,6 +84,7 @@ const registro: Record<UnidadeSlug, UnidadeInfo> = {
     endereco: "Alameda Grajaú, 525 · Alphaville Industrial · Barueri",
     horarios: "Seg–Sex 05h–23h · Sáb 07h–15h · Dom/feriados 08h–14h",
     local: "Barueri · SP",
+    cnpj: "12.831.197/0001-90",
   },
   norte: {
     nome: "Norte",
@@ -104,6 +107,7 @@ const registro: Record<UnidadeSlug, UnidadeInfo> = {
     endereco: "Rua Maria Cândida, 468 · Vila Guilherme · São Paulo",
     horarios: "Seg–Sex 04h–23h · Sáb 07h–15h · Dom/feriados 08h–14h",
     local: "Vila Guilherme · São Paulo",
+    cnpj: "07.920.464/0001-65",
   },
   cambui: {
     nome: "Cambuí",
@@ -126,6 +130,7 @@ const registro: Record<UnidadeSlug, UnidadeInfo> = {
     endereco: "Rua Santa Cruz, 299 · Cambuí · Campinas",
     horarios: "Seg–Sex 05h–23h · Sáb 07h–15h · Dom/feriados 08h–14h",
     local: "Campinas · SP",
+    cnpj: "10.972.699/0002-96",
   },
   lagoa: {
     nome: "Lagoa",
@@ -148,6 +153,7 @@ const registro: Record<UnidadeSlug, UnidadeInfo> = {
     endereco: "Av. Dr. Heitor Penteado, 1740 · Campinas",
     horarios: "Consulte a unidade para confirmar os horários vigentes.",
     local: "Campinas · SP",
+    cnpj: "17.819.497/0001-77",
   },
 };
 

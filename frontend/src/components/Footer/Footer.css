@@ -47,10 +47,32 @@
   margin-top: 10px;
 }
 
+/* Uma coluna por unidade, com o CNPJ embaixo do nome */
 .footer__unidades {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px 24px;
+  margin: 24px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.footer__unidades li {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.footer__unidade-nome {
   font-size: 13px;
-  color: var(--color-gray);
   letter-spacing: 0.05em;
+}
+
+.footer__cnpj {
+  font-family: var(--font-body);
+  font-size: 11px;
+  color: var(--color-gray-claro);
+  font-variant-numeric: tabular-nums;
 }
 
 .footer__cta {
@@ -99,5 +121,9 @@
     flex-direction: column;
     align-items: flex-start;
     gap: 16px;
+  }
+
+  .footer__unidades {
+    grid-template-columns: repeat(2, 1fr);
   }
 }

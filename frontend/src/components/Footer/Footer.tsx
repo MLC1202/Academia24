@@ -1,7 +1,8 @@
 // Rodape padrao: aparece no fim de todas as paginas (o admin nao usa).
 
 import { Link } from 'react-router-dom';
-import { POLITICA_PRIVACIDADE } from '../../data/site';
+import { EMAIL_SAC, POLITICA_PRIVACIDADE } from '../../data/site';
+import { slugsUnidades, unidades } from '../../data/unidades';
 import { abrirPreferenciasCookies } from '../../lib/consentimento';
 import './Footer.css';
 
@@ -27,12 +28,22 @@ function Footer() {
           </div>
           <div className="footer__tagline">Quatro unidades. Uma mesma essência.</div>
         </div>
-        <div className="footer__unidades">Alphaville · Norte · Cambuí · Lagoa</div>
         <Link to="/agendamento" className="footer__cta">
           Agendar aula →
         </Link>
       </div>
+      <ul className="footer__unidades">
+        {slugsUnidades.map((slug) => (
+          <li key={slug}>
+            <span className="footer__unidade-nome">{unidades[slug].nome}</span>
+            <span className="footer__cnpj">CNPJ {unidades[slug].cnpj}</span>
+          </li>
+        ))}
+      </ul>
       <div className="footer__base">
+        <a href={`mailto:${EMAIL_SAC}`} className="footer__privacidade">
+          SAC: {EMAIL_SAC}
+        </a>
         {/* <a> e nao <Link>: e um arquivo estatico, nao uma rota do React */}
         <a
           href={`${base}${POLITICA_PRIVACIDADE}`}

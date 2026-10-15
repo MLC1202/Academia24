@@ -13,7 +13,7 @@ export const SITE_URL = 'https://www.academia24hclub.com';
 // propriedade da dona. Nao e segredo: aparece no HTML de qualquer site com GA.
 // Vazio = GA desligado (o aviso de cookies continua aparecendo).
 // Quando ele liga: src/lib/analytics-regras.ts.
-export const GA_ID = '';
+export const GA_ID = 'G-YH41P1R1DN';
 
 // Outros dominios da rede que devem cair no site acima (redirecionamento
 // 301, mantendo o caminho: 24wellness.com.br/agendamento ->
@@ -27,3 +27,6 @@ export const DOMINIOS_QUE_REDIRECIONAM = ['24wellness.com.br'];
 // (So o nome: quem usa junta com o import.meta.env.BASE_URL, porque este
 // arquivo tambem e lido pelo vite.config.ts, onde o BASE_URL nao existe.)
 export const POLITICA_PRIVACIDADE = 'politica-de-privacidade.pdf';
+
+// E-mail do SAC, mostrado no rodape.
+export const EMAIL_SAC = 'sac@academia24hclub.com';
