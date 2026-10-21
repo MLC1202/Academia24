@@ -5,9 +5,11 @@
 //
 // Decidido com a dona/Matheus em 01/10/2026: UM site so (as 4 unidades e os
 // dois logos), dominio principal academia24hclub.com, com www.
+// Trocado em 20/10/2026: o dominio principal passou a ser 24wellness.com.br
+// (com www) e o academia24hclub.com agora redireciona pra ele.
 // Vazio = o "npm run build" para com erro, de proposito.
 // (A previa do GitHub Pages nao usa isto e fica fora do Google.)
-export const SITE_URL = 'https://www.academia24hclub.com';
+export const SITE_URL = 'https://www.24wellness.com.br';
 
 // ID de medicao do Google Analytics 4 ("G-..."), do fluxo de dados Web da
 // propriedade da dona. Nao e segredo: aparece no HTML de qualquer site com GA.
@@ -16,11 +18,11 @@ export const SITE_URL = 'https://www.academia24hclub.com';
 export const GA_ID = 'G-YH41P1R1DN';
 
 // Outros dominios da rede que devem cair no site acima (redirecionamento
-// 301, mantendo o caminho: 24wellness.com.br/agendamento ->
-// www.academia24hclub.com/agendamento). Vale com e sem "www".
+// 301, mantendo o caminho: academia24hclub.com/agendamento ->
+// www.24wellness.com.br/agendamento). Vale com e sem "www".
 // O principal sem/com "www" (o contrario do SITE_URL) tambem redireciona.
-// Subdominios (ex.: alphaville.24wellness.com.br, das LPs) NAO sao afetados.
-export const DOMINIOS_QUE_REDIRECIONAM = ['24wellness.com.br'];
+// Subdominios (ex.: unidadenorte.academia24hclub.com, das LPs) NAO sao afetados.
+export const DOMINIOS_QUE_REDIRECIONAM = ['academia24hclub.com'];
 
 // Arquivo da politica de privacidade, em public/. Basta colocar o PDF com
 // este nome la: o rodape e o formulario de agendamento ja apontam pra ele.
