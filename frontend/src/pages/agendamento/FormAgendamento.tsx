@@ -54,7 +54,7 @@ type Campo = keyof typeof inicial;
 type Quem = "" | "eu" | "dependente";
 
 const objetivos = [
-  { valor: "saude", texto: "Saúde e qualidade de vida" },
+  { valor: "saude", texto: "Qualidade de vida" },
   { valor: "emagrecimento", texto: "Emagrecimento" },
   { valor: "massamuscular", texto: "Ganho de massa muscular" },
   { valor: "condicionamento", texto: "Condicionamento físico" },
@@ -70,10 +70,10 @@ const periodos = [
 const ordemCampos: Campo[] = ["unidade", "periodo", "objetivo", "nome", "whatsapp", "email"];
 const ordemCamposDependente: Campo[] = [...ordemCampos, "menor"];
 
-// Versao dos textos da caixinha de consentimento (LGPD), o de adulto e o de
-// responsavel juntos. Mudou algum? Mude a data aqui E em
-// backend/src/leads.php (LEAD_CONSENTIMENTO_VERSAO).
-const CONSENTIMENTO_VERSAO = "2026-10-07";
+// Versao da Politica de Privacidade que a caixinha referencia: use a data da
+// ultima atualizacao do PDF. Mudou a Politica ou o texto da caixinha? Mude a
+// data aqui E em backend/src/leads.php (LEAD_CONSENTIMENTO_VERSAO).
+const CONSENTIMENTO_VERSAO = "2026-10-26";
 
 // Codigo de erro da API -> frase pra pessoa.
 const mensagensErro: Record<string, string> = {
@@ -287,7 +287,7 @@ function FormAgendamento() {
             {dados.whatsapp} para combinar o dia da{" "}
             {ehDependente ? `aula de ${dados.menor.trim()}` : "sua aula"}.
             {ehDependente &&
-              " Lembre-se: você precisa estar presente na aula para assinar a autorização."}
+              " Lembre-se: o responsável legal assina presencialmente, conforme as normas da Unidade."}
           </p>
 
           <dl className="agendar__resumo">
@@ -604,23 +604,21 @@ function FormAgendamento() {
                 />
                 <span className="agendar__consent-caixa" aria-hidden="true" />
                 <span>
-                  {ehDependente
-                    ? "Sou o responsável legal e autorizo o contato da Rede 24 sobre a aula experimental, conforme a "
-                    : "Autorizo o contato da equipe da Rede 24 sobre minha aula experimental e condições de matrícula, conforme a "}
+                  {ehDependente ? "Sou o responsável legal, li a " : "Li a "}
                   <a
                     href={`${import.meta.env.BASE_URL}${POLITICA_PRIVACIDADE}`}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    Política de privacidade
-                  </a>
-                  .
+                    Política de Privacidade
+                  </a>{" "}
+                  e solicito o contato da Unidade sobre o agendamento.
                 </span>
               </label>
               {ehDependente && (
                 <p className="agendar__nota">
-                  O responsável (o mesmo deste formulário) precisa estar presente na
-                  aula agendada para assinar a autorização.
+                  O responsável legal assina presencialmente, conforme as normas da
+                  Unidade.
                 </p>
               )}
             </fieldset>

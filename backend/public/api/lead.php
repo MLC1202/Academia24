@@ -8,7 +8,7 @@ declare(strict_types=1);
 //   { unidade, periodo, objetivo, nome, telefone, email,
 //     menor: "Ana" | null,   <- opcional; preenchido = nome/telefone/e-mail
 //                               sao do responsavel legal
-//     consentimento: true, consentimento_versao: "2026-10-07",
+//     consentimento: true, consentimento_versao: "2026-10-26",
 //     referencia: "" }   <- honeypot, sempre vazio
 //
 // Respostas:

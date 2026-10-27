@@ -6,10 +6,11 @@ declare(strict_types=1);
 // O front valida so por conforto. Quem decide e AQUI, por lista branca:
 // o que nao esta explicitamente permitido e recusado.
 
-// Versao do texto da caixinha de consentimento. Se o texto mudar no
-// FormAgendamento.tsx, mude a data LA e AQUI (o lead grava qual texto a
-// pessoa aceitou -- e a prova da LGPD).
-const LEAD_CONSENTIMENTO_VERSAO = '2026-10-07';
+// Versao da Politica de Privacidade (data da ultima atualizacao do PDF) que a
+// caixinha referencia. Se a Politica ou o texto da caixinha mudar, mude a
+// data no FormAgendamento.tsx E AQUI (o lead grava o que a pessoa aceitou --
+// e a prova da LGPD).
+const LEAD_CONSENTIMENTO_VERSAO = '2026-10-26';
 
 const LEAD_PERIODOS = ['manha', 'tarde', 'noite'];
 const LEAD_OBJETIVOS = ['saude', 'emagrecimento', 'massamuscular', 'condicionamento', 'retomar'];

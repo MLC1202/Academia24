@@ -79,6 +79,13 @@ frontend/public/
 └── politica-de-privacidade.pdf   (colocar o arquivo; rodapé e agendamento já apontam pra ele)
 ```
 
+**Política de Privacidade:** o PDF vigente fica em `frontend/public/politica-de-privacidade.pdf`
+e deve trazer a data da última atualização. Ao publicar uma versão nova, guarde uma cópia em
+`docs/politica/politica-de-privacidade-AAAA-MM-DD.pdf` (uma por versão publicada) e suba a data
+em `CONSENTIMENTO_VERSAO` (`FormAgendamento.tsx`) e `LEAD_CONSENTIMENTO_VERSAO`
+(`backend/src/leads.php`), sempre a mesma nos dois. Front e back precisam ir juntos pro ar:
+versões diferentes fazem o envio do formulário falhar.
+
 Os originais (antes de otimizar) não ficam no repositório, só no backup.
 
 **Trocar uma foto:** abrir a nova no [squoosh.app](https://squoosh.app),

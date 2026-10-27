@@ -30,7 +30,7 @@ export const nomePeriodo: Record<string, string> = {
 };
 
 export const nomeObjetivo: Record<string, string> = {
-  saude: 'Saúde e qualidade de vida',
+  saude: 'Qualidade de vida',
   emagrecimento: 'Emagrecimento',
   massamuscular: 'Ganho de massa muscular',
   condicionamento: 'Condicionamento físico',
