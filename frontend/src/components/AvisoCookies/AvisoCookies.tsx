@@ -13,7 +13,11 @@ import {
   lerConsentimento,
 } from "../../lib/consentimento";
 import { ehCaminhoAdmin } from "../../lib/analytics-regras";
-import { iniciarAnalytics, registrarPagina, revogarAnalytics } from "../../lib/analytics";
+import {
+  iniciarAnalytics,
+  registrarPagina,
+  revogarAnalytics,
+} from "../../lib/analytics";
 import "./AvisoCookies.css";
 
 function AvisoCookies() {
@@ -76,9 +80,13 @@ function AvisoCookies() {
       aria-label="Aviso de cookies"
     >
       <p className="aviso-cookies__texto">
-        Usamos cookies do Google Analytics para entender como o site é usado e
-        melhorá-lo. Você pode mudar sua escolha quando quiser em “Preferências
-        de cookies”, no rodapé.{" "}
+        Usamos o Google Analytics para medir visitas ao site.{" "}
+        <strong>
+          Os dados de navegação são enviados ao Google e podem ser tratados nos
+          Estados Unidos e em outros países.
+        </strong>{" "}
+        Ao clicar em Aceitar, você consente com esse uso e com a transferência
+        internacional. Saiba mais na{" "}
         {/* <a> e nao <Link>: e um arquivo estatico, nao uma rota do React */}
         <a
           href={`${import.meta.env.BASE_URL}${POLITICA_PRIVACIDADE}`}
@@ -86,14 +94,23 @@ function AvisoCookies() {
           rel="noopener noreferrer"
           className="aviso-cookies__link"
         >
-          Política de privacidade
+          Política de Privacidade
         </a>
+        .
       </p>
       <div className="aviso-cookies__botoes">
-        <button type="button" className="aviso-cookies__botao" onClick={recusar}>
+        <button
+          type="button"
+          className="aviso-cookies__botao"
+          onClick={recusar}
+        >
           Recusar
         </button>
-        <button type="button" className="aviso-cookies__botao" onClick={aceitar}>
+        <button
+          type="button"
+          className="aviso-cookies__botao"
+          onClick={aceitar}
+        >
           Aceitar
         </button>
       </div>
