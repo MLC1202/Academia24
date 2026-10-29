@@ -145,3 +145,10 @@ npm run build
 Sobe o conteúdo de `frontend/dist/` para a raiz pública. O `.htaccess`
 vai junto no build (vem de `frontend/public/`) e é o que faz as rotas do
 site funcionarem ao recarregar a página.
+
+## Política de Privacidade
+
+O PDF vai em `frontend/public/politica-de-privacidade.pdf` (rodapé, aviso de
+cookies e formulário apontam para ele). Cada versão publicada fica arquivada
+em `docs/politica/AAAA-MM-DD.pdf`; o passo a passo para trocar de versão
+está em `docs/politica/README.md`.

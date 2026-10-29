@@ -13,11 +13,11 @@ declare(strict_types=1);
 // cancelamentos ja existe desde a 001 e o site ja risca a aula; aqui so
 // entram as regras de gravar e apagar.
 //
-// So da pra cancelar aula que EXISTE na grade publicada daquela unidade,
-// naquele dia da semana. Assim nenhum texto inventado vai parar no JSON
+// So da pra cancelar aula que EXISTE no Pacto naquela unidade, naquela data. Assim nenhum texto inventado vai parar no JSON
 // publico do site.
 
 require_once __DIR__ . '/grade.php'; // DIAS, unidade_existe, cache
+require_once __DIR__ . '/pacto.php';
 
 const CANCEL_DIAS_FRENTE = 60;
 const FUSO_SITE = 'America/Sao_Paulo';
@@ -64,26 +64,31 @@ function dia_da_semana(DateTimeImmutable $d): string
     return DIAS[(int) $d->format('N') - 1];
 }
 
-// Aulas da grade PUBLICADA da unidade no dia da semana da data, cada uma
-// dizendo se ja esta cancelada naquela data.
+// Aulas daquela data no Pacto, cada uma dizendo se ja esta cancelada.
+// Se o Pacto nao responder, devolve 502 (nao da pra conferir a aula sem ele).
 function aulas_da_data(PDO $pdo, string $unidade, DateTimeImmutable $data): array
 {
     $st = $pdo->prepare(
-        "SELECT TIME_FORMAT(a.hora, '%H:%i') AS hora, a.modalidade,
-                (c.id IS NOT NULL) AS cancelada
-           FROM unidades u
-           JOIN aulas a ON a.versao_id = u.grade_ativa_id AND a.dia = ?
-           LEFT JOIN cancelamentos c
-                  ON c.unidade = u.slug AND c.data = ? AND c.hora = a.hora AND c.modalidade = a.modalidade
-          WHERE u.slug = ?
-          ORDER BY a.hora, a.modalidade"
+        "SELECT TIME_FORMAT(hora, '%H:%i') AS hora, modalidade FROM cancelamentos WHERE unidade = ? AND data = ?"
     );
-    $st->execute([dia_da_semana($data), $data->format('Y-m-d'), $unidade]);
+    $st->execute([$unidade, $data->format('Y-m-d')]);
+    $canceladas = [];
+    foreach ($st->fetchAll() as $c) {
+        $canceladas[$c['hora'] . '|' . $c['modalidade']] = true;
+    }
+
+    try {
+        $aulas = pacto_buscar_dia($unidade, $data);
+    } catch (RuntimeException | JsonException $e) {
+        registrar('erro', 'pacto_falhou', ['msg' => $e->getMessage()]);
+        responder(502, ['erro' => 'pacto_indisponivel', 'detalhe' => 'O Pacto não respondeu. Tente de novo em instantes.']);
+    }
+
     return array_map(fn(array $a): array => [
         'hora' => $a['hora'],
         'modalidade' => $a['modalidade'],
-        'cancelada' => (bool) $a['cancelada'],
-    ], $st->fetchAll());
+        'cancelada' => isset($canceladas[$a['hora'] . '|' . $a['modalidade']]),
+    ], $aulas);
 }
 
 // Cancelamentos de hoje em diante da unidade (pra lista "Proximos").

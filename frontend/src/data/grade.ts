@@ -11,7 +11,7 @@ import type { UnidadeSlug } from './unidades';
 export type Dia = 'seg' | 'ter' | 'qua' | 'qui' | 'sex' | 'sab' | 'dom';
 
 export type Aula = {
-  // So pro React e pro editor saberem qual linha e qual.
+  // So pro React saber qual linha e qual.
   id: string;
   modalidade: string;
   // Sempre em 24h, no formato 'HH:MM'.
@@ -62,18 +62,9 @@ export function ordenarPorHora(aulas: Aula[]) {
   return [...aulas].sort((a, b) => a.hora.localeCompare(b.hora));
 }
 
-export function novaAula(): Aula {
-  return {
-    id: `a-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
-    modalidade: '',
-    hora: '',
-  };
-}
-
 // Daqui pra baixo e so exemplo, pra secao nao nascer vazia na previa do
-// GitHub Pages (que nao tem API). A grade de verdade vem do banco.
-// Fonte unica: o mesmo JSON que o backend/bin/seed.php coloca no banco em dev.
-// (Fica fora do frontend/, por isso o server.fs.allow no vite.config.ts.)
+// GitHub Pages (que nao tem API). A grade de verdade vem do Pacto.
+// (O JSON fica fora do frontend/, por isso o server.fs.allow no vite.config.ts.)
 type AulaExemplo = { dia: Dia; hora: string; modalidade: string };
 const exemplos = gradeExemplo as Record<UnidadeSlug, AulaExemplo[]>;
 
