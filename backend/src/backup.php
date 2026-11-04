@@ -159,15 +159,21 @@ function backup_faxina(string $pasta, ?int $agora = null): int
 // Pergunta no terminal sem mostrar o que e digitado.
 function ler_escondido(string $texto): string
 {
-    echo $texto;
     $terminal = function_exists('posix_isatty') ? posix_isatty(STDIN) : true;
-    if ($terminal) {
+    // A Hostinger desativa shell_exec: sem o stty o que se digita aparece, entao
+    // avisa e apaga a linha digitada depois.
+    $esconder = $terminal && function_exists('shell_exec');
+    if ($terminal && !$esconder) {
+        echo "Aviso: shell_exec desativada, o que voce digitar vai aparecer.\n";
+    }
+    echo $texto;
+    if ($esconder) {
         shell_exec('stty -echo 2>/dev/null');
     }
     $valor = trim((string) fgets(STDIN));
-    if ($terminal) {
+    if ($esconder) {
         shell_exec('stty echo 2>/dev/null');
     }
-    echo PHP_EOL;
+    echo $terminal && !$esconder ? "\033[1A\033[2K\r{$texto}(oculta)" . PHP_EOL : PHP_EOL;
     return $valor;
 }
