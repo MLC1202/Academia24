@@ -101,6 +101,7 @@ if (count(array_unique(mb_str_split($senha))) < 5) {
 // O hash ja inclui o "sal": duas pessoas com a mesma senha ficam com hashes
 // diferentes.
 $hash = senha_hash($senha);
+$pdo = db(true); // a conexao do inicio pode ter caido enquanto digitavam as senhas
 
 if ($existente === false) {
     $pdo->prepare('INSERT INTO admins (email, senha_hash) VALUES (?, ?)')

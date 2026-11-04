@@ -29,8 +29,13 @@ function conectar(string $usuario, string $senha): PDO
 }
 
 // Conexao da aplicacao (usuario com menor privilegio). Uma por requisicao.
-function db(): PDO
+// $reabrir: os scripts de terminal ficam esperando o que a pessoa digita e a
+// hospedagem derruba a conexao parada ("MySQL server has gone away").
+function db(bool $reabrir = false): PDO
 {
     static $pdo = null;
+    if ($reabrir) {
+        $pdo = null;
+    }
     return $pdo ??= conectar(config('DB_USER'), config('DB_PASS'));
 }
