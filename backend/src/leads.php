@@ -10,7 +10,7 @@ declare(strict_types=1);
 // caixinha referencia. Se a Politica ou o texto da caixinha mudar, mude a
 // data no FormAgendamento.tsx E AQUI (o lead grava o que a pessoa aceitou --
 // e a prova da LGPD).
-const LEAD_CONSENTIMENTO_VERSAO = '2026-10-26';
+const LEAD_CONSENTIMENTO_VERSAO = '2026-11-06';
 
 const LEAD_PERIODOS = ['manha', 'tarde', 'noite'];
 const LEAD_OBJETIVOS = ['saude', 'emagrecimento', 'massamuscular', 'condicionamento', 'retomar'];

@@ -77,7 +77,8 @@ function AvisoCookies() {
     >
       <p className="aviso-cookies__texto">
         Usamos cookies do Google Analytics para entender como o site é usado e
-        melhorá-lo. Você pode mudar sua escolha quando quiser em “Preferências
+        melhorá-lo. Ao aceitar, os dados de navegação são enviados ao Google,
+        nos Estados Unidos. Você pode mudar sua escolha quando quiser em “Preferências
         de cookies”, no rodapé.{" "}
         {/* <a> e nao <Link>: e um arquivo estatico, nao uma rota do React */}
         <a

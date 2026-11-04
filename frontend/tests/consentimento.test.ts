@@ -5,6 +5,7 @@ import {
   gravarConsentimento,
   nomesCookiesGa,
   esquecerEscolhaDaVisita,
+  VERSAO_CONSENTIMENTO,
 } from "../src/lib/consentimento.ts";
 
 const comValor = (valor: string | null) => () => ({ getItem: () => valor });
@@ -15,7 +16,7 @@ const quebrado = () => {
 beforeEach(() => esquecerEscolhaDaVisita());
 
 test("le_escolha_valida", () => {
-  const salvo = JSON.stringify({ escolha: "aceito", versao: "2026-10-14" });
+  const salvo = JSON.stringify({ escolha: "aceito", versao: VERSAO_CONSENTIMENTO });
   assert.equal(lerConsentimento(comValor(salvo)), "aceito");
 });
 
@@ -29,7 +30,7 @@ test("json_corrompido_vira_null", () => {
 });
 
 test("escolha_desconhecida_vira_null", () => {
-  const salvo = JSON.stringify({ escolha: "talvez", versao: "2026-10-14" });
+  const salvo = JSON.stringify({ escolha: "talvez", versao: VERSAO_CONSENTIMENTO });
   assert.equal(lerConsentimento(comValor(salvo)), null);
 });
 
@@ -51,7 +52,7 @@ test("grava_json_com_versao", () => {
   }));
   assert.equal(ok, true);
   assert.deepEqual(gravados, [
-    ["consentimento-cookies", JSON.stringify({ escolha: "aceito", versao: "2026-10-14" })],
+    ["consentimento-cookies", JSON.stringify({ escolha: "aceito", versao: VERSAO_CONSENTIMENTO })],
   ]);
 });
 
