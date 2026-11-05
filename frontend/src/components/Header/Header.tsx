@@ -123,7 +123,7 @@ function Header() {
         to="/"
         className="header__logo"
         onClick={fechar}
-        aria-label="Rede 24 — página inicial"
+        aria-label="24 Wellness e 24 Health Club — página inicial"
       >
         <img
           className="header__logo-wellness"

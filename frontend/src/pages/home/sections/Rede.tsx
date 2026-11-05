@@ -159,10 +159,10 @@ function Rede() {
 
           <div className="rede__text">
             <p>
-              A Rede 24 reúne unidades com identidades próprias, conectadas pelo
-              mesmo compromisso com estrutura, acolhimento e resultado. Em
-              Alphaville, a experiência 24 Wellness. Nas unidades Norte, Cambuí
-              e Lagoa, a tradição 24 Health Club.
+              Nossas unidades têm identidades próprias, conectadas pelo mesmo
+              compromisso com estrutura, acolhimento e resultado. Em Alphaville,
+              a experiência 24 Wellness. Nas unidades Norte, Cambuí e Lagoa, a
+              tradição 24 Health Club.
             </p>
             <p>
               Você escolhe a unidade que combina com seu dia a dia. Em todas

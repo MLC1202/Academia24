@@ -336,8 +336,9 @@ function FormAgendamento() {
           </h1>
 
           <p className="agendar__subtitle">
-            Uma aula para sentir o ritmo da Rede 24, conhecer a nossa forma de
-            treinar e descobrir o que combina com você.
+            Uma aula para sentir o ritmo do 24 Wellness e do 24 Health Club,
+            conhecer a nossa forma de treinar e descobrir o que combina com
+            você.
           </p>
 
           <ul className="agendar__beneficios">

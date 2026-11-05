@@ -23,7 +23,7 @@ const perguntas = [
     r: "Sim. Preencha o formulário na página de Agendamento, escolha a unidade e aguarde o contato da equipe para combinar o melhor dia e horário.",
   },
   {
-    p: "A Rede 24 aceita Wellhub e TotalPass?",
+    p: "O 24 Wellness e o 24 Health Club aceitam Wellhub e TotalPass?",
     r: "As unidades aceitam Wellhub a partir do plano Gold e TotalPass a partir do TP5. Consulte regras e disponibilidade na unidade escolhida.",
   },
   {
@@ -64,8 +64,9 @@ function DuvidasPage() {
             </h1>
 
             <p className="duvidas__subtitle">
-              Reunimos as principais informações sobre a Rede 24. Condições
-              comerciais, modalidades e disponibilidade podem variar.
+              Reunimos as principais informações sobre o 24 Wellness e o 24
+              Health Club. Condições comerciais, modalidades e disponibilidade
+              podem variar.
             </p>
 
             <Link to="/agendamento" className="duvidas__cta">

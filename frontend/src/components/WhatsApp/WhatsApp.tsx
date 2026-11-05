@@ -16,7 +16,7 @@ import { registrarEvento } from "../../lib/analytics";
 import "./WhatsApp.css";
 
 const WHATSAPP_NUMERO = "11 99499-2924";
-const MENSAGEM = "Olá! Vim pelo site e quero saber mais sobre a Rede 24.";
+const MENSAGEM = "Olá! Vim pelo site e quero saber mais sobre o 24 Wellness e o 24 Health Club.";
 
 // "11 99499-2924" -> "5511994992924"
 function paraNumeroWa(numero: string) {

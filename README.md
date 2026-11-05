@@ -1,6 +1,6 @@
 # Academia 24
 
-Site da Rede 24 — home institucional com as quatro unidades. As landing
+Site da Academia 24 Wellness e do 24 Health Club — home institucional com as quatro unidades. As landing
 pages de cada unidade são as oficiais da rede (links externos), não fazem
 parte deste projeto.
 
