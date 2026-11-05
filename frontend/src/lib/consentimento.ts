@@ -10,7 +10,7 @@
 
 export type EscolhaCookies = "aceito" | "recusado";
 
-export const VERSAO_CONSENTIMENTO = "2026-10-14";
+export const VERSAO_CONSENTIMENTO = "2026-11-06";
 const CHAVE = "consentimento-cookies";
 
 // Disparado pelo link do rodape pra reabrir o aviso (AvisoCookies escuta).

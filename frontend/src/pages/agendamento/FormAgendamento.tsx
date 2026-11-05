@@ -73,7 +73,7 @@ const ordemCamposDependente: Campo[] = [...ordemCampos, "menor"];
 // Versao da Politica de Privacidade que a caixinha referencia: use a data da
 // ultima atualizacao do PDF. Mudou a Politica ou o texto da caixinha? Mude a
 // data aqui E em backend/src/leads.php (LEAD_CONSENTIMENTO_VERSAO).
-const CONSENTIMENTO_VERSAO = "2026-10-26";
+const CONSENTIMENTO_VERSAO = "2026-11-06";
 
 // Codigo de erro da API -> frase pra pessoa.
 const mensagensErro: Record<string, string> = {

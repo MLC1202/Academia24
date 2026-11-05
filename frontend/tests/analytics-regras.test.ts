@@ -6,8 +6,8 @@ const base: CondicoesGa = {
   gaId: "G-TESTE12345",
   producao: true,
   debug: false,
-  hostname: "www.24wellness.com.br",
-  hostSite: "www.24wellness.com.br",
+  hostname: "academia24wellness.com.br",
+  hostSite: "academia24wellness.com.br",
   caminho: "/",
   escolha: "aceito",
 };

@@ -33,16 +33,22 @@ function perguntar(string $texto): string
 // Le sem mostrar na tela (desliga o "eco" do terminal enquanto digita).
 function perguntar_senha(string $texto): string
 {
-    echo $texto;
     $temTerminal = function_exists('posix_isatty') ? posix_isatty(STDIN) : true;
-    if ($temTerminal) {
+    // A Hostinger desativa shell_exec: sem o stty a senha aparece, entao avisa
+    // e apaga a linha digitada depois.
+    $esconder = $temTerminal && function_exists('shell_exec');
+    if ($temTerminal && !$esconder) {
+        echo "Aviso: shell_exec desativada, a senha vai aparecer enquanto voce digita.\n";
+    }
+    echo $texto;
+    if ($esconder) {
         shell_exec('stty -echo 2>/dev/null');
     }
     $valor = rtrim((string) fgets(STDIN), "\r\n");
-    if ($temTerminal) {
+    if ($esconder) {
         shell_exec('stty echo 2>/dev/null');
     }
-    echo PHP_EOL;
+    echo $temTerminal && !$esconder ? "\033[1A\033[2K\r{$texto}(oculta)" . PHP_EOL : PHP_EOL;
     return $valor;
 }
 
@@ -95,6 +101,7 @@ if (count(array_unique(mb_str_split($senha))) < 5) {
 // O hash ja inclui o "sal": duas pessoas com a mesma senha ficam com hashes
 // diferentes.
 $hash = senha_hash($senha);
+$pdo = db(true); // a conexao do inicio pode ter caido enquanto digitavam as senhas
 
 if ($existente === false) {
     $pdo->prepare('INSERT INTO admins (email, senha_hash) VALUES (?, ?)')

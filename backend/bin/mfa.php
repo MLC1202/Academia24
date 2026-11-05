@@ -46,7 +46,7 @@ if ($admin['mfa_segredo'] !== null) {
     if ($r !== 's') {
         sair('Nada foi alterado.');
     }
-    db()->prepare('UPDATE admins SET mfa_segredo = NULL, mfa_ultimo_passo = NULL WHERE id = ?')
+    db(true)->prepare('UPDATE admins SET mfa_segredo = NULL, mfa_ultimo_passo = NULL WHERE id = ?')
         ->execute([$id]);
     registrar('aviso', 'mfa_desligado', ['admin_id' => $id]);
     aparelho_esquecer_todos(db(), $id); // celular perdido: nenhum aparelho segue lembrado
@@ -81,7 +81,7 @@ for ($tentativa = 1; $tentativa <= 3; $tentativa++) {
     $codigo = preg_replace('/\s+/', '', perguntar('3. Digite o codigo de 6 digitos que o app mostra: '));
     $passo = totp_verificar($segredo, $codigo, null);
     if ($passo !== null) {
-        db()->prepare('UPDATE admins SET mfa_segredo = ?, mfa_ultimo_passo = ? WHERE id = ?')
+        db(true)->prepare('UPDATE admins SET mfa_segredo = ?, mfa_ultimo_passo = ? WHERE id = ?')
             ->execute([mfa_cifrar($segredo), $passo, $id]);
         registrar('info', 'mfa_ligado', ['admin_id' => $id]);
         aparelho_esquecer_todos(db(), $id);

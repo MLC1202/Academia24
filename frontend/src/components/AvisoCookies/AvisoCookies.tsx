@@ -80,13 +80,12 @@ function AvisoCookies() {
       aria-label="Aviso de cookies"
     >
       <p className="aviso-cookies__texto">
-        Usamos o Google Analytics para medir visitas ao site.{" "}
-        <strong>
-          Os dados de navegação são enviados ao Google e podem ser tratados nos
-          Estados Unidos e em outros países.
-        </strong>{" "}
-        Ao clicar em Aceitar, você consente com esse uso e com a transferência
-        internacional. Saiba mais na{" "}
+
+        Usamos cookies do Google Analytics para entender como o site é usado e
+        melhorá-lo. Ao aceitar, os dados de navegação são enviados ao Google,
+        nos Estados Unidos. Você pode mudar sua escolha quando quiser em “Preferências
+        de cookies”, no rodapé.{" "}
+
         {/* <a> e nao <Link>: e um arquivo estatico, nao uma rota do React */}
         <a
           href={`${import.meta.env.BASE_URL}${POLITICA_PRIVACIDADE}`}
