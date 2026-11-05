@@ -12,8 +12,8 @@ declare(strict_types=1);
 //     pergunta toda vez "ainda e esta?". Se for, a resposta e um 304 vazio
 //     (quase nada de dados); se nao for, vem a nova.
 // Quando a grade mudar (upload/edicao/cancelamento), o arquivo de cache do
-// servidor e apagado na hora -- ver salvar_nova_versao() em src/grade.php e
-// gravar/apagar_cancelamentos() em src/cancelamentos.php.
+// servidor e apagado na hora -- ver gravar/apagar_cancelamentos() em
+// src/cancelamentos.php e admin-atualizar-grade.php (botao "Atualizar agora").
 //
 // Antes era "max-age=60": o navegador nem perguntava por 60 s, entao
 // cancelar/desfazer aula demorava ate 1 min pra aparecer pra quem ja tinha
@@ -21,20 +21,32 @@ declare(strict_types=1);
 
 require __DIR__ . '/../../src/bootstrap.php';
 require __DIR__ . '/../../src/grade.php'; // ja traz o cache.php
+require __DIR__ . '/../../src/pacto.php';
 
 exigir_metodo('GET', 'HEAD');
 
-const CACHE_SEGUNDOS = 60;
+// As aulas vem do Pacto (src/pacto.php); a dona muda la e o site acompanha
+// em ate CACHE_SEGUNDOS. Cancelar uma aula limpa o cache na hora.
+const CACHE_SEGUNDOS = 600;
 
 $json = cache_ler('grades', CACHE_SEGUNDOS);
 if ($json === null) {
     // Anotada ANTES de ler o banco (ver cache_gravar em src/cache.php).
     $geracao = cache_geracao('grades');
-    $json = json_encode(
-        carregar_grades_publicas(db()),
-        JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR,
-    );
-    cache_gravar('grades', $json, $geracao);
+    try {
+        $json = json_grades_publicas(db());
+        cache_gravar('grades', $json, $geracao);
+    } catch (RuntimeException | JsonException $e) {
+        // Pacto fora do ar ou formato mudou: segue com a ultima copia boa
+        // (qualquer idade) e so tenta de novo daqui a CACHE_SEGUNDOS, pra
+        // nao fazer todo visitante esperar o timeout.
+        registrar('erro', 'pacto_falhou', ['msg' => $e->getMessage()]);
+        $json = cache_ler('grades', PHP_INT_MAX);
+        if ($json === null) {
+            responder(503, ['erro' => 'grade_indisponivel']);
+        }
+        touch(pasta_cache() . '/grades.json');
+    }
 }
 
 // Conteudo publico, mas SEMPRE confere com o servidor antes de usar a copia.

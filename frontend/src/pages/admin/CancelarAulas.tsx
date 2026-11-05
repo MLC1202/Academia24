@@ -1,12 +1,9 @@
 // Bloco "Cancelar aula" dentro da aba Grade do dashboard.
 //
 // Escolhe a data (atalhos dos proximos 7 dias ou o calendario, ate 60 dias
-// a frente), ve as aulas da grade PUBLICADA daquele dia e cancela uma por
-// uma ou o dia inteiro (feriado). Desfazer volta a aula pro site na hora.
+// a frente), ve as aulas do Pacto naquele dia e cancela uma por uma ou o dia
+// inteiro (feriado). Desfazer volta a aula pro site na hora.
 // Embaixo, a lista dos proximos cancelamentos da unidade.
-//
-// Usa a unidade que esta aberta no editor. Alteracao NAO salva no editor
-// nao entra aqui: so vale o que ja esta no site.
 
 import { useEffect, useState } from 'react';
 import { ErroApi } from '../../lib/api';
@@ -24,7 +21,7 @@ import {
 
 type Props = {
   unidade: UnidadeSlug;
-  chave: number; // muda quando a grade e salva/publicada -> recarrega
+  chave: number; // muda quando a grade e atualizada -> recarrega
   desativado: boolean; // previa sem API
   aoExpirar: () => void;
 };

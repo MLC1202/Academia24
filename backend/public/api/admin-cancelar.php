@@ -28,7 +28,7 @@ if (!data_cancelavel($data)) {
     ]);
 }
 
-// So aulas que existem na grade publicada daquele dia da semana.
+// So aulas que existem no Pacto naquela data.
 $doDia = aulas_da_data(db(), $unidade, $data);
 if ($hora === null) {
     if (!$doDia) {

@@ -10,15 +10,13 @@ seguranca (`SEGURANCA.md`, que fica so na maquina local, fora do git).
 backend/
 ├── public/api/        pontos de entrada (na Hostinger: public_html/api/)
 │   ├── saude.php      GET -> {"ok":true} se PHP e banco respondem
-│   ├── grades.php     GET -> grade no ar de cada unidade + cancelamentos (7 dias)
+│   ├── grades.php     GET -> grade (vinda do Pacto) de cada unidade + cancelamentos (7 dias)
 │   ├── sessao.php     GET -> logado? + token CSRF
 │   ├── login.php      POST {email, senha} (CSRF, rate limit) -> pede o codigo
 │   ├── login-mfa.php  POST {codigo} (6 digitos do app autenticador)
 │   ├── logout.php     POST (CSRF)
 │   ├── lead.php       POST formulario de agendamento (publico: CSRF, honeypot, rate limit)
-│   ├── admin-grade.php POST {unidade, grade, origem} -- so admin (CSRF)
-│   ├── admin-versoes.php GET ?unidade= -- historico (so admin)
-│   ├── admin-desfazer.php POST {unidade} -- volta pra versao que estava no ar antes (so admin, CSRF)
+│   ├── admin-atualizar-grade.php POST -- busca a grade no Pacto agora (botao "Atualizar agora"; so admin, CSRF)
 │   ├── admin-cancelamentos.php GET ?unidade=&data= -- aulas do dia + proximos cancelamentos (so admin)
 │   ├── admin-cancelar.php POST {unidade, data, hora, modalidade} ou {unidade, data, dia_inteiro} (so admin, CSRF)
 │   ├── admin-descancelar.php POST (mesmo formato) -- desfaz (so admin, CSRF)
@@ -34,7 +32,7 @@ backend/
 ├── docker-compose.yml
 ├── .env.example       modelo -- o .env de verdade nunca vai pro git
 ├── logs/              criado sozinho, ignorado pelo git
-└── cache/             JSON pronto da grade (60 s), ignorado pelo git
+└── cache/             JSON pronto da grade (10 min), ignorado pelo git
 ```
 
 `src/` e `.env` ficam um nivel ACIMA de `public/`. Na Hostinger e igual:
@@ -105,89 +103,15 @@ codigo (a senha e pedida sempre). Trocar a senha (`bin/admin.php`) ou
 ligar/desligar o MFA (`bin/mfa.php`) faz TODOS os aparelhos pedirem o codigo
 de novo -- e o caminho se a dona perder o celular ou o notebook.
 
-## Dados de exemplo (seed)
-
-```bash
-docker compose exec php php bin/seed.php
-```
-
-Coloca a grade de exemplo (`sql/seeds/grade-exemplo.json`) no banco. So roda
-com `APP_ENV=dev`. Cada execucao cria uma versao nova da grade de cada
-unidade; as anteriores ficam guardadas.
-
-A validacao de aula (dia, hora `HH:MM`, nome da modalidade) fica em
-`src/grade.php` e vale pra tudo que grava grade: seed, upload e edicao.
-
-## Limpeza dos leads (LGPD, 6 meses)
-
-```bash
-docker compose exec php php bin/limpar-leads.php --simular   # so conta
-docker compose exec php php bin/limpar-leads.php             # apaga
-```
-
-Apaga leads com mais de 6 meses (`LEAD_RETENCAO_MESES` em `src/leads.php`),
-qualquer status. Na Hostinger roda sozinho por Cron Job (hPanel > Avancado >
-Cron Jobs), 1x por dia de madrugada:
-`/usr/bin/php /home/<usuario>/domains/<dominio>/bin/limpar-leads.php`.
-O log guarda so quantos foram apagados.
-
-## Backup do banco (cadeado e chave, 30 dias)
-
-```bash
-docker compose exec php php bin/gerar-chaves-backup.php   # UMA vez: cadeado + chave
-docker compose exec php php bin/backup.php                # faz o backup agora
-docker compose exec php php bin/restaurar-backup.php backups/AAAA-MM-DD_HHMM.a24bak
-docker compose exec php php bin/abrir-backup.php backups/AAAA-MM-DD_HHMM.a24bak   # gera .sql legivel
-```
-
-- O backup vai pra `backups/` (fora do `public_html`, no `.gitignore`),
-  trancado com o **cadeado** (`APP_BACKUP_CADEADO` no `.env`). So a **chave**
-  abre, e ela fica SO no gerenciador de senhas. Perdeu a chave = perdeu os backups.
-- Guarda 30 dias; os mais antigos sao apagados sozinhos.
-- So os dados vao no arquivo (as tabelas vem das migrations). Restaurar num
-  banco novo: `bin/migrate.php up` antes.
-- Restaurar pede a chave e a palavra RESTAURAR, e antes faz um backup do
-  estado atual (`...-antes-de-restaurar.a24bak`).
-- Na Hostinger: Cron diario depois do `limpar-leads.php`. Copia fora da
-  Hostinger: baixar o mais recente manualmente (ver checklist de deploy).
-
-## Alertas por e-mail (vigia)
-
-```bash
-docker compose exec php php bin/vigia.php --simular   # mostra o que mandaria
-docker compose exec php php bin/vigia.php --teste     # manda um e-mail de teste
-```
-
-De hora em hora (Cron), le o log desde a ultima rodada e, se aparecer algo
-preocupante (erro interno, backup falhou, muitas senhas erradas, codigo do
-MFA bloqueado, aparelho suspeito, `.env` aberto, spam no formulario...),
-manda UM e-mail pra `ALERTA_EMAIL_PARA` (a dona) pela caixa da Hostinger
-(`SMTP_*` no `.env`). So contagens e o que fazer, nenhum dado de cliente.
-As 9h confere tambem se o backup e a limpeza de leads rodaram nas ultimas 30 h.
-As regras (evento, minimo, texto) ficam no topo de `bin/vigia.php`.
-
-## Rotas da API (nada exposto sem querer)
-
-```bash
-docker compose exec php php bin/rotas.php
-```
-
-Confere todo arquivo de `public/api/`: rota que nao esta na lista de publicas
-precisa de `exigir_admin()`, rota que grava precisa de `exigir_csrf()`, e
-toda rota precisa de `exigir_metodo()`. Rodar antes de todo commit que mexe
-na API. O `public/api/.htaccess` so deixa responder `nome.php` (arquivo com
-`_` no comeco, backup ou `.txt` dao 403).
-
 ## Banco
 
 | Tabela | Para que |
 |---|---|
-| `unidades` | as 4 unidades + qual versao da grade esta no ar (`grade_ativa_id`) |
-| `grade_versoes` | cada upload/edicao vira uma versao; a anterior fica guardada (rollback). `anterior_id` = a que estava no ar (o "Desfazer" volta pra ela). Guarda as 20 mais novas por unidade (+ a do ar e a do Desfazer) |
-| `aulas` | aulas de uma versao: dia, hora, modalidade |
+| `unidades` | as 4 unidades (slug e nome) |
+| `grade_versoes`, `aulas` | **sem uso**: eram a grade do Excel, antes do Pacto. Ficam no banco (nada foi apagado) e podem ser removidas por uma migration quando nao houver mais duvida |
 | `cancelamentos` | aula cancelada numa DATA real (vale so aquela semana) |
 | `admins` | login do dashboard (senha em hash, segredo do MFA criptografado) |
-| `tentativas` | rate limit de login/lead/upload (so HMAC do IP/e-mail) |
+| `tentativas` | rate limit de login/lead/atualizar grade (so HMAC do IP/e-mail) |
 | `dispositivos_confiaveis` | "mantenha-me conectado": aparelho que pula o codigo do MFA por 30 dias (so hash do segredo) |
 | `leads` | formulario de agendamento: so o necessario + prova do consentimento (retencao 6 meses) |
 
@@ -224,3 +148,22 @@ na API. O `public/api/.htaccess` so deixa responder `nome.php` (arquivo com
 - Senhas do banco de producao novas e longas (nunca as do `.env` local).
 - Segredos: nada de chave em variavel `VITE_*` -- tudo que comeca com
   `VITE_` vai parar no JavaScript publico do site.
+
+## Grade de aulas (Pacto)
+
+A grade que o site mostra vem do Pacto, nao do banco: `src/pacto.php` busca
+os proximos 7 dias das 4 unidades (28 chamadas em paralelo, ~0,5 s) na mesma
+API publica da pagina `agenda-aulas`. A dona muda la e o site acompanha em
+ate 10 min (o cache de `grades.php`). Cancelar uma aula no dashboard limpa o
+cache na hora.
+
+- Se o Pacto falhar, o site segue com a ultima copia boa e o erro vai pro
+  log (`pacto_falhou`). So da 503 se nunca houve copia.
+- Aula com nome ou horario fora da validacao e descartada (`pacto_aula_descartada`).
+- O `un` de cada unidade esta em `PACTO_UNIDADES`.
+- Botao "Atualizar agora" (dashboard): `admin-atualizar-grade.php` busca de novo
+  e troca o cache na hora; se o Pacto falhar, o cache bom fica e ela ve o erro.
+  Limite de 10 cliques a cada 15 min (cada um faz 28 chamadas).
+- Cancelar aula confere a aula no Pacto (1 chamada por dia); sem o Pacto, 502.
+- Teste da conversao (sem rede):
+  `docker run --rm -v "$PWD":/app -w /app php:8.3-cli php tests/pacto.php`

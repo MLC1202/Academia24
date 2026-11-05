@@ -1,18 +1,14 @@
 import { useEffect, useState } from 'react';
-import {
-  gradesPadrao,
-  type GradeUnidade,
-  type Grades,
-} from '../data/grade';
+import { gradesPadrao, type Grades } from '../data/grade';
 import { slugsUnidades, type UnidadeSlug } from '../data/unidades';
 // No GitHub Pages (previa pra dona) nao existe PHP: SEM_API liga a grade
 // de exemplo em vez de dar erro.
-import { enviar, obter, SEM_API } from './api';
+import { enviar, SEM_API } from './api';
 
-// Onde a grade e lida/salva. O resto do site so fala com este arquivo.
+// Onde a grade e lida. O resto do site so fala com este arquivo.
 //
-// LEITURA (site e dashboard): GET /api/grades.php.
-// ESCRITA (so dashboard, logado): POST /api/admin-grade.php.
+// LEITURA (site e dashboard): GET /api/grades.php (aulas vindas do Pacto).
+// ATUALIZAR AGORA (so dashboard, logado): POST /api/admin-atualizar-grade.php.
 
 // ---------------------------------------------------------------------------
 // Leitura: backend
@@ -29,9 +25,6 @@ export type Cancelamento = {
 export type DadosGrade = {
   grades: Grades;
   cancelamentos: Cancelamento[];
-  // Versao no ar de cada unidade (null = nenhuma). So o dashboard usa: manda
-  // de volta ao salvar pra saber se outra aba mudou a grade no meio.
-  versoes?: Partial<Record<UnidadeSlug, number | null>>;
 };
 
 export type EstadoGrade =
@@ -56,16 +49,14 @@ function formatoValido(dados: unknown): dados is DadosGrade {
   );
 }
 
-// semCache: o dashboard pula ate a copia do navegador. O site usa 'default':
-// o servidor manda "no-cache" + ETag, entao o navegador sempre confere se a
+// O servidor manda "no-cache" + ETag, entao o navegador sempre confere se a
 // copia ainda vale (304 = vale, quase sem dados) -- cancelar/desfazer aparece
 // no proximo F5.
-export async function buscarGrades(semCache = false): Promise<DadosGrade> {
+export async function buscarGrades(): Promise<DadosGrade> {
   if (SEM_API) return { grades: gradesPadrao, cancelamentos: [] };
 
   const resposta = await fetch(`${import.meta.env.BASE_URL}api/grades.php`, {
     headers: { Accept: 'application/json' },
-    cache: semCache ? 'no-store' : 'default',
     signal: AbortSignal.timeout(TEMPO_LIMITE_MS),
   });
   if (!resposta.ok) throw new Error(`HTTP ${resposta.status}`);
@@ -96,68 +87,12 @@ export function useGrades(): EstadoGrade {
 }
 
 // ---------------------------------------------------------------------------
-// Escrita: so admin logado (o backend confere sessao + CSRF)
+// Atualizar agora: so admin logado (o backend confere sessao + CSRF)
 // ---------------------------------------------------------------------------
 
-// Manda a grade de UMA unidade. O servidor valida tudo de novo, grava como
-// versao nova (a anterior fica guardada) e limpa o cache do site.
-// origem: 'upload' quando vem da planilha (aparece assim no historico).
-// versaoBase: a versao que o editor carregou (null = nenhuma no ar). Se a do
-// ar for outra, o servidor recusa com 409 "grade_mudou". undefined = nao
-// confere (planilha: substituir e a intencao).
-// Devolve o id da versao nova.
-export async function salvarGrade(
-  unidade: UnidadeSlug,
-  grade: GradeUnidade,
-  origem: 'edicao' | 'upload' = 'edicao',
-  versaoBase?: number | null,
-): Promise<number> {
-  const corpo = Object.fromEntries(
-    Object.entries(grade).map(([dia, aulas]) => [
-      dia,
-      // Tudo menos o id (o banco cria o dele).
-      aulas.map(({ hora, modalidade, duracao, professor, categoria, estudio }) => ({
-        hora,
-        modalidade,
-        duracao,
-        professor,
-        categoria,
-        estudio,
-      })),
-    ]),
-  );
-  const base = versaoBase === undefined ? {} : { versao_base: versaoBase ?? 0 };
-  const dados = await enviar('admin-grade.php', { unidade, grade: corpo, origem, ...base });
-  return Number(dados.versao);
-}
-
-// ---------------------------------------------------------------------------
-// Versoes: historico e desfazer (so admin)
-// ---------------------------------------------------------------------------
-
-export type Versao = {
-  id: number;
-  origem: 'upload' | 'edicao' | 'seed';
-  criadaEm: Date;
-  aulas: number;
-  ativa: boolean;
-  desfazer: boolean; // e pra esta que o "Voltar para a versao anterior" volta
-};
-
-export async function listarVersoes(unidade: UnidadeSlug): Promise<Versao[]> {
-  const dados = await obter(`admin-versoes.php?unidade=${encodeURIComponent(unidade)}`);
-  const lista = Array.isArray(dados.versoes) ? dados.versoes : [];
-  return lista.map((v: Record<string, unknown>) => ({
-    id: Number(v.id),
-    origem: v.origem as Versao['origem'],
-    criadaEm: new Date(String(v.criada_em)),
-    aulas: Number(v.aulas),
-    ativa: v.ativa === true,
-    desfazer: v.desfazer === true,
-  }));
-}
-
-// Volta a unidade pra versao anterior a que esta no ar (nada e apagado).
-export async function desfazerUnidade(unidade: UnidadeSlug) {
-  return enviar('admin-desfazer.php', { unidade });
+// Manda o servidor buscar a grade no Pacto agora, em vez de esperar o cache
+// de 10 min vencer. Se o Pacto nao responder, o servidor recusa (502) e o
+// site continua com a grade anterior.
+export async function atualizarGradeDoPacto(): Promise<void> {
+  await enviar('admin-atualizar-grade.php');
 }

@@ -4,7 +4,7 @@
 // Ao abrir mostra dois botoes grandes: "Grade de aulas" e "Leads". Cada um
 // abre o seu painel:
 //   /admin/dashboard            -> inicio (os dois botoes)
-//   /admin/dashboard?aba=grade  -> PainelGrade (editor da grade, como antes)
+//   /admin/dashboard?aba=grade  -> PainelGrade (atualizar a grade do Pacto, cancelar aulas)
 //   /admin/dashboard?aba=leads  -> PainelLeads (pedidos de aula experimental)
 // A aba fica no endereco, entao o "voltar" do navegador funciona.
 //
@@ -33,8 +33,6 @@ function DashboardPage({ email }: { email: string | null }) {
   const valor = params.get("aba");
   const aba: Aba | null = valor === "grade" || valor === "leads" ? valor : null;
 
-  // O PainelGrade avisa quando tem alteracao nao salva.
-  const [gradeAlterada, setGradeAlterada] = useState(false);
   const [saindo, setSaindo] = useState(false);
 
   // Sessao venceu (30 min parado / 8 h): volta pro login.
@@ -42,21 +40,12 @@ function DashboardPage({ email }: { email: string | null }) {
     navigate("/admin/login", { replace: true, state: { expirou: true } });
   }, [navigate]);
 
-  function podeSairDaGrade() {
-    return (
-      aba !== "grade" ||
-      !gradeAlterada ||
-      confirm("Você tem alterações não salvas na grade. Sair descarta essas alterações. Continuar?")
-    );
-  }
-
   function ir(destino: Aba | null) {
-    if (destino === aba || !podeSairDaGrade()) return;
+    if (destino === aba) return;
     setParams(destino ? { aba: destino } : {});
   }
 
   async function encerrar() {
-    if (!podeSairDaGrade()) return;
     setSaindo(true);
     try {
       await sair();
@@ -91,8 +80,7 @@ function DashboardPage({ email }: { email: string | null }) {
           <button type="button" className="painel__cartao" onClick={() => ir("grade")}>
             <span className="painel__cartao-titulo">Grade de aulas</span>
             <span className="painel__cartao-texto">
-              Editar as aulas de cada unidade, importar a planilha e voltar para a versão
-              anterior.
+              Atualizar a grade que vem do Pacto e cancelar aulas em uma data.
             </span>
             <span className="painel__cartao-ir">Abrir grade →</span>
           </button>
@@ -123,7 +111,7 @@ function DashboardPage({ email }: { email: string | null }) {
         </nav>
       )}
 
-      {aba === "grade" && <PainelGrade aoAlterar={setGradeAlterada} aoExpirar={sessaoExpirou} />}
+      {aba === "grade" && <PainelGrade aoExpirar={sessaoExpirou} />}
       {aba === "leads" && <PainelLeads aoExpirar={sessaoExpirou} />}
     </div>
   );
