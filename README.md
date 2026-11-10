@@ -2,7 +2,7 @@
 
 Site institucional das quatro unidades da **Academia 24 Wellness** (Alphaville) e do **24 Health Club** (Norte, Cambuí e Lagoa): apresentação das unidades, grade de aulas coletivas, agendamento de aula experimental e uma área interna para a equipe.
 
-Produção: **https://academia24wellness.com**
+Produção: **https://academia24wellness.com.br**
 
 ---
 
