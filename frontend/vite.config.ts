@@ -4,6 +4,7 @@ import { join } from 'node:path'
 import { defineConfig, searchForWorkspaceRoot, type Plugin } from 'vite'
 import { DOMINIOS_QUE_REDIRECIONAM, SITE_URL } from './src/data/site.ts'
 import { NOME_SITE, SEO } from './src/data/seo.ts'
+import { jsonLdUnidades } from './src/data/local.ts'
 
 // Config do Vite — docs em vite.dev/config
 //
@@ -88,6 +89,11 @@ function seo(): Plugin {
           .replaceAll('__SEO_DESCRICAO__', escapar(SEO.inicio.descricao))
           .replaceAll('__SEO_NOME__', escapar(NOME_SITE))
           .replaceAll('__SEO_SITE__', site)
+        if (!previa) {
+          // "<" escapado pra um texto com "</script>" nunca fechar a tag antes da hora.
+          const json = JSON.stringify(jsonLdUnidades(site)).replaceAll('<', '\\u003c')
+          saida = saida.replace('</head>', `    <script type="application/ld+json">${json}</script>\n  </head>`)
+        }
         if (previa) {
           // data-fixo: o useSeo nao tira este noindex.
           saida = saida.replace('</head>', '    <meta name="robots" content="noindex" data-fixo="1" />\n  </head>')

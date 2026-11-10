@@ -17,7 +17,7 @@ export const SEO = {
   inicio: {
     titulo: 'Academia 24 Wellness Alphaville e 24 Health Club',
     descricao:
-      'Academia 24 Wellness (Alphaville) e 24 Health Club (Norte, Cambuí e Lagoa). Quatro unidades completas. Agende sua aula experimental, sem compromisso.',
+      'Academia 24 Wellness em Alphaville (Barueri) e 24 Health Club em São Paulo (Norte) e Campinas (Cambuí e Lagoa). Agende sua aula experimental.',
   },
   unidades: {
     titulo: `Unidades · ${MARCAS}`,
