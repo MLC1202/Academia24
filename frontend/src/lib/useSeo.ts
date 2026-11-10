@@ -6,6 +6,7 @@
 
 import { useEffect } from 'react';
 import type { Seo } from '../data/seo';
+import { SITE_URL } from '../data/site';
 
 function meta(nome: string): HTMLMetaElement {
   let el = document.querySelector<HTMLMetaElement>(`meta[name="${nome}"]`);
@@ -26,5 +27,18 @@ export function useSeo({ titulo, descricao, indexar = true }: Seo) {
     if (robots?.dataset.fixo) return;
     if (indexar) robots?.remove();
     else meta('robots').content = 'noindex';
+
+    // Sem query string de proposito: ?nocache=123 e afins apontam pra pagina limpa.
+    let canonical = document.querySelector<HTMLLinkElement>('link[rel="canonical"]');
+    if (!indexar) {
+      canonical?.remove();
+      return;
+    }
+    if (!canonical) {
+      canonical = document.createElement('link');
+      canonical.rel = 'canonical';
+      document.head.appendChild(canonical);
+    }
+    canonical.href = SITE_URL + window.location.pathname;
   }, [titulo, descricao, indexar]);
 }
