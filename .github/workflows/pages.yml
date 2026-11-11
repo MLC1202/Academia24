@@ -47,7 +47,7 @@ jobs:
       - name: Fallback das rotas
         # O Pages nao tem .htaccess: sem isso, recarregar /admin/dashboard da 404.
         working-directory: frontend
-        run: cp dist/index.html dist/404.html
+        run: cp dist/app.html dist/404.html
 
       - uses: actions/upload-pages-artifact@v3
         with:

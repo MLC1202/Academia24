@@ -5,6 +5,7 @@
 
 import { unidades, type UnidadeSlug } from "../../../data/unidades";
 import InstagramLink from "../../../components/InstagramLink/InstagramLink";
+import { linkMapa, telefoneDe } from "../../../data/local";
 import { registrarEvento } from "../../../lib/analytics";
 import "./Unidades.css";
 
@@ -15,6 +16,7 @@ type CardProps = {
 
 function CardUnidade({ slug, invertida }: CardProps) {
   const u = unidades[slug];
+  const telefone = telefoneDe(slug);
 
   const estiloFoto = {
     // Escuro em cima (logo) e embaixo (local); o meio fica livre pra foto.
@@ -26,7 +28,12 @@ function CardUnidade({ slug, invertida }: CardProps) {
       id={slug}
       className={invertida ? "unidade unidade--invertida" : "unidade"}
     >
-      <div className="unidade__foto" style={estiloFoto}>
+      <div
+        className="unidade__foto"
+        style={estiloFoto}
+        role="img"
+        aria-label={`${u.marca} ${u.nome}, ${u.local}`}
+      >
         <span className="unidade__foto-topo">
           <img
             className={`unidade__logo unidade__logo--${u.marca === "24 Wellness" ? "wellness" : "healthclub"}`}
@@ -65,12 +72,30 @@ function CardUnidade({ slug, invertida }: CardProps) {
         <dl className="unidade__dados">
           <div>
             <dt>Endereço</dt>
-            <dd>{u.endereco}</dd>
+            <dd>
+              {u.endereco}{" "}
+              <a
+                className="unidade__mapa"
+                href={linkMapa(slug)}
+                target="_blank"
+                rel="noreferrer"
+              >
+                Ver no mapa ↗
+              </a>
+            </dd>
           </div>
           <div>
             <dt>Horários</dt>
             <dd>{u.horarios}</dd>
           </div>
+          {telefone && (
+            <div>
+              <dt>Telefone</dt>
+              <dd>
+                <a href={telefone.link}>{telefone.texto}</a>
+              </dd>
+            </div>
+          )}
         </dl>
 
         <div className="unidade__acoes">

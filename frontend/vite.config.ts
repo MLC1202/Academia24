@@ -59,12 +59,14 @@ function seo(): Plugin {
   let origem = ''
   let previa = false
   let build = false
+  let ssr = false
 
   return {
     name: 'seo',
     configResolved(config) {
       base = config.base
       build = config.command === 'build'
+      ssr = !!config.build.ssr
       previa = config.env.VITE_SEM_API === '1'
       origem = !build
         ? 'http://localhost:5173'
@@ -104,7 +106,7 @@ function seo(): Plugin {
     // Depois que o Vite copiou o public/ pro dist/: troca o marcador do
     // .htaccess pela regra dos dominios (so no build de producao).
     writeBundle(opcoes) {
-      if (!build || previa) return
+      if (!build || previa || ssr) return
       const arquivo = join(opcoes.dir ?? 'dist', '.htaccess')
       const marcador = '# @@REDIRECIONAMENTO_DE_DOMINIOS@@'
       const htaccess = readFileSync(arquivo, 'utf8')
@@ -112,7 +114,8 @@ function seo(): Plugin {
       writeFileSync(arquivo, htaccess.replace(marcador, regraDeDominios(origem)))
     },
     generateBundle() {
-      if (!build) return
+      // O build SSR (pre-renderizacao) so gera o JS do servidor, sem robots/sitemap.
+      if (!build || ssr) return
       const site = `${origem}${base}`
       const robots = previa
         ? 'User-agent: *\nDisallow: /\n'

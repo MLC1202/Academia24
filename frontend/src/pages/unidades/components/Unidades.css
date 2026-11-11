@@ -254,6 +254,17 @@
     line-height: 1.5;
     color: #b3aea6;
   }
+
+  .unidade__dados a {
+    color: inherit;
+  }
+
+  .unidade__dados .unidade__mapa {
+    margin-left: 6px;
+    color: var(--color-red);
+    font-weight: 600;
+    white-space: nowrap;
+  }
   
   .unidade__link {
     display: inline-flex;

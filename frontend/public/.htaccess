@@ -57,14 +57,16 @@ RedirectMatch 404 "/\.(?!well-known/)"
 # @@REDIRECIONAMENTO_DE_DOMINIOS@@
 
 # --- Rotas do React -----------------------------------------------------------
-# O site e uma pagina so (React Router): as rotas que EXISTEM entregam o
-# index.html com 200. Sem isso, abrir /admin/dashboard direto ou dar F5 nele
-# da 404 na Hostinger.
+# O "npm run build" gera um HTML pronto por pagina (scripts/prerender.ts):
+# index.html (home), unidades.html, agendamento.html, duvidas.html. Arquivo e
+# nao pasta de proposito: pasta faria o servidor redirecionar /unidades pra
+# /unidades/ e o endereco canonico mudaria.
+# /admin entrega app.html (raiz vazia, sem pre-render). Sem isso, dar F5 em
+# /admin/dashboard daria 404 na Hostinger.
 # Qualquer outro endereco cai no ErrorDocument: status 404 DE VERDADE (o
-# Google nao indexa endereco errado), mas o conteudo continua sendo o
-# index.html, e o React mostra a pagina "nao encontrada".
-# Rota nova no App.tsx? Acrescente aqui tambem.
-ErrorDocument 404 /index.html
+# Google nao indexa endereco errado) com o conteudo do 404.html.
+# Rota nova no App.tsx? Acrescente aqui e em scripts/prerender.ts.
+ErrorDocument 404 /404.html
 
 <IfModule mod_rewrite.c>
   RewriteEngine On
@@ -79,6 +81,6 @@ ErrorDocument 404 /index.html
   # As paginas de cada unidade sairam (01/10/2026): link antigo/compartilhado
   # de /unidades/norte vai pra /unidades#norte (o card daquela unidade).
   RewriteRule ^unidades/([a-z0-9-]+)/?$ /unidades#$1 [R=301,NE,L]
-  # /unidades, /agendamento, /duvidas, /admin e /admin/...
-  RewriteRule ^(unidades|agendamento|duvidas|admin(/[a-z0-9/-]*)?)/?$ /index.html [L]
+  RewriteRule ^(unidades|agendamento|duvidas)/?$ /$1.html [L]
+  RewriteRule ^admin(/[a-z0-9/-]*)?/?$ /app.html [L]
 </IfModule>

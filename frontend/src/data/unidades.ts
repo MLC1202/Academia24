@@ -150,7 +150,7 @@ const registro: Record<UnidadeSlug, UnidadeInfo> = {
       "Aulas coletivas",
       "Avaliação com bioimpedância",
     ],
-    endereco: "Av. Doutor Heitor Penteado, 1740 · Lagoa · Campinas",
+    endereco: "Av. Dr. Heitor Penteado, 1740 · Jardim Nossa Sra. Auxiliadora · Campinas",
     horarios: "Seg–Sex 05h–23h · Sáb 07h–15h · Dom/feriados 08h–14h",
     local: "Campinas · SP",
     cnpj: "17.819.497/0001-77",

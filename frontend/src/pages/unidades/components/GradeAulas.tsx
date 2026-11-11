@@ -30,6 +30,7 @@ import {
   type Dia,
 } from "../../../data/grade";
 import { useGrades, type Cancelamento } from "../../../lib/grade-store";
+import { useNoNavegador } from "../../../lib/useNoNavegador";
 import { agoraNoSite, type Agora } from "../../../lib/horario-site";
 import "./GradeAulas.css";
 
@@ -133,7 +134,22 @@ function ListaAulas({ aulas, ehHoje, agora, proximaId, canceladas }: ListaProps)
   );
 }
 
-function GradeAulas() {
+const cabecalho = (
+  <>
+    <div className="grade__eyebrow">AULAS COLETIVAS</div>
+
+    <h2 className="grade__title">Encontre a aula que combina com o seu ritmo.</h2>
+
+    <div className="grade__text">
+      <p>
+        As modalidades e os horários variam por unidade. Escolha o dia e a
+        unidade para ver a grade.
+      </p>
+    </div>
+  </>
+);
+
+function GradeInterativa() {
   // "Agora" no horario de Brasilia, conferido a cada 30 s: com a pagina
   // aberta, a etiqueta "Proxima" anda sozinha e a meia-noite a aba "hoje"
   // vira. So recalcula aqui no navegador; a grade vem do backend uma vez.
@@ -232,18 +248,7 @@ function GradeAulas() {
 
   return (
     <section className="grade snap-section" id="grade">
-      <div className="grade__eyebrow">AULAS COLETIVAS</div>
-
-      <h2 className="grade__title">
-        Encontre a aula que combina com o seu ritmo.
-      </h2>
-
-      <div className="grade__text">
-        <p>
-          As modalidades e os horários variam por unidade. Escolha o dia e a
-          unidade para ver a grade.
-        </p>
-      </div>
+      {cabecalho}
 
       <div
         className="grade__dias grade__dias--com-roleta"
@@ -382,6 +387,19 @@ function GradeAulas() {
       </p>
     </section>
   );
+}
+
+// No pre-render so o titulo e o texto: as abas dependem do dia de hoje, que no
+// build ja e de outro dia quando o visitante chega.
+function GradeAulas() {
+  if (!useNoNavegador()) {
+    return (
+      <section className="grade snap-section" id="grade">
+        {cabecalho}
+      </section>
+    );
+  }
+  return <GradeInterativa />;
 }
 
 export default GradeAulas;

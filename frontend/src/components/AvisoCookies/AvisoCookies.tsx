@@ -12,6 +12,7 @@ import {
   gravarConsentimento,
   lerConsentimento,
 } from "../../lib/consentimento";
+import { useNoNavegador } from "../../lib/useNoNavegador";
 import { ehCaminhoAdmin } from "../../lib/analytics-regras";
 import {
   iniciarAnalytics,
@@ -22,7 +23,10 @@ import "./AvisoCookies.css";
 
 function AvisoCookies() {
   const { pathname } = useLocation();
-  const [aberto, setAberto] = useState(() => lerConsentimento() === null);
+  const noNavegador = useNoNavegador();
+  const [aberto, setAberto] = useState(
+    () => typeof window !== "undefined" && lerConsentimento() === null,
+  );
   const caixa = useRef<HTMLElement>(null);
   // Quem reabriu o aviso (o botao do rodape): o foco volta pra ele ao fechar,
   // senao quem navega por teclado ou leitor de tela cai no topo da pagina.
@@ -41,7 +45,7 @@ function AvisoCookies() {
     if (aberto && quemAbriu.current) caixa.current?.focus();
   }, [aberto]);
 
-  if (!aberto || ehCaminhoAdmin(pathname)) return null;
+  if (!noNavegador || !aberto || ehCaminhoAdmin(pathname)) return null;
 
   function fechar() {
     setAberto(false);

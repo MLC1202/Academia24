@@ -17,9 +17,11 @@ import NaoEncontradaPage from './pages/naoEncontrada/NaoEncontradaPage';
 import AvisoCookies from './components/AvisoCookies/AvisoCookies';
 import RastreioPaginas from './components/RastreioPaginas';
 
-function App() {
+// Tudo que fica dentro do roteador. Separado do App pra o entry-server.tsx
+// renderizar o mesmo conteudo com o roteador de servidor (pre-renderizacao).
+export function Rotas() {
   return (
-    <BrowserRouter basename={import.meta.env.BASE_URL}>
+    <>
       <Header />
       <Routes>
         <Route path="/" element={<HomePage />} />
@@ -41,6 +43,14 @@ function App() {
       {/* Depois das Routes: o page_view sai com o titulo da pagina nova. */}
       <AvisoCookies />
       <RastreioPaginas />
+    </>
+  );
+}
+
+function App() {
+  return (
+    <BrowserRouter basename={import.meta.env.BASE_URL}>
+      <Rotas />
     </BrowserRouter>
   );
 }

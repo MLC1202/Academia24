@@ -2,6 +2,7 @@
 
 import { Link } from 'react-router-dom';
 import { EMAIL_SAC, POLITICA_PRIVACIDADE } from '../../data/site';
+import { telefoneDe } from '../../data/local';
 import { slugsUnidades, unidades } from '../../data/unidades';
 import { abrirPreferenciasCookies } from '../../lib/consentimento';
 import './Footer.css';
@@ -33,12 +34,21 @@ function Footer() {
         </Link>
       </div>
       <ul className="footer__unidades">
-        {slugsUnidades.map((slug) => (
-          <li key={slug}>
-            <span className="footer__unidade-nome">{unidades[slug].nome}</span>
-            <span className="footer__cnpj">CNPJ {unidades[slug].cnpj}</span>
-          </li>
-        ))}
+        {slugsUnidades.map((slug) => {
+          const telefone = telefoneDe(slug);
+          return (
+            <li key={slug}>
+              <span className="footer__unidade-nome">{unidades[slug].nome}</span>
+              <span className="footer__cnpj">{unidades[slug].endereco}</span>
+              {telefone && (
+                <a className="footer__cnpj" href={telefone.link}>
+                  {telefone.texto}
+                </a>
+              )}
+              <span className="footer__cnpj">CNPJ {unidades[slug].cnpj}</span>
+            </li>
+          );
+        })}
       </ul>
       <div className="footer__base">
         <a href={`mailto:${EMAIL_SAC}`} className="footer__privacidade">
