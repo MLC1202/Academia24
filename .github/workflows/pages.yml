@@ -27,7 +27,9 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          # 24 (igual ao do desenvolvimento): o scripts/prerender.ts roda
+          # direto no Node, que so le .ts a partir da 22.18. No 20 da erro.
+          node-version: 24
 
       - name: Instalar dependencias
         working-directory: frontend
