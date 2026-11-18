@@ -1,5 +1,5 @@
 // Aqui ficam os dados das 4 unidades. E o unico lugar que eu edito quando
-// muda nome, foto, texto ou link da LP: a pagina de unidades, a subpagina de
+// muda nome, foto, texto ou link de planos: a pagina de unidades, o card de
 // cada uma, a grade e o agendamento leem tudo daqui.
 
 import { SLUGS } from "./slugs";
@@ -23,13 +23,11 @@ export type UnidadeInfo = {
   // do JPG; os originais em JPG ficam so no backup, fora do repositorio.)
   // As que estao la agora sao provisorias.
   foto: string;
-  // Link da LP oficial da unidade (as que a dona mandou).
-  // Pode colar sem o https:// que o urlAbsoluta la embaixo completa.
-  // Se eu deixar vazio, o botao "Conhecer unidade" fica desativado em vez
-  // de virar link quebrado.
-  lp: string;
-  // Link da pagina de planos da unidade. Mesma regra da LP: pode colar sem
-  // https://, e se ficar vazio o botao "Ver planos" nem aparece no card.
+  // (A LP de cada unidade agora e pagina do site, /unidades/<slug>: os textos
+  // dela ficam em src/pages/lp/.)
+  // Link da pagina de planos da unidade. Pode colar sem https:// (o
+  // urlAbsoluta la embaixo completa), e se ficar vazio o botao "Ver planos"
+  // nem aparece no card.
   planos: string;
   // @ do Instagram da unidade, SEM o "@" e sem link (ex.: "minhaacademia").
   // Se ficar vazio o icone do Instagram nao aparece no card.
@@ -68,7 +66,6 @@ const registro: Record<UnidadeSlug, UnidadeInfo> = {
     marca: "24 Wellness",
     logo: "/logos/24wellness-negativo.svg",
     foto: "/imagens/unidades/alphaville.webp",
-    lp: "alphaville.24wellness.com.br",
     planos: "https://vendas.online.sistemapacto.com.br/loja?un=1&k=95115352dc19ba38fc6b7c1f4931700d",
     instagram: "24wellnessacademia",
     n: "01",
@@ -91,7 +88,6 @@ const registro: Record<UnidadeSlug, UnidadeInfo> = {
     marca: "24 Health Club",
     logo: "/logos/24healthclub-branco.svg",
     foto: "/imagens/unidades/norte.webp",
-    lp: "unidadenorte.academia24hclub.com",
     planos: "https://vendas.online.sistemapacto.com.br/loja?un=4&k=95115352dc19ba38fc6b7c1f4931700d", 
     instagram: "academia24healthclub",
     n: "02",
@@ -114,7 +110,6 @@ const registro: Record<UnidadeSlug, UnidadeInfo> = {
     marca: "24 Health Club",
     logo: "/logos/24healthclub-branco.svg",
     foto: "/imagens/unidades/cambui.webp",
-    lp: "unidadecambui.academia24hclub.com",
     planos: "https://vendas.online.sistemapacto.com.br/loja?un=2&k=95115352dc19ba38fc6b7c1f4931700d",
     instagram: "academia24healthclubcampinas", 
     n: "03",
@@ -137,7 +132,6 @@ const registro: Record<UnidadeSlug, UnidadeInfo> = {
     marca: "24 Health Club",
     logo: "/logos/24healthclub-branco.svg",
     foto: "/imagens/unidades/lagoa.webp",
-    lp: "unidadelagoa.academia24hclub.com",
     planos: "https://vendas.online.sistemapacto.com.br/loja?un=3&k=95115352dc19ba38fc6b7c1f4931700d",
     instagram: "academia24healthclubcampinas",
     n: "04",
@@ -157,8 +151,8 @@ const registro: Record<UnidadeSlug, UnidadeInfo> = {
   },
 };
 
-// O que o resto do site importa: o mesmo registro, mas com os links de LP
-// e de planos ja arrumados.
+// O que o resto do site importa: o mesmo registro, mas com a foto, o logo e o
+// link de planos ja arrumados.
 export const unidades = Object.fromEntries(
   Object.entries(registro).map(([slug, info]) => [
     slug,
@@ -166,7 +160,6 @@ export const unidades = Object.fromEntries(
       ...info,
       foto: caminhoPublico(info.foto),
       logo: caminhoPublico(info.logo),
-      lp: urlAbsoluta(info.lp),
       planos: urlAbsoluta(info.planos),
     },
   ])

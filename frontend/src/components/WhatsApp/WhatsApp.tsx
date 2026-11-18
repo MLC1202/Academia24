@@ -1,5 +1,5 @@
 // Botao flutuante do WhatsApp: fica preso no canto de baixo da tela e desce
-// junto enquanto a pessoa rola a home. Por enquanto e so o lugar do chatbot.
+// junto enquanto a pessoa rola a home e as LPs das unidades. Por enquanto e so o lugar do chatbot.
 //
 // PRA LIGAR:
 // - Numero: coloque em WHATSAPP_NUMERO do jeito que vier ("11 99999-9999",
@@ -26,12 +26,14 @@ function paraNumeroWa(numero: string) {
   return digitos;
 }
 
-function WhatsApp() {
+// linkDaUnidade: as LPs de unidade passam o link do WhatsApp da propria unidade;
+// sem ele vale o numero geral da home.
+function WhatsApp({ linkDaUnidade }: { linkDaUnidade?: string }) {
   const { pathname } = useLocation();
   const numero = paraNumeroWa(WHATSAPP_NUMERO);
-  const link = numero
-    ? `https://wa.me/${numero}?text=${encodeURIComponent(MENSAGEM)}`
-    : undefined;
+  const link =
+    linkDaUnidade ??
+    (numero ? `https://wa.me/${numero}?text=${encodeURIComponent(MENSAGEM)}` : undefined);
 
   function abrirChat() {
     if (!link) return;

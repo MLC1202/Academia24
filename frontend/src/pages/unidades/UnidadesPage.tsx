@@ -1,6 +1,6 @@
 // /unidades: as 4 unidades em zigue-zague e a grade de aulas embaixo.
-// /unidades#norte (link antigo de /unidades/norte ou o "Ver unidade" da
-// grade) rola ate o card daquela unidade.
+// /unidades#norte (o "Ver unidade" da grade) rola ate o card daquela unidade.
+// A LP de cada uma fica em /unidades/<slug> (UnidadePage).
 
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";

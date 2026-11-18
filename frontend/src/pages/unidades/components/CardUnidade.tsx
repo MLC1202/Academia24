@@ -1,8 +1,9 @@
 // Card de uma unidade: foto de um lado, textos e botoes do outro.
 // Usado na lista (/unidades). O id do card e o slug: /unidades#norte rola
-// ate ele. (A subpagina /unidades/<slug> saiu em 01/10/2026.)
-// Todos os textos, foto, link da LP e dos planos vem de src/data/unidades.ts.
+// ate ele. "Conhecer unidade" abre a LP dela, /unidades/<slug>.
+// Textos, foto e link dos planos vem de src/data/unidades.ts.
 
+import { Link } from "react-router-dom";
 import { unidades, type UnidadeSlug } from "../../../data/unidades";
 import InstagramLink from "../../../components/InstagramLink/InstagramLink";
 import { linkMapa, telefoneDe } from "../../../data/local";
@@ -100,30 +101,16 @@ function CardUnidade({ slug, invertida }: CardProps) {
 
         <div className="unidade__acoes">
           <>
-              {u.lp ? (
-                <a
-                  className="unidade__link"
-                  href={u.lp}
-                  target="_blank"
-                  rel="noreferrer"
-                  onClick={() => registrarEvento("clique_lp_unidade", { unidade: slug })}
-                >
-                  <span>Conhecer unidade</span>
-                  <span className="unidade__link-seta" aria-hidden="true">
-                    ↗
-                  </span>
-                </a>
-              ) : (
-                <span
-                  className="unidade__link unidade__link--inativo"
-                  aria-disabled="true"
-                >
-                  <span>Conhecer unidade</span>
-                  <span className="unidade__link-seta" aria-hidden="true">
-                    ↗
-                  </span>
+              <Link
+                className="unidade__link"
+                to={`/unidades/${slug}`}
+                onClick={() => registrarEvento("clique_lp_unidade", { unidade: slug })}
+              >
+                <span>Conhecer unidade</span>
+                <span className="unidade__link-seta" aria-hidden="true">
+                  →
                 </span>
-              )}
+              </Link>
 
               <a
                 className="unidade__link unidade__link--grade"

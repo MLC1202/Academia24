@@ -124,7 +124,8 @@ export function jsonLdUnidades(site: string) {
       '@type': 'HealthClub',
       '@id': `${site}#${u.slug}`,
       name: u.nome,
-      url: site,
+      // A LP da unidade (/unidades/<slug>) e a pagina dela no Google.
+      url: `${site}unidades/${u.slug}`,
       image: `${site}og.jpg`,
       address: {
         '@type': 'PostalAddress',

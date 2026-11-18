@@ -234,28 +234,33 @@
   }
 }
 
-/* CELULAR: pilha de cartoes presa na tela.
-   O trilho e alto (a moldura + um "passo" de rolagem por cartao); a
-   moldura gruda no topo e o Rede.tsx vai mudando --p conforme o scroll.
-   Cada cartao sabe seu numero (--i) e calcula onde esta em relacao a
-   frente da pilha:
-     --frente  quantos cartoes ele esta ATRAS (0 = e o da frente)
-     --passou  quanto ele ja passou (0 a 1 = subindo e sumindo)
-   O de tras espia por cima, menor e esbranquicado; o terceiro em
-   diante fica escondido. */
+/* CELULAR: cartoes que sobem uns por cima dos outros, igual ao site da Smart
+   Fit (valores medidos la). O trilho e alto: a moldura + uma tela de rolagem
+   por cartao. A moldura gruda no topo e o Rede.tsx muda --p (0 = cartao 01,
+   3 = cartao 04) conforme o scroll, sem pausa.
+   Todos os cartoes ficam empilhados no mesmo lugar (o de numero maior por
+   cima). Cada um calcula, a partir de --p:
+     --falta   o quanto ainda precisa subir (0 = no lugar); vira
+               translateY(falta x 110%), entao o proximo cartao fica
+               espiando embaixo do atual;
+     --coberto quanto o proximo ja subiu em cima dele; a opacidade e
+               1 - coberto, ou seja, ele "esbranquica" ate sumir no fundo.
+   O cartao e quadrado; a moldura e um pouco mais alta que ele pra sobrar
+   espaco pro proximo aparecer embaixo. */
 @media (max-width: 900px) {
   .rede {
-    --rede-espia: 64px;
-    --rede-moldura: min(calc(100svh - var(--header-height) - 40px), 620px);
-    --rede-passo: 70svh;
+    /* Largura da moldura = tela - 2 x 32px do padding da secao. */
+    --rede-cartao: min(calc(100vw - 64px), 420px);
+    --rede-moldura: calc(var(--rede-cartao) + 190px);
   }
 
   .rede__trilho {
     position: relative;
     margin-top: 48px;
-    height: calc(
-      var(--rede-moldura) + (var(--rede-passos) - 1) * var(--rede-passo)
-    );
+    /* Puxa a proxima secao pra cima: no fim, o espaco que a moldura reserva
+       pro cartao seguinte espiar ficaria vazio. */
+    margin-bottom: -180px;
+    height: calc(var(--rede-moldura) + (var(--rede-passos) - 1) * 100svh);
   }
 
   .rede__accordion {
@@ -265,46 +270,29 @@
     display: block;
     height: var(--rede-moldura);
     margin-top: 0;
+    /* Corta o cartao que ainda espera embaixo. */
+    overflow: hidden;
   }
 
   .rede__painel {
-    --d: calc(var(--i) - var(--p));
-    --frente: max(var(--d), 0);
-    --passou: min(max(calc(-1 * var(--d)), 0), 1);
+    --falta: max(calc(var(--i) - var(--p)), 0);
+    --coberto: min(max(calc(var(--p) - var(--i)), 0), 1);
 
     position: absolute;
-    top: var(--rede-espia);
+    top: 0;
     left: 0;
     right: 0;
-    bottom: 0;
-    z-index: calc(10 - var(--i));
+    height: var(--rede-cartao);
+    z-index: var(--i);
     justify-content: flex-end;
-    padding: 32px 26px;
-    border-radius: 28px;
-    cursor: pointer;
-    transform-origin: top center;
-    transform: translateY(
-        calc(
-          var(--frente) * var(--rede-espia) * -0.9 - var(--passou) * 60%
-        )
-      )
-      scale(calc(1 - min(var(--frente), 2) * 0.06 - var(--passou) * 0.04));
-    opacity: calc(
-      1 - var(--passou) * 1.7 - max(calc(var(--frente) - 1), 0) * 3
-    );
+    padding: 28px 24px;
+    border-radius: 24px;
+    cursor: default;
+    transform: translateY(calc(var(--falta) * 110%));
+    opacity: calc(1 - var(--coberto));
     /* Anda junto com o dedo, sem atraso */
     transition: none;
     will-change: transform, opacity;
-  }
-
-  /* Veu branco no cartao de tras (some quando ele chega na frente) */
-  .rede__painel::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: var(--color-cream);
-    opacity: calc(min(var(--frente), 1) * 0.6);
-    pointer-events: none;
   }
 
   .rede__painel::before,
@@ -312,7 +300,6 @@
     display: none;
   }
 
-  /* Texto so no cartao da frente */
   .rede__painel-n,
   .rede__painel-titulo,
   .rede__painel-texto,
@@ -320,7 +307,7 @@
   .rede__painel--ativo .rede__painel-texto {
     position: relative;
     z-index: 1;
-    opacity: calc(1 - min(var(--frente), 1) * 2.5);
+    opacity: 1;
     transform: none;
     transition: none;
   }
@@ -332,16 +319,83 @@
 
   .rede__painel-titulo,
   .rede__painel--ativo .rede__painel-titulo {
-    margin-top: 10px;
-    font-size: 28px;
+    margin-top: 8px;
+    font-size: 24px;
     line-height: 1.1;
   }
 
   .rede__painel-texto,
   .rede__painel--ativo .rede__painel-texto {
-    margin-top: 12px;
-    font-size: 15px;
-    line-height: 1.55;
+    margin-top: 8px;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+}
+
+/* CELULAR, navegadores com animacao ligada a rolagem (Chrome, Safari 26+):
+   o movimento dos cartoes sai do JavaScript e passa pro CSS. Assim ele anda
+   junto com a rolagem (e com a moldura grudada) sem o tranco de quando o JS
+   atualiza um quadro atrasado. O Rede.tsx nem liga o calculo nesses casos.
+   Mesmas contas de acima, escritas como keyframes (p = 3 x porcentagem):
+   o cartao i sobe de i x 110% ate 0, e some (opacity) quando o proximo chega.
+   A faixa da animacao vai de "a moldura gruda" ate "a moldura solta".
+   shortcut: keyframes fixos pra 4 cartoes; com um quinto, acrescentar o
+   keyframe e ajustar as porcentagens. */
+@supports (animation-timeline: view()) {
+  @media (max-width: 900px) {
+    .rede__trilho {
+      view-timeline: --rede block;
+    }
+
+    .rede__painel {
+      transform: none;
+      opacity: 1;
+      will-change: auto;
+      animation-duration: 1ms;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: --rede;
+      animation-range-start: cover calc(100dvh - var(--header-height) - 20px);
+      animation-range-end: cover
+        calc(100dvh - var(--header-height) - 20px + (var(--rede-passos) - 1) * 100svh);
+    }
+
+    .rede__painel:nth-child(1) {
+      animation-name: rede-cartao-0;
+    }
+    .rede__painel:nth-child(2) {
+      animation-name: rede-cartao-1;
+    }
+    .rede__painel:nth-child(3) {
+      animation-name: rede-cartao-2;
+    }
+    .rede__painel:nth-child(4) {
+      animation-name: rede-cartao-3;
+    }
+  }
+
+  @keyframes rede-cartao-0 {
+    0% { opacity: 1; }
+    33.333% { opacity: 0; }
+    100% { opacity: 0; }
+  }
+  @keyframes rede-cartao-1 {
+    0% { transform: translateY(110%); opacity: 1; }
+    33.333% { transform: translateY(0); opacity: 1; }
+    66.667% { transform: translateY(0); opacity: 0; }
+    100% { transform: translateY(0); opacity: 0; }
+  }
+  @keyframes rede-cartao-2 {
+    0% { transform: translateY(220%); opacity: 1; }
+    33.333% { transform: translateY(110%); opacity: 1; }
+    66.667% { transform: translateY(0); opacity: 1; }
+    100% { transform: translateY(0); opacity: 0; }
+  }
+  @keyframes rede-cartao-3 {
+    0% { transform: translateY(330%); opacity: 1; }
+    33.333% { transform: translateY(220%); opacity: 1; }
+    66.667% { transform: translateY(110%); opacity: 1; }
+    100% { transform: translateY(0); opacity: 1; }
   }
 }
 
@@ -349,6 +403,165 @@
   .rede__painel,
   .rede__painel::before,
   .rede__painel-texto {
+    transition: none;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Computador: galeria elastica. O painel ativo ocupa 4 partes e os outros 1,
+   os de fora escurecem e mostram so o titulo na vertical. A foto fica numa
+   camada propria (.rede__painel-foto) pra poder dar zoom sem mexer no texto.
+   No celular a camada some e continua valendo a pilha de cartoes abaixo.
+   --------------------------------------------------------------------------- */
+.rede__painel-foto,
+.rede__painel-vertical {
+  display: none;
+}
+
+@media (min-width: 901px) {
+  .rede__accordion {
+    --rede-ease: cubic-bezier(0.25, 1, 0.5, 1);
+    gap: 14px;
+    height: 440px;
+  }
+
+  .rede__painel {
+    flex: 1 1 0;
+    justify-content: flex-end;
+    padding: 32px;
+    border-radius: 16px;
+    /* A foto vai na camada propria; aqui fica so a cor de fundo. */
+    background-image: none;
+    filter: brightness(0.5);
+    transition:
+      flex-grow 0.7s var(--rede-ease),
+      filter 0.7s var(--rede-ease);
+  }
+
+  .rede__painel:hover {
+    filter: brightness(0.75);
+  }
+
+  .rede__painel--ativo,
+  .rede__painel--ativo:hover {
+    flex-grow: 4;
+    filter: none;
+  }
+
+  .rede__painel-foto {
+    display: block;
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-repeat: no-repeat;
+    transform: scale(1.1);
+    transition: transform 1s var(--rede-ease);
+  }
+
+  .rede__painel--ativo .rede__painel-foto {
+    transform: none;
+  }
+
+  /* Degrade pra o texto ler bem: so aparece no painel ativo. */
+  .rede__painel-foto::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.2) 55%, transparent);
+    opacity: 0;
+    transition: opacity 0.5s ease;
+  }
+
+  .rede__painel--ativo .rede__painel-foto::after {
+    opacity: 1;
+  }
+
+  /* Conteudo do painel ativo: sobe e aparece, um pouco depois da abertura. */
+  .rede__painel-n,
+  .rede__painel-titulo,
+  .rede__painel-texto {
+    position: relative;
+    opacity: 0;
+    transform: translateY(48px);
+    transition:
+      opacity 0.5s ease,
+      transform 0.5s ease;
+  }
+
+  .rede__painel--ativo .rede__painel-n,
+  .rede__painel--ativo .rede__painel-titulo,
+  .rede__painel--ativo .rede__painel-texto {
+    opacity: 1;
+    transform: none;
+    transition-delay: 0.2s;
+  }
+
+  /* O numero vira uma etiqueta em capsula, como no modelo. */
+  .rede__painel-n {
+    align-self: flex-start;
+    padding: 4px 12px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(8px);
+    color: var(--color-white);
+    font-size: 12px;
+    letter-spacing: 0.12em;
+  }
+
+  .rede__painel--ativo .rede__painel-n {
+    color: var(--color-white);
+  }
+
+  .rede__painel-titulo,
+  .rede__painel--ativo .rede__painel-titulo {
+    margin-top: 14px;
+    writing-mode: horizontal-tb;
+    font-family: var(--font-display);
+    font-size: clamp(28px, 3.2vw, 46px);
+    font-weight: 800;
+    line-height: 1.02;
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+    white-space: normal;
+  }
+
+  .rede__painel-texto {
+    color: rgba(255, 255, 255, 0.82);
+    transition-delay: 0s;
+  }
+
+  /* Titulo na vertical dos painéis fechados. */
+  .rede__painel-vertical {
+    display: block;
+    position: absolute;
+    bottom: 32px;
+    left: 50%;
+    translate: -50% 0;
+    writing-mode: vertical-rl;
+    color: var(--color-white);
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    opacity: 1;
+    transition: opacity 0.4s ease 0.3s;
+  }
+
+  .rede__painel--ativo .rede__painel-vertical {
+    opacity: 0;
+    transition-delay: 0s;
+  }
+}
+
+@media (min-width: 901px) and (prefers-reduced-motion: reduce) {
+  .rede__painel,
+  .rede__painel-foto,
+  .rede__painel-n,
+  .rede__painel-titulo,
+  .rede__painel-texto,
+  .rede__painel-vertical {
     transition: none;
   }
 }

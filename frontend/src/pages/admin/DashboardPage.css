@@ -443,3 +443,35 @@
   opacity: 0.45;
   cursor: default;
 }
+
+/* Aba "Avaliações do Google" */
+.aval__lista {
+  display: grid;
+  gap: 0.75rem;
+  margin: 1rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.aval__linha {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.aval__nome {
+  min-width: 6rem;
+  font-weight: 600;
+}
+
+.aval__campo {
+  width: 4.5rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid currentColor;
+  border-radius: 0.5rem;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: center;
+}

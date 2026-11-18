@@ -5,6 +5,7 @@ import { defineConfig, searchForWorkspaceRoot, type Plugin } from 'vite'
 import { DOMINIOS_QUE_REDIRECIONAM, SITE_URL } from './src/data/site.ts'
 import { NOME_SITE, SEO } from './src/data/seo.ts'
 import { jsonLdUnidades } from './src/data/local.ts'
+import { SLUGS } from './src/data/slugs.ts'
 
 // Config do Vite — docs em vite.dev/config
 //
@@ -13,8 +14,8 @@ import { jsonLdUnidades } from './src/data/local.ts'
 // build local continua na raiz, sem precisar lembrar de nada.
 
 // Paginas publicas que entram no sitemap.xml (admin e 404 ficam de fora).
-// (As paginas /unidades/<slug> sairam em 01/10/2026: tudo fica em /unidades.)
-const ROTAS_PUBLICAS = ['', 'unidades', 'agendamento', 'duvidas']
+// /unidades/<slug> = LP de cada unidade.
+const ROTAS_PUBLICAS = ['', 'unidades', ...SLUGS.map((s) => `unidades/${s}`), 'agendamento', 'duvidas']
 
 // Regra do .htaccess que manda pro endereco oficial (https + dominio principal):
 //  - qualquer acesso por http (sem cadeado) -> https;

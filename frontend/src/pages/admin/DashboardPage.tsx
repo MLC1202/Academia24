@@ -1,11 +1,12 @@
 // Dashboard (/admin/dashboard). So abre logado (o App envolve esta pagina
 // no RotaAdmin).
 //
-// Ao abrir mostra dois botoes grandes: "Grade de aulas" e "Leads". Cada um
+// Ao abrir mostra botoes grandes: "Grade de aulas", "Leads" e "Avaliações do Google". Cada um
 // abre o seu painel:
 //   /admin/dashboard            -> inicio (os dois botoes)
 //   /admin/dashboard?aba=grade  -> PainelGrade (atualizar a grade do Pacto, cancelar aulas)
 //   /admin/dashboard?aba=leads  -> PainelLeads (pedidos de aula experimental)
+//   /admin/dashboard?aba=avaliacoes -> PainelAvaliacoes (nota do Google de cada unidade)
 // A aba fica no endereco, entao o "voltar" do navegador funciona.
 //
 // O topo (e-mail, ver o site, sair) e o mesmo pros dois paineis.
@@ -15,15 +16,17 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { sair, SEM_API } from "../../lib/api";
 import PainelGrade from "./PainelGrade";
 import PainelLeads from "./PainelLeads";
+import PainelAvaliacoes from "./PainelAvaliacoes";
 import "./DashboardPage.css";
 import { SEO } from "../../data/seo";
 import { useSeo } from "../../lib/useSeo";
 
-type Aba = "grade" | "leads";
+type Aba = "grade" | "leads" | "avaliacoes";
 
 const titulos: Record<Aba, string> = {
   grade: "Grade de aulas",
   leads: "Leads",
+  avaliacoes: "Avaliações do Google",
 };
 
 function DashboardPage({ email }: { email: string | null }) {
@@ -31,7 +34,7 @@ function DashboardPage({ email }: { email: string | null }) {
   const navigate = useNavigate();
   const [params, setParams] = useSearchParams();
   const valor = params.get("aba");
-  const aba: Aba | null = valor === "grade" || valor === "leads" ? valor : null;
+  const aba: Aba | null = valor === "grade" || valor === "leads" || valor === "avaliacoes" ? valor : null;
 
   const [saindo, setSaindo] = useState(false);
 
@@ -91,6 +94,13 @@ function DashboardPage({ email }: { email: string | null }) {
             </span>
             <span className="painel__cartao-ir">Abrir leads →</span>
           </button>
+          <button type="button" className="painel__cartao" onClick={() => ir("avaliacoes")}>
+            <span className="painel__cartao-titulo">Avaliações do Google</span>
+            <span className="painel__cartao-texto">
+              A nota de cada unidade que aparece na página dela.
+            </span>
+            <span className="painel__cartao-ir">Abrir notas →</span>
+          </button>
         </nav>
       ) : (
         <nav className="painel__troca" aria-label="Seções do painel">
@@ -113,6 +123,7 @@ function DashboardPage({ email }: { email: string | null }) {
 
       {aba === "grade" && <PainelGrade aoExpirar={sessaoExpirou} />}
       {aba === "leads" && <PainelLeads aoExpirar={sessaoExpirou} />}
+      {aba === "avaliacoes" && <PainelAvaliacoes aoExpirar={sessaoExpirou} />}
     </div>
   );
 }

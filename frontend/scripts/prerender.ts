@@ -3,7 +3,8 @@
 // esse HTML no navegador (hydrateRoot em main.tsx).
 import { readFileSync, writeFileSync } from 'node:fs';
 import { pathToFileURL } from 'node:url';
-import { SEO } from '../src/data/seo.ts';
+import { SEO, SEO_LP } from '../src/data/seo.ts';
+import { SLUGS } from '../src/data/slugs.ts';
 
 const { render } = await import(pathToFileURL('dist-ssr/entry-server.js').href);
 const modelo = readFileSync('dist/index.html', 'utf8');
@@ -25,6 +26,8 @@ const paginas = [
   { caminho: 'unidades', arquivo: 'unidades.html', seo: SEO.unidades },
   { caminho: 'agendamento', arquivo: 'agendamento.html', seo: SEO.agendamento },
   { caminho: 'duvidas', arquivo: 'duvidas.html', seo: SEO.duvidas },
+  // LP de cada unidade: /unidades/norte -> unidades-norte.html
+  ...SLUGS.map((slug) => ({ caminho: `unidades/${slug}`, arquivo: `unidades-${slug}.html`, seo: SEO_LP[slug] })),
   // Resposta de endereco inexistente (ErrorDocument 404 no .htaccess).
   { caminho: 'pagina-nao-encontrada', arquivo: '404.html', seo: SEO.naoEncontrada },
 ];

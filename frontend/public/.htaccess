@@ -58,7 +58,8 @@ RedirectMatch 404 "/\.(?!well-known/)"
 
 # --- Rotas do React -----------------------------------------------------------
 # O "npm run build" gera um HTML pronto por pagina (scripts/prerender.ts):
-# index.html (home), unidades.html, agendamento.html, duvidas.html. Arquivo e
+# index.html (home), unidades.html, unidades-<slug>.html (LP de cada
+# unidade), agendamento.html, duvidas.html. Arquivo e
 # nao pasta de proposito: pasta faria o servidor redirecionar /unidades pra
 # /unidades/ e o endereco canonico mudaria.
 # /admin entrega app.html (raiz vazia, sem pre-render). Sem isso, dar F5 em
@@ -78,9 +79,8 @@ ErrorDocument 404 /404.html
   RewriteCond %{REQUEST_FILENAME} -f [OR]
   RewriteCond %{REQUEST_FILENAME} -d
   RewriteRule ^ - [L]
-  # As paginas de cada unidade sairam (01/10/2026): link antigo/compartilhado
-  # de /unidades/norte vai pra /unidades#norte (o card daquela unidade).
-  RewriteRule ^unidades/([a-z0-9-]+)/?$ /unidades#$1 [R=301,NE,L]
+  # LP de cada unidade (voltou em 18/11/2026). Slug que nao existe cai no 404.
+  RewriteRule ^unidades/(alphaville|norte|cambui|lagoa)/?$ /unidades-$1.html [L]
   RewriteRule ^(unidades|agendamento|duvidas)/?$ /$1.html [L]
   RewriteRule ^admin(/[a-z0-9/-]*)?/?$ /app.html [L]
 </IfModule>

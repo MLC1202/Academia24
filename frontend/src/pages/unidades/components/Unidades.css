@@ -424,13 +424,6 @@
       transition: none;
     }
   }
-/* Sem link de LP preenchido o botao fica apagado e nao clica */
-.unidade__link--inativo {
-  opacity: 0.45;
-  pointer-events: none;
-  cursor: default;
-}
-
 /* Nome da unidade + icone do Instagram na mesma linha */
 .unidade__nome-linha {
   display: flex;

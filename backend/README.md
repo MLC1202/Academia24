@@ -16,6 +16,8 @@ backend/
 │   ├── login-mfa.php  POST {codigo} (6 digitos do app autenticador)
 │   ├── logout.php     POST (CSRF)
 │   ├── lead.php       POST formulario de agendamento (publico: CSRF, honeypot, rate limit; avisa a dona por e-mail)
+│   ├── avaliacoes.php GET -> nota do Google de cada unidade (digitada no painel)
+│   ├── admin-avaliacao.php POST {unidade, nota} -- troca a nota do Google (so admin, CSRF)
 │   ├── admin-atualizar-grade.php POST -- busca a grade no Pacto agora (botao "Atualizar agora"; so admin, CSRF)
 │   ├── admin-cancelamentos.php GET ?unidade=&data= -- aulas do dia + proximos cancelamentos (so admin)
 │   ├── admin-cancelar.php POST {unidade, data, hora, modalidade} ou {unidade, data, dia_inteiro} (so admin, CSRF)
@@ -109,6 +111,7 @@ de novo -- e o caminho se a dona perder o celular ou o notebook.
 |---|---|
 | `unidades` | as 4 unidades (slug e nome) |
 | `grade_versoes`, `aulas` | **sem uso**: eram a grade do Excel, antes do Pacto. Ficam no banco (nada foi apagado) e podem ser removidas por uma migration quando nao houver mais duvida |
+| `avaliacoes_google` | nota do Google de cada unidade, digitada na aba "Avaliações do Google" do dashboard (o site nao consulta o Google) |
 | `cancelamentos` | aula cancelada numa DATA real (vale so aquela semana) |
 | `admins` | login do dashboard (senha em hash, segredo do MFA criptografado) |
 | `tentativas` | rate limit de login/lead/atualizar grade (so HMAC do IP/e-mail) |
@@ -167,3 +170,4 @@ cache na hora.
 - Cancelar aula confere a aula no Pacto (1 chamada por dia); sem o Pacto, 502.
 - Teste da conversao (sem rede):
   `docker run --rm -v "$PWD":/app -w /app php:8.3-cli php tests/pacto.php`
+- Teste da validacao da nota: `... php tests/avaliacoes.php`

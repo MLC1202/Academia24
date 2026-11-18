@@ -29,7 +29,8 @@ Produção: **https://academia24wellness.com.br**
 
 **Site público**
 - Home com as unidades, a avaliação com bioimpedância e o convite para a aula experimental.
-- Uma página por unidade, com a grade dos próximos 7 dias.
+- Página das unidades, com a grade dos próximos 7 dias.
+- Uma LP por unidade (`/unidades/<slug>`), igual às LPs antigas que ficavam em outros domínios.
 - Formulário de agendamento em passos, com consentimento explícito (LGPD).
 - Perguntas frequentes e aviso de cookies com escolha do visitante.
 - SEO por página (título, descrição, Open Graph, `sitemap.xml`, `robots.txt`).
@@ -131,6 +132,7 @@ npm run build       # tsc + vite build
 ```bash
 # conversão da grade da Pacto (sem rede), a partir de backend/
 docker run --rm -v "$PWD":/app -w /app php:8.3-cli php tests/pacto.php
+docker run --rm -v "$PWD":/app -w /app php:8.3-cli php tests/avaliacoes.php
 ```
 
 ```bash
@@ -143,7 +145,7 @@ docker run --rm -v "$PWD":/app -w /app php:8.3-cli php tests/pacto.php
 |---|---|
 | `/` | Home |
 | `/unidades` | As 4 unidades e a grade de aulas |
-| `/unidades/<slug>` | Uma unidade (`alphaville`, `norte`, `cambui`, `lagoa`) e a grade só dela |
+| `/unidades/<slug>` | LP da unidade (`alphaville`, `norte`, `cambui`, `lagoa`) |
 | `/agendamento` | Formulário da aula experimental (aceita `?unidade=<slug>`) |
 | `/duvidas` | Perguntas frequentes |
 | `/admin/login` · `/admin/dashboard` | Área interna (fora do índice do Google e do GA) |
@@ -152,7 +154,8 @@ docker run --rm -v "$PWD":/app -w /app php:8.3-cli php tests/pacto.php
 
 | Preciso mudar | Arquivo |
 |---|---|
-| Textos, foto e link da LP de uma unidade | `frontend/src/data/unidades.ts` |
+| Textos, foto e link de planos do card de uma unidade | `frontend/src/data/unidades.ts` |
+| Textos e fotos das 4 LPs (mesmo layout) | `frontend/src/pages/lp/conteudo.ts` |
 | Títulos e descrições de cada página (Google, WhatsApp) | `frontend/src/data/seo.ts` |
 | Endereço do site, ID do GA | `frontend/src/data/site.ts` |
 | Seções da home | `frontend/src/pages/home/sections/` |
@@ -162,7 +165,7 @@ docker run --rm -v "$PWD":/app -w /app php:8.3-cli php tests/pacto.php
 | Grade de exemplo (dev e prévia do GitHub Pages) | `backend/sql/seeds/grade-exemplo.json` |
 | Grade real | na Pacto, não no código |
 
-Enquanto o link da LP de uma unidade estiver vazio em `unidades.ts`, os botões "Conhecer unidade" e "Consultar esta unidade" ficam desativados.
+As fotos das LPs ficam em `frontend/public/imagens/lp/<slug>/`, e as fontes delas (Montserrat e Archivo) em `frontend/src/pages/lp/fontes/`. As fontes ficam no próprio site porque a CSP do `.htaccess` bloqueia o Google Fonts.
 
 ## Mídia
 

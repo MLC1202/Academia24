@@ -1,0 +1,645 @@
+/* LPs de Alphaville, Cambui e Lagoa. Cores, fontes e medidas copiadas das
+   LPs antigas (Lovable/Tailwind), por isso fogem das variaveis do global.css:
+   a dona pediu as paginas iguais as que ja existiam.
+
+   As cores ficam em variaveis e cada faixa (clara/vermelha) troca o valor
+   delas: o mesmo card ou botao muda de cor sozinho conforme a faixa onde esta.
+
+   Montserrat fica no proprio site (a CSP do .htaccess bloqueia o Google Fonts). */
+
+@font-face {
+  font-family: "Montserrat";
+  src: url("./fontes/montserrat.woff2") format("woff2");
+  font-weight: 400 800;
+  font-display: swap;
+}
+
+.lpr {
+  --fundo: oklch(13% 0 0);
+  --texto: oklch(98.5% 0 0);
+  --card: oklch(18% 0.004 20);
+  --muted: oklch(75% 0.005 20);
+  --borda: oklch(100% 0 0 / 0.14);
+  --primaria: oklch(55% 0.23 27.5);
+  --primaria-texto: oklch(100% 0 0);
+  --gradiente: linear-gradient(135deg, oklch(60% 0.24 28), oklch(46% 0.2 27));
+  --sombra-cta: 0 12px 40px -14px oklch(55% 0.23 27.5 / 0.7);
+  --sombra-foto: 0 24px 60px -20px oklch(0% 0 0 / 0.8);
+  --secundaria: oklch(23% 0.006 20);
+
+  background: var(--fundo);
+  color: var(--texto);
+  font-family: "Montserrat", ui-sans-serif, system-ui, sans-serif;
+  line-height: 1.5;
+}
+
+.lpr-faixa--clara {
+  --fundo: oklch(100% 0 0);
+  --texto: oklch(16% 0 0);
+  --card: oklch(97% 0.002 20);
+  --muted: oklch(45% 0.01 20);
+  --borda: oklch(16% 0 0 / 0.14);
+  --secundaria: oklch(94% 0.002 20);
+}
+
+.lpr-faixa--vermelha {
+  --fundo: oklch(50% 0.22 27.5);
+  --texto: oklch(100% 0 0);
+  --card: oklch(42% 0.19 27.5);
+  --muted: oklch(93% 0.03 27);
+  --borda: oklch(100% 0 0 / 0.28);
+  --primaria: oklch(100% 0 0);
+  --primaria-texto: oklch(45% 0.21 27.5);
+  --secundaria: oklch(45% 0.2 27.5);
+  --gradiente: linear-gradient(135deg, oklch(100% 0 0), oklch(93% 0.01 27));
+  --sombra-cta: 0 12px 40px -14px oklch(0% 0 0 / 0.45);
+}
+
+.lpr-faixa {
+  background: var(--fundo);
+  color: var(--texto);
+}
+
+.lpr-container {
+  max-width: 72rem;
+  margin-inline: auto;
+  padding-inline: 1.25rem;
+}
+
+.lpr-secao {
+  padding-block: 6rem;
+}
+
+.lpr-secao--curta {
+  padding-block: 5rem;
+}
+
+/* --- Tipografia ------------------------------------------------------------ */
+
+.lpr-h1,
+.lpr-h2,
+.lpr-h3 {
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: -0.015em;
+}
+
+.lpr-h1 {
+  margin-top: 1.25rem;
+  font-size: 2.25rem;
+  line-height: 2.5rem;
+}
+
+.lpr-h2 {
+  margin-top: 1rem;
+  font-size: 2.25rem;
+  line-height: 2.5rem;
+}
+
+.lpr-h2--menor {
+  font-size: 1.875rem;
+  line-height: 2.25rem;
+}
+
+.lpr-h3 {
+  font-size: 1.5rem;
+  line-height: 2rem;
+}
+
+.lpr-h3--maior {
+  margin-top: 1rem;
+  font-size: 1.875rem;
+  line-height: 2.25rem;
+}
+
+.lpr-kicker {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--primaria);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+}
+
+.lpr-kicker__linha {
+  display: inline-block;
+  width: 2rem;
+  height: 1px;
+  background: var(--primaria);
+}
+
+.lpr-kicker__ponto {
+  display: inline-block;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 999px;
+  background: var(--primaria);
+}
+
+.lpr-muted {
+  margin-top: 1rem;
+  color: var(--muted);
+}
+
+.lpr-pequeno {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+.lpr-nota {
+  margin-top: 1rem;
+  color: var(--muted);
+  font-size: 0.75rem;
+  line-height: 1rem;
+}
+
+.lpr-nota--centro {
+  margin-top: 0.75rem;
+  text-align: center;
+}
+
+.lpr-link {
+  display: inline-block;
+  margin-top: 1rem;
+  color: var(--primaria);
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-underline-offset: 4px;
+}
+
+.lpr-link:hover {
+  text-decoration: underline;
+}
+
+/* --- Botoes ---------------------------------------------------------------- */
+
+.lpr-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.95rem 1.6rem;
+  border-radius: 999px;
+  background: var(--gradiente);
+  color: var(--primaria-texto);
+  box-shadow: var(--sombra-cta);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  transition: transform 0.2s, filter 0.2s;
+}
+
+.lpr-btn:hover {
+  filter: brightness(1.07);
+  transform: translateY(-2px);
+}
+
+.lpr-btn--ghost {
+  background: none;
+  border: 1px solid var(--borda);
+  color: var(--texto);
+  box-shadow: none;
+  font-weight: 600;
+  transition: background-color 0.2s;
+}
+
+.lpr-btn--ghost:hover {
+  background: var(--secundaria);
+  filter: none;
+  transform: none;
+}
+
+.lpr-btn--espaco {
+  margin-top: 2rem;
+}
+
+.lpr-btn--cheio {
+  width: 100%;
+  margin-top: 1.5rem;
+}
+
+.lpr-acoes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+/* --- Hero ------------------------------------------------------------------ */
+
+.lpr-hero {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  align-items: center;
+  min-height: 92vh;
+  padding-top: var(--header-height);
+  overflow: hidden;
+}
+
+.lpr-hero__foto {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* As tres camadas de escurecimento da LP original, numa so. */
+.lpr-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(to top, var(--fundo), transparent 10rem),
+    linear-gradient(to right, var(--fundo), oklch(13% 0 0 / 0.8), oklch(13% 0 0 / 0.1)),
+    oklch(13% 0 0 / 0.55);
+}
+
+.lpr-hero__grade {
+  display: grid;
+  gap: 3rem;
+  width: 100%;
+  padding-block: 4rem;
+}
+
+.lpr-hero__texto {
+  max-width: 42rem;
+}
+
+.lpr-hero__lead {
+  max-width: 36rem;
+  margin-top: 1.5rem;
+  color: var(--muted);
+}
+
+.lpr-hero__destaque {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  max-width: 28rem;
+  margin-top: 2rem;
+  padding-left: 1rem;
+  border-left: 2px solid var(--primaria);
+}
+
+.lpr-hero__destaque strong {
+  font-size: 0.875rem;
+}
+
+.lpr-hero__destaque span {
+  color: var(--muted);
+  font-size: 0.75rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.lpr-numeros {
+  display: grid;
+  grid-template-columns: 1fr;
+  width: 100%;
+  max-width: 56rem;
+  margin-left: auto;
+  border: 1px solid var(--borda);
+  background: oklch(13% 0 0 / 0.7);
+  backdrop-filter: blur(8px);
+}
+
+.lpr-numeros > div {
+  padding: 1.25rem;
+}
+
+.lpr-numeros > div + div {
+  border-top: 1px solid var(--borda);
+}
+
+.lpr-numeros dt {
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 2rem;
+}
+
+.lpr-numeros dd {
+  margin-top: 0.25rem;
+  color: var(--muted);
+  font-size: 0.65rem;
+  line-height: 1.25;
+  letter-spacing: 0.025em;
+}
+
+/* --- Cards ----------------------------------------------------------------- */
+
+.lpr-intro {
+  max-width: 42rem;
+}
+
+.lpr-cards {
+  display: grid;
+  gap: 1.25rem;
+  margin-top: 3rem;
+}
+
+.lpr-card {
+  display: block;
+  padding: 1.5rem;
+  border: 1px solid var(--borda);
+  border-radius: 1rem;
+  background: var(--card);
+  box-shadow: 0 18px 40px -24px oklch(0% 0 0 / 0.35);
+}
+
+.lpr-card--sobe {
+  transition: transform 0.15s;
+}
+
+.lpr-card--sobe:hover {
+  transform: translateY(-0.25rem);
+}
+
+.lpr-card__n {
+  color: var(--primaria);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+}
+
+.lpr-card__n--rotulo {
+  text-transform: uppercase;
+}
+
+.lpr-card .lpr-h3 {
+  margin-top: 1rem;
+}
+
+.lpr-card .lpr-muted {
+  margin-top: 0.75rem;
+}
+
+/* --- Destaque (foto + lista) ----------------------------------------------- */
+
+.lpr-duas {
+  display: grid;
+  align-items: center;
+  gap: 3rem;
+}
+
+.lpr-destaque__foto {
+  width: 100%;
+  height: 100%;
+  max-height: 520px;
+  border-radius: 1.5rem;
+  object-fit: cover;
+  box-shadow: var(--sombra-foto);
+}
+
+.lpr-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+  list-style: none;
+}
+
+.lpr-lista li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  font-size: 0.875rem;
+}
+
+.lpr-lista__ponto {
+  flex-shrink: 0;
+  width: 0.5rem;
+  height: 0.5rem;
+  margin-top: 0.25rem;
+  border-radius: 999px;
+  background: var(--primaria);
+}
+
+/* --- Galeria --------------------------------------------------------------- */
+
+.lpr-galeria__topo {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+.lpr-galeria__titulo {
+  max-width: 36rem;
+}
+
+.lpr-galeria__texto {
+  max-width: 24rem;
+  margin-top: 0;
+}
+
+.lpr-galeria__item {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--borda);
+  border-radius: 1rem;
+}
+
+.lpr-galeria__item img {
+  display: block;
+  width: 100%;
+  height: 18rem;
+  object-fit: cover;
+  transition: transform 0.5s;
+}
+
+.lpr-galeria__item:hover img {
+  transform: scale(1.05);
+}
+
+.lpr-galeria__item figcaption {
+  position: absolute;
+  inset: auto 0 0;
+  padding: 1rem;
+  background: linear-gradient(to top, var(--fundo), transparent);
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* --- Avaliacao do Google --------------------------------------------------- */
+
+.lpr-google {
+  padding: 2rem;
+  text-align: center;
+}
+
+.lpr-google__estrelas {
+  color: var(--primaria);
+  font-size: 1.5rem;
+  letter-spacing: 0.2em;
+}
+
+.lpr-google__estrelas--grande {
+  font-size: 1.875rem;
+}
+
+.lpr-google__nota {
+  margin-top: 0.75rem;
+  background: var(--gradiente);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-size: 3rem;
+  line-height: 1;
+}
+
+.lpr-google__rotulo {
+  margin-top: 0.75rem;
+  color: var(--muted);
+  font-size: 0.75rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.lpr-google__nota + .lpr-google__rotulo {
+  margin-top: 0.5rem;
+}
+
+.lpr-google__texto {
+  margin-top: 1rem;
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+
+/* --- Oferta ---------------------------------------------------------------- */
+
+.lpr-oferta {
+  padding: 2rem;
+  border-radius: 1.5rem;
+}
+
+/* --- Endereco, horarios e duvidas ------------------------------------------ */
+
+.lpr-local {
+  border-top: 1px solid var(--borda);
+}
+
+.lpr-tres {
+  display: grid;
+  gap: 3rem;
+}
+
+.lpr-local__endereco span {
+  display: block;
+}
+
+.lpr-horarios {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  list-style: none;
+  font-size: 0.875rem;
+}
+
+.lpr-horarios li {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--borda);
+}
+
+.lpr-horarios .lpr-muted {
+  margin-top: 0;
+}
+
+.lpr-faq {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.lpr-faq details {
+  padding: 1rem;
+  border: 1px solid var(--borda);
+  border-radius: 0.75rem;
+  background: oklch(13% 0 0 / 0.6);
+}
+
+.lpr-faq summary {
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.lpr-faq .lpr-muted {
+  margin-top: 0.5rem;
+}
+
+/* --- Telas maiores (mesmos pontos de quebra do Tailwind: 640/768/1024) ----- */
+
+@media (min-width: 640px) {
+  .lpr-h1,
+  .lpr-h2 {
+    font-size: 3rem;
+    line-height: 1;
+  }
+
+  .lpr-h2--menor {
+    font-size: 1.875rem;
+    line-height: 2.25rem;
+  }
+
+  .lpr-hero__lead {
+    font-size: 1.125rem;
+    line-height: 1.75rem;
+  }
+
+  .lpr-numeros {
+    grid-template-columns: 1fr 2fr 1fr;
+  }
+
+  .lpr-numeros > div + div {
+    border-top: 0;
+    border-left: 1px solid var(--borda);
+  }
+
+  .lpr-cards--4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 768px) {
+  .lpr-cards--3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .lpr-galeria__topo {
+    flex-direction: row;
+    align-items: flex-end;
+  }
+}
+
+@media (min-width: 1024px) {
+  .lpr-h1 {
+    font-size: 3.75rem;
+  }
+
+  .lpr-cards--4 {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .lpr-duas {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .lpr-tres {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}

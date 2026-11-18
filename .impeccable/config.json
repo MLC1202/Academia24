@@ -1,0 +1,26 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "gradient-text",
+        "value": "*",
+        "files": [
+          "frontend/src/pages/lp/TemplateRede.css"
+        ],
+        "createdAt": "2026-11-18T18:26:34.359Z",
+        "reason": "Replica fiel da LP Cambui/Lagoa (classe text-gold na nota 4,9); pedido do usuario: LPs iguais as originais"
+      },
+      {
+        "rule": "overused-font",
+        "value": "montserrat",
+        "files": [
+          "frontend/src/pages/lp/TemplateRede.css"
+        ],
+        "createdAt": "2026-11-18T18:28:37.033Z",
+        "reason": "Fonte das LPs originais (Lovable) de Alphaville/Cambui/Lagoa; pedido do usuario: LPs iguais as originais"
+      }
+    ]
+  }
+}

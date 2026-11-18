@@ -7,13 +7,16 @@
 // O BASE_URL e o caminho onde o site esta hospedado ('/' na Hostinger,
 // '/Academia24/' no GitHub Pages). Sem ele a foto da 404 no Pages.
 //
-// NO CELULAR (ate 900px) o acordeao vira uma pilha de cartoes presa na tela
-// (position: sticky) dentro de um trilho mais alto que ela. Conforme o
-// cliente rola, o cartao da frente sobe e some, e o de tras (que fica
-// espiando por cima) vem pra frente e para no centro. Depois do 04 a pilha
-// solta e a pagina segue pra proxima secao.
-// O Rede.tsx so calcula --p (0 = cartao 01 na frente, 3 = cartao 04) e o
-// CSS faz o resto. No computador nada muda: continua abrindo no hover.
+// NO CELULAR (ate 900px) os cartoes ficam empilhados no mesmo lugar, presos
+// na tela (position: sticky) dentro de um trilho mais alto que ela. Conforme o
+// cliente rola, o proximo cartao sobe de baixo POR CIMA do anterior, que
+// vai clareando ate sumir (mesma ideia do site da Smart Fit). Depois do 04 a moldura solta e
+// a pagina segue pra proxima secao.
+// O Rede.tsx so calcula --p (0 = cartao 01 no lugar, 3 = cartao 04) e o
+// CSS faz o resto.
+// NO COMPUTADOR (acima de 900px) e a galeria elastica: o painel sob o mouse
+// abre (4 partes contra 1), a foto faz um zoom suave, os vizinhos escurecem e
+// mostram o titulo na vertical. So CSS: o React so marca qual esta ativo.
 
 import { useEffect, useRef, useState } from "react";
 import type { CSSProperties } from "react";
@@ -59,21 +62,11 @@ const pilares = [
 
 const MOBILE = "(max-width: 900px)";
 
-// Folga (em "cartoes") no comeco e no fim do trilho, pra o 01 e o 04 ficarem
-// um tempinho parados antes de a pilha comecar a andar / soltar.
-const FOLGA = 0.3;
 const ULTIMO = pilares.length - 1;
 
-// Progresso do trilho (0 a 1) -> posicao na pilha (0 a ULTIMO). Cada troca
-// ainda "segura" um pouco no meio, pro cartao descansar no centro.
-function paraPosicao(progresso: number) {
-  const bruto = progresso * (ULTIMO + 2 * FOLGA) - FOLGA;
-  const limitado = Math.min(Math.max(bruto, 0), ULTIMO);
-  const base = Math.floor(limitado);
-  const resto = limitado - base;
-  const segura = Math.min(Math.max((resto - 0.15) / 0.7, 0), 1);
-  return base + segura;
-}
+// Progresso do trilho (0 a 1) -> posicao na pilha (0 a ULTIMO). Linear: cada
+// cartao gasta uma tela de rolagem, sem pausa (como no site da Smart Fit).
+const paraPosicao = (progresso: number) => progresso * ULTIMO;
 
 function Rede() {
   const [ativo, setAtivo] = useState(0);
@@ -95,7 +88,8 @@ function Rede() {
   useEffect(() => {
     const container = document.querySelector<HTMLElement>(".snap-container");
     const mq = window.matchMedia(MOBILE);
-    if (!container) return;
+    // Com animacao ligada a rolagem o proprio CSS move os cartoes (Rede.css).
+    if (!container || CSS.supports("animation-timeline", "view()")) return;
 
     let frame = 0;
     const atualizar = () => {
@@ -125,24 +119,9 @@ function Rede() {
     };
   }, []);
 
-  // No celular, tocar num cartao de tras leva a rolagem ate ele.
-  const irPara = (i: number) => {
-    if (!window.matchMedia(MOBILE).matches) {
-      setAtivo(i);
-      return;
-    }
-    const container = document.querySelector<HTMLElement>(".snap-container");
-    const med = medir();
-    if (!container || !molduraRef.current || !med) return;
-    // Onde a moldura gruda na tela (topo do container + o 'top' do sticky).
-    const topoPreso =
-      container.getBoundingClientRect().top +
-      parseFloat(getComputedStyle(molduraRef.current).top || "0");
-    const alvo = ((i + FOLGA) / (ULTIMO + 2 * FOLGA)) * med.total;
-    container.scrollTo({
-      top: container.scrollTop + med.t.top - topoPreso + alvo,
-      behavior: "smooth",
-    });
+  // Toque no computador/tablet abre o painel. No celular quem manda e a rolagem.
+  const abrir = (i: number) => {
+    if (!window.matchMedia(MOBILE).matches) setAtivo(i);
   };
 
   return (
@@ -196,11 +175,19 @@ function Rede() {
               aria-expanded={i === ativo}
               onMouseEnter={() => setAtivo(i)}
               onFocus={() => setAtivo(i)}
-              onClick={() => irPara(i)}
+              onClick={() => abrir(i)}
             >
+              <span
+                className="rede__painel-foto"
+                aria-hidden="true"
+                style={{ backgroundImage: `url(${p.foto})`, backgroundPosition: p.posicao }}
+              />
               <span className="rede__painel-n">{p.n}</span>
               <span className="rede__painel-titulo">{p.titulo}</span>
               <span className="rede__painel-texto">{p.texto}</span>
+              <span className="rede__painel-vertical" aria-hidden="true">
+                {p.titulo}
+              </span>
             </button>
           ))}
         </div>

@@ -45,3 +45,29 @@ export const SEO = {
     indexar: false,
   },
 } satisfies Record<string, Seo>;
+
+// LP de cada unidade (/unidades/<slug>). Titulo e descricao vieram das LPs
+// antigas (Lovable), pra o Google nao ver o texto mudar na migracao.
+// Chave = slug (src/data/slugs.ts); string solta porque este arquivo nao importa nada.
+export const SEO_LP: Record<string, Seo> = {
+  alphaville: {
+    titulo: '24 Wellness Alphaville | Academia premium em Barueri',
+    descricao:
+      '1.800 m² climatizados, equipamentos Life Fitness e Hammer Strength, manobrista, lojas e massoterapia na Alameda Grajaú, 525 — Alphaville, Barueri.',
+  },
+  norte: {
+    titulo: '24 Health Club Norte — Academia em Vila Guilherme, SP',
+    descricao:
+      'Mais de 3.000 m², 80+ vagas de estacionamento e abertura às 4h de segunda a sexta. Conheça a unidade Norte do 24 Health Club em Vila Guilherme.',
+  },
+  cambui: {
+    titulo: '24 Health Club Cambuí | Academia premium em Campinas',
+    descricao:
+      'Mais de 1.200 m² climatizados, equipamentos Life Fitness e Hammer Strength, avaliação física e manobrista no Cambuí, Campinas. Condição especial para novas matrículas.',
+  },
+  lagoa: {
+    titulo: '24 Health Club Lagoa | Academia premium em Campinas',
+    descricao:
+      'Academia com mais de 1.200 m², equipamentos Life Fitness e Hammer Strength, aulas coletivas e manobrista na Lagoa, Campinas. Condição especial para novas matrículas.',
+  },
+};

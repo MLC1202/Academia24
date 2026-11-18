@@ -13,6 +13,7 @@ import { Link, useLocation } from 'react-router-dom';
 import FluidMenu, { type ItemMenu } from '../FluidMenu/FluidMenu';
 import PlanosModal from '../PlanosModal/PlanosModal';
 import { icones } from '../FluidMenu/icones';
+import { ehSlugUnidade, unidades } from '../../data/unidades';
 import './Header.css';
 
 const base = import.meta.env.BASE_URL;
@@ -30,7 +31,15 @@ type Passo = { label: string; to?: string };
 // Monta a trilha a partir da URL. O ultimo passo e onde eu estou (sem link).
 function montarTrilha(pathname: string): Passo[] {
   const partes = pathname.replace(/\/+$/, '').split('/').filter(Boolean);
-  const [pagina] = partes;
+  const [pagina, sub] = partes;
+
+  if (pagina === 'unidades' && ehSlugUnidade(sub)) {
+    return [
+      { label: 'Home', to: '/' },
+      { label: 'Unidades', to: '/unidades' },
+      { label: unidades[sub].nome },
+    ];
+  }
 
   if (pagina === 'unidades') {
     return [{ label: 'Home', to: '/' }, { label: 'Unidades' }];
