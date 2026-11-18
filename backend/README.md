@@ -15,7 +15,7 @@ backend/
 │   ├── login.php      POST {email, senha} (CSRF, rate limit) -> pede o codigo
 │   ├── login-mfa.php  POST {codigo} (6 digitos do app autenticador)
 │   ├── logout.php     POST (CSRF)
-│   ├── lead.php       POST formulario de agendamento (publico: CSRF, honeypot, rate limit)
+│   ├── lead.php       POST formulario de agendamento (publico: CSRF, honeypot, rate limit; avisa a dona por e-mail)
 │   ├── admin-atualizar-grade.php POST -- busca a grade no Pacto agora (botao "Atualizar agora"; so admin, CSRF)
 │   ├── admin-cancelamentos.php GET ?unidade=&data= -- aulas do dia + proximos cancelamentos (so admin)
 │   ├── admin-cancelar.php POST {unidade, data, hora, modalidade} ou {unidade, data, dia_inteiro} (so admin, CSRF)

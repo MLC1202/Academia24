@@ -23,6 +23,7 @@ require __DIR__ . '/../../src/bootstrap.php';
 require __DIR__ . '/../../src/sessao.php';
 require __DIR__ . '/../../src/limite.php';
 require __DIR__ . '/../../src/leads.php';
+require __DIR__ . '/../../src/email.php';
 
 exigir_metodo('POST');
 iniciar_sessao();
@@ -96,5 +97,20 @@ registrar_tentativa('lead_email', $lead['email']);
 
 // Log sem dado pessoal: so o numero e a unidade.
 registrar('info', 'lead_criado', ['id' => $id, 'unidade' => $lead['unidade']]);
+
+// Avisa a dona. Sem dado pessoal no e-mail (os dados ficam no painel). Falha
+// no SMTP so e registrada: o lead ja esta salvo e a pessoa nao tem culpa.
+$para = config_opcional('ALERTA_EMAIL_PARA');
+if ($para !== '') {
+    try {
+        enviar_email(
+            $para,
+            '[Site Rede 24] Novo lead: ' . $lead['unidade'],
+            "Chegou um novo lead.\n\nUnidade: {$lead['unidade']}\nPeríodo: {$lead['periodo']}\n\nOs dados de contato estão no painel do site.\n"
+        );
+    } catch (Throwable $e) {
+        registrar('erro', 'lead_aviso_falhou', ['id' => $id, 'msg' => $e->getMessage()]);
+    }
+}
 
 responder(201, ['ok' => true]);
