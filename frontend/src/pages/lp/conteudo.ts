@@ -66,9 +66,11 @@ const foto = (slug: string, nome: string, alt: string): Foto => ({
   alt,
 });
 
-// "5511915371685", "Alphaville" -> https://wa.me/5511915371685?text=...
-const whatsapp = (numero: string, unidade: string) =>
-  `https://wa.me/${numero}?text=${encodeURIComponent(`Quero saber mais sobre a Unidade ${unidade}`)}`;
+// Todos os botoes de WhatsApp das LPs levam pro mesmo numero do botao da home
+// (components/WhatsApp); so o texto da mensagem diz de qual unidade veio.
+const NUMERO_WHATSAPP = "5511994992924";
+const whatsapp = (unidade: string) =>
+  `https://wa.me/${NUMERO_WHATSAPP}?text=${encodeURIComponent(`Quero saber mais sobre a Unidade ${unidade}`)}`;
 
 const HORARIOS: [string, string][] = [
   ["Segunda a sexta", "05h às 23h"],
@@ -87,7 +89,7 @@ const GOOGLE_CAMPINAS = "https://share.google/VuQk2rhqnUKNydcuM";
 export const LPS_REDE: Record<UnidadeSlug, LpRede> = {
   alphaville: {
     nome: "Alphaville",
-    whatsapp: whatsapp("5511915371685", "Alphaville"),
+    whatsapp: whatsapp("Alphaville"),
     hero: {
       foto: foto("alphaville", "hero", "Fachada da 24 Wellness Unidade Alphaville"),
       kicker: "Rede 24",
@@ -196,7 +198,7 @@ export const LPS_REDE: Record<UnidadeSlug, LpRede> = {
 
   cambui: {
     nome: "Cambuí",
-    whatsapp: whatsapp("5519989840304", "Cambuí"),
+    whatsapp: whatsapp("Cambuí"),
     hero: {
       foto: foto("cambui", "hero", "Fachada da 24 Health Club Unidade Cambuí"),
       kicker: "Premium · Acolhedora · No coração do Cambuí",
@@ -288,7 +290,7 @@ export const LPS_REDE: Record<UnidadeSlug, LpRede> = {
 
   lagoa: {
     nome: "Lagoa",
-    whatsapp: whatsapp("5519992078463", "Lagoa"),
+    whatsapp: whatsapp("Lagoa"),
     hero: {
       foto: foto("lagoa", "hero", "Fachada da 24 Health Club Unidade Lagoa"),
       kicker: "Estrutura premium em Campinas",
@@ -384,7 +386,7 @@ export const LPS_REDE: Record<UnidadeSlug, LpRede> = {
 
   norte: {
     nome: "Norte",
-    whatsapp: whatsapp("5511976047297", "Norte"),
+    whatsapp: whatsapp("Norte"),
     hero: {
       foto: foto("norte", "hero", "Salão de musculação da unidade Norte do 24 Health Club"),
       kicker: "Unidade Norte · Vila Guilherme",
