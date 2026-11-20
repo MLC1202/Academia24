@@ -63,7 +63,13 @@ if (!$senhaOk) {
     if ($formatoOk) {
         registrar_tentativa('login_email', $email);
     }
-    registrar('aviso', 'login_falhou', []);
+    // O motivo fica so no log: a resposta HTTP e igual nos tres casos.
+    $motivo = !$formatoOk ? 'formato_invalido'
+        : (!$admin ? 'conta_inexistente_ou_inativa' : 'senha_errada');
+    registrar('aviso', 'login_falhou', array_filter([
+        'motivo' => $motivo,
+        'admin_id' => $admin ? (int) $admin['id'] : null,
+    ]));
     responder(401, ['erro' => 'credenciais_invalidas']);
 }
 
